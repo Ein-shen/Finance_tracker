@@ -185,11 +185,8 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
           This ALWAYS stays visible
       ========================================== */}
       <div className="flex items-center gap-2">
-        <Wallet size={16} className="opacity-60" />
-
-        <h1 className="font-mono text-base sm:text-lg">
-          Monthly salary
-        </h1>
+      
+        
       </div>
 
 
