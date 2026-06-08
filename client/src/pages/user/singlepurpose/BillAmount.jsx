@@ -169,14 +169,7 @@ export const BillAmount = ({ refreshKey }) => {
 
       <div className="flex items-center gap-2">
 
-        <Receipt
-          size={16}
-          className="opacity-60"
-        />
-
-        <h1 className="font-mono text-base sm:text-lg">
-          Monthly expenses
-        </h1>
+      
 
       </div>
 
