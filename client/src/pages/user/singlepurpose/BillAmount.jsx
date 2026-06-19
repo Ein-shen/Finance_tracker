@@ -1,14 +1,11 @@
 
 import { useEffect, useState } from 'react'
 import { Receipt } from 'lucide-react'
-import { auth, db } from '../../../firebase'
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from 'firebase/firestore'
+import { auth } from '../../../firebase'
+import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 import { HashLoader } from 'react-spinners'
+
+const getCacheKey = (uid) => `bill_amount_${uid}`
 
 const peso = (n) =>
   `₱${Number(n || 0).toLocaleString('en-PH', {
@@ -17,90 +14,161 @@ const peso = (n) =>
   })}`
 
 export const BillAmount = ({ refreshKey }) => {
-  const [billAmount, setBillAmount] = useState(() => {
-    // Try to load cached value IMMEDIATELY
-    const cached = localStorage.getItem('bill_amount_cache')
 
-    if (cached !== null) {
-      return Number(cached) || 0
+  // ==========================================
+  // CACHE STATE
+  // ==========================================
+  const [billAmount, setBillAmount] = useState(() => {
+    // Try previous user's cache immediately
+    const lastUser = localStorage.getItem('bill_amount_last_user')
+
+    if (!lastUser) {
+      console.log('No previous bill cache user')
+      return 0
     }
 
-    return 0
+    const cached = localStorage.getItem(
+      getCacheKey(lastUser)
+    )
+
+    console.log(
+      'Initial bill cache:',
+      cached
+    )
+
+    return cached !== null
+      ? Number(cached) || 0
+      : 0
   })
 
   const [loading, setLoading] = useState(() => {
-    // If we already have cache, don't show loading
-    return localStorage.getItem('bill_amount_cache') === null
+    const lastUser = localStorage.getItem(
+      'bill_amount_last_user'
+    )
+
+    if (!lastUser) {
+      return true
+    }
+
+    return localStorage.getItem(
+      getCacheKey(lastUser)
+    ) === null
   })
 
+  // ==========================================
+  // FIREBASE
+  // ==========================================
   useEffect(() => {
-    let cancelled = false
 
-    const loadBills = async () => {
-      // Wait for current Firebase user
-      const user = auth.currentUser
+    const unsubscribe = auth.onAuthStateChanged(
+      async (user) => {
 
-      if (!user) {
-        setLoading(false)
-        return
-      }
+        if (!user) {
+          setBillAmount(0)
+          setLoading(false)
+          return
+        }
 
-      try {
-        const q = query(
-          collection(db, 'bills'),
-          where('userId', '==', user.uid)
+        const uid = user.uid
+        const cacheKey = getCacheKey(uid)
+
+        console.log(
+          'Firebase UID:',
+          uid
         )
 
-        const snapshot = await getDocs(q)
+        // ==========================================
+        // LOAD THIS USER'S CACHE
+        // ==========================================
+        const cached = localStorage.getItem(
+          cacheKey
+        )
 
-        let total = 0
+        if (cached !== null) {
 
-        snapshot.forEach((doc) => {
-          const data = doc.data()
+          const cachedAmount = Number(cached)
 
-          total += Number(data.amount) || 0
-        })
+          if (!Number.isNaN(cachedAmount)) {
 
-        if (cancelled) return
+            console.log(
+              'Using cached bill amount:',
+              cachedAmount
+            )
 
-        // Update UI
-        setBillAmount(total)
+            setBillAmount(cachedAmount)
+            setLoading(false)
+          }
+        }
 
-        // SAVE CACHE
+        // Remember which user owns the cache
         localStorage.setItem(
-          'bill_amount_cache',
-          String(total)
+          'bill_amount_last_user',
+          uid
         )
 
-        console.log('Bill amount cached:', total)
-      } catch (error) {
-        console.error('Failed to load bills:', error)
-      } finally {
-        if (!cancelled) {
+        // ==========================================
+        // FETCH FRESH DATA IN BACKGROUND
+        // ==========================================
+        try {
+
+          console.log(
+            'Fetching fresh analytics...'
+          )
+
+          const data = await fetchAnalytics()
+
+          const total =
+            Number(data?.totalSpent || 0) +
+            Number(data?.totalUpcoming || 0)
+
+          console.log(
+            'Fresh bill amount:',
+            total
+          )
+
+          // Update UI
+          setBillAmount(total)
+
+          // ==========================================
+          // SAVE TO LOCAL STORAGE
+          // ==========================================
+          localStorage.setItem(
+            cacheKey,
+            String(total)
+          )
+
+          console.log(
+            'SAVED TO LOCAL STORAGE:',
+            cacheKey,
+            total
+          )
+
+        } catch (error) {
+
+          console.error(
+            'Failed to fetch analytics:',
+            error
+          )
+
+        } finally {
+
           setLoading(false)
         }
       }
-    }
+    )
 
-    // Firebase auth may not have initialized yet.
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        loadBills()
-      } else {
-        setLoading(false)
-      }
-    })
+    return unsubscribe
 
-    return () => {
-      cancelled = true
-      unsubscribe()
-    }
   }, [refreshKey])
 
+  // ==========================================
+  // RENDER
+  // ==========================================
   return (
     <div className="space-y-2 sm:space-y-4 w-full">
 
       <div className="flex items-center gap-2">
+
         <Receipt
           size={16}
           className="opacity-60"
@@ -109,16 +177,22 @@ export const BillAmount = ({ refreshKey }) => {
         <h1 className="font-mono text-base sm:text-lg">
           Monthly expenses
         </h1>
+
       </div>
 
       {loading ? (
+
         <div className="flex items-center py-3">
+
           <HashLoader
             size={19}
             color="#dddfe9"
           />
+
         </div>
+
       ) : (
+
         <div className="bg-[#0077B6] rounded-md p-3 sm:p-4">
 
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
@@ -130,6 +204,7 @@ export const BillAmount = ({ refreshKey }) => {
           </p>
 
         </div>
+
       )}
 
     </div>
