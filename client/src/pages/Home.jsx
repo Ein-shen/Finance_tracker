@@ -226,7 +226,7 @@ export const Home = () => {
           <Link to="/" className="flex items-center gap-3">
             <Logo />
             <span className="text-lg font-bold tracking-tight">
-              Expense<span className="text-orange-400">kontrol</span>
+              Expensekontrol
             </span>
           </Link>
 
