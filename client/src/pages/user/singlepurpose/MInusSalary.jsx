@@ -178,8 +178,7 @@ export const MInusSalary = ({ refreshKey }) => {
   return (
     <div className='space-y-2 sm:space-y-4 w-full'>
       <div className='flex items-center gap-2'>
-        <PiggyBank size={16} className='opacity-60' />
-        <h1 className='font-mono text-base sm:text-lg'>Remaining salary</h1>
+        
       </div>
 
       {isLoading && (
