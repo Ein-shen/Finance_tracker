@@ -4,7 +4,9 @@ import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 import { useNavigate } from 'react-router-dom'
 import { Toogle, useTheme } from "./Toogle"
-import { Star } from "lucide-react";
+import { Star } from "lucide-react"
+
+
 const CACHE_KEY_PREFIX = 'accountProfile_'
 
 export const Navbar = () => {
@@ -103,28 +105,38 @@ export const Navbar = () => {
         </button>
 
         {/* profile + dropdown */}
-        <div ref={menuRef} className="relative ml-auto flex items-center gap-1">
-          <div
-            onClick={() => navigate('/dashboard/account')}
-            className="h-9 w-9 cursor-pointer overflow-hidden rounded-full border border-white bg-blue-500"
-          >
-            {resolvedPhotoUrl && (
-              <img src={resolvedPhotoUrl} alt="Profile" className="h-full w-full object-cover" />
-            )}
-          </div>
+        <div ref={menuRef} className="relative ml-auto flex items-center gap-3">
 
-          <button
-            type="button"
-            onClick={() => setShowAccount((prev) => !prev)}
-            aria-haspopup="menu"
-            aria-expanded={showAccount}
-            className="rounded-lg p-1 opacity-60 transition hover:opacity-100"
-          >
-            <ChevronDown
-              size={20}
-              className={`transition-transform duration-200 ${showAccount ? 'rotate-180' : ''}`}
-            />
-          </button>
+
+          
+          <Toogle />
+
+          <div className='flex flex-row'>
+              <div
+              onClick={() => navigate('/dashboard/account')}
+              className="h-9 w-9 cursor-pointer overflow-hidden rounded-full border border-white bg-blue-500"
+            >
+              {resolvedPhotoUrl && (
+                <img src={resolvedPhotoUrl} alt="Profile" className="h-full w-full object-cover" />
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAccount((prev) => !prev)}
+              aria-haspopup="menu"
+              aria-expanded={showAccount}
+              className="rounded-lg p-1 opacity-60 transition hover:opacity-100"
+            >
+              <ChevronDown
+                size={20}
+                className={`transition-transform duration-200 ${showAccount ? 'rotate-180' : ''}`}
+              />
+            </button>
+            
+
+          </div>
+          
 
           {showAccount && (
             <div
@@ -144,16 +156,9 @@ export const Navbar = () => {
                 </button>
               ))}
 
-              <div className="border-t border-white/10" />
+      
 
-              {/* Theme Toggle Item (same as Settings) */}
-              <div className="flex w-full flex-row items-center gap-3 px-4 py-2.5">
-                
-                <Star size={16}/>
-                <Toogle />
-              </div>
-
-              <div className="border-t border-white/10" />
+             
 
               <button
                 type="button"
