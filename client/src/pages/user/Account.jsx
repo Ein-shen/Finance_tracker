@@ -293,11 +293,7 @@ export const Account = () => {
           </div>
         </div>
 
-      <div className="theme-bg border-b theme-border pt-15" />
-
-      <div className="flex flex-row pt-10 items-center justify-center">
-        <Salary />
-      </div>
+     
     </div>
   )
 }
