@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth'
 
-import suitcase from '../../assets/suitcase.png'
+<img src="/suitcase.png" alt="Suitcase" className="w-16 h-16" />
 
 const googleProvider = new GoogleAuthProvider()
 
@@ -61,7 +61,7 @@ export const Login = () => {
         {/* Logo / Welcome */}
         <div className="flex flex-col items-center gap-2 mb-6">
           <img
-            src={suitcase}
+            src="/suitcase.png"
             alt="Suitcase"
             className="w-16 h-16"
           />
