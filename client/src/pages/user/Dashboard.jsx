@@ -1,7 +1,15 @@
 import React from 'react'
+import { Upperbar } from './Upperbar'
+import { Sidebar } from './Sidebar'
 
 export const Dashboard = () => {
   return (
-    <div>Dashboard</div>
+    <div>
+      <div>
+        <Upperbar />
+        <Sidebar />
+        
+      </div>
+    </div>
   )
 }
