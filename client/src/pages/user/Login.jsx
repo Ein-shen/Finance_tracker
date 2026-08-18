@@ -7,10 +7,7 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth'
 
-<img src="/suitcase.png" alt="Suitcase" className="w-16 h-16" />
-
 const googleProvider = new GoogleAuthProvider()
-
 
 export const Login = () => {
   const [email, setEmail] = useState('')
@@ -55,8 +52,8 @@ export const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center  overflow-y-auto py-8">
-      <div className="  p-8 rounded-xl shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center overflow-y-auto py-8">
+      <div className="p-8 rounded-xl shadow-md w-full max-w-md">
 
         {/* Logo / Welcome */}
         <div className="flex flex-col items-center gap-2 mb-6">
@@ -78,32 +75,30 @@ export const Login = () => {
           </div>
         )}
 
-     
-       
-
         {/* Divider */}
-        <div className="flex items-center my-5 ">
+        <div className="flex items-center my-5">
           <hr className="flex-1 border-gray-400" />
 
           <span className="mx-3 text-gray-500 text-sm">
-           Continue with Auth
+            Continue with Auth
           </span>
 
           <hr className="flex-1 border-gray-400" />
         </div>
 
         <div>
-            <h2 className="text-xl font-mono mb-6 text-center pb-10">
-                Login now
-            </h2>
+          <h2 className="text-xl font-mono mb-6 text-center pb-10">
+            Login now
+          </h2>
         </div>
 
+       
         {/* Google Login */}
         <button
           type="button"
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50"
+          className="w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
         >
           <img
             src="https://www.google.com/favicon.ico"
