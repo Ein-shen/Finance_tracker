@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { UserCircle } from 'lucide-react'
-import { Upperbar } from './Upperbar'
 import { Toogle } from './Toogle'
 import { Signout } from './Signout'
 
@@ -27,16 +26,15 @@ export const Profiledrop = () => {
       
         <div className='pr-10'>
             {open && (
-              <div className='absolute right-0 mt-2 w-40 border-2 rounded-md shadow-md z-50'>
+              <div 
+                className='absolute right-0 mt-2 w-40 border-2 rounded-md shadow-md z-50 border-[var(--text-color)] bg-[var(--bg-color)]'
+              >
                 
-                <div className=' rounded-t-md flex items-center justify-between w-full px-3 py-2 hover:bg-gray-100 hover:text-black font-mono text-sm cursor-default border-b-2'>
+                <div className='rounded-t-md flex items-center justify-between w-full px-3 py-2 hover:bg-gray-100 hover:text-black font-mono text-sm cursor-default border-b-2'>
                   Night Mode
                   <Toogle />
                 </div>
-
-    
-
-                <Signout  />
+                <Signout />
 
               </div>
            

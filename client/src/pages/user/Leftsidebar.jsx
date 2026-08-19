@@ -3,13 +3,13 @@ import { Calendar, BarChart2, User, Receipt } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const navItems = [
-  { label: 'Schedule', icon: Calendar, path: '/schedule' },
-  { label: 'Analytics', icon: BarChart2, path: '/analytics' },
-  { label: 'Account', icon: User, path: '/account' },
-  { label: 'Transaction', icon: Receipt, path: '/transaction' },
+  { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
+  { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
+  { label: 'Account', icon: User, path: '/dashboard/account' },
+  { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
 ]
 
-export const Sidebar = () => {
+export const Leftsidebar = () => {
   const navigate = useNavigate()
 
   return (

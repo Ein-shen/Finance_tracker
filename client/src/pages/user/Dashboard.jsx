@@ -1,22 +1,15 @@
 import React from 'react'
-import { Upperbar } from './Upperbar'
-import { Sidebar } from './Sidebar'
-import { Transaction } from './Transaction'
-import { Account } from './Account.jsx'
-import { Schedule } from './Schedule.jsx'
-import { Analytics } from './Analytics.jsx'
- 
+import { Outlet } from 'react-router-dom'
+import { Leftsidebar } from './Leftsidebar'
+import { Rightsidebar } from './Rightsidebar'
 
 export const Dashboard = () => {
   return (
     <div>
-      <div>
-        
-
-        <Sidebar />
-        <Upperbar/>
-        
-        
+      <Leftsidebar />
+      <Rightsidebar />
+      <div className="ml-64 pt-20 p-4"> {/* adjust margin/padding to clear sidebar + upperbar */}
+        <Outlet />
       </div>
     </div>
   )

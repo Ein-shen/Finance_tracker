@@ -9,20 +9,20 @@ import { Transaction } from './pages/user/Transaction'
 import { Account } from './pages/user/Account.jsx'
 import { Schedule } from './pages/user/Schedule.jsx'
 import { Analytics } from './pages/user/Analytics.jsx'
- 
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/transaction" element={<Transaction />} />
-      <Route path="/account" element={<Account />} />
-      <Route path="/schedule" element={<Schedule />} />
-      <Route path="/analytics" element={<Analytics />} />
 
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route path="transaction" element={<Transaction />} />
+        <Route path="account" element={<Account />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="analytics" element={<Analytics />} />
+      </Route>
     </Routes>
   )
 }
