@@ -1,21 +1,53 @@
 @import "tailwindcss";
 
-
-
-
 :root {
-  --bg-color: #262626;
-  --text-color: #e5e5e5;
+  --bg-color: #242424;
+  --text-color: #ffffff;
+  --card-color: #2b2b2b;
+  --border-color: #ffffff;
+
+  /* Dark mode hover */
+  --hover-color: #3a3a3a;
+  --hover-text-color: #ffffff;
 }
 
-.light {
-  --bg-color: #e5e5e5;
-  --text-color: #262626;
+:root.light {
+  --bg-color: #ffffff;
+  --text-color: #222222;
+  --card-color: #f3f3f3;
+  --border-color: #222222;
+
+  /* Light mode hover = gray-100 */
+  --hover-color: #f3f4f6;
+  --hover-text-color: #222222;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
+/* Theme classes */
+.theme-bg {
+  background-color: var(--bg-color);
+}
+
+.theme-card {
+  background-color: var(--card-color);
+}
+
+.theme-text {
+  color: var(--text-color);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+.theme-hover:hover {
+  background-color: var(--hover-color);
+  color: var(--hover-text-color);
+}
