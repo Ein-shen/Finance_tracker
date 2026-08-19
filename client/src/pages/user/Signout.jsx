@@ -18,7 +18,7 @@ export const Signout = () => {
   return (
     <button
       onClick={handleSignOut}
-      className='block w-full text-left px-3 py-2 hover:bg-gray-100 font-mono text-sm rounded-b-md'
+      className='block w-full text-left px-3 py-2 hover:bg-gray-100 hover:text-black font-mono text-sm rounded-b-md'
     >
       Sign out
     </button>

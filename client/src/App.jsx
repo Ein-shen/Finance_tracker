@@ -9,6 +9,8 @@ import { Transaction } from './pages/user/Transaction'
 import { Account } from './pages/user/Account.jsx'
 import { Schedule } from './pages/user/Schedule.jsx'
 import { Analytics } from './pages/user/Analytics.jsx'
+import { Index } from './pages/user/index'
+import { Settings } from './pages/user/Settings'
 
 function App() {
   return (
@@ -18,7 +20,9 @@ function App() {
       <Route path="/signup" element={<Signup />} />
 
       <Route path="/dashboard" element={<Dashboard />}>
+        <Route index element={<Index />} />
         <Route path="transaction" element={<Transaction />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="account" element={<Account />} />
         <Route path="schedule" element={<Schedule />} />
         <Route path="analytics" element={<Analytics />} />
