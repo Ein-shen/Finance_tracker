@@ -6,8 +6,10 @@ export const Dashboard = () => {
   return (
     <div>
       <div>
-        <Upperbar />
+        
+
         <Sidebar />
+        <Upperbar/>
         
       </div>
     </div>
