@@ -237,3 +237,25 @@ app.listen(5000, () => {
     'Server running on http://localhost:5000'
   )
 })
+
+
+app.get('/api/transactions', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM transactions
+      ORDER BY transaction_date DESC, id DESC
+    `)
+
+    res.json({
+      transactions: result.rows,
+    })
+
+  } catch (error) {
+    console.error('Get transactions error:', error)
+
+    res.status(500).json({
+      message: 'Failed to get transactions',
+    })
+  }
+})
