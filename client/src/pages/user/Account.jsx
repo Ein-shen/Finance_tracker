@@ -7,6 +7,17 @@ export const Account = () => {
         <h1 className="font-mono text-lg sm:text-2xl theme-text">
           Account
         </h1>
+
+
+        <div className='flex flex-col'>
+          <div className='border border-2 rounded-md h-32 w-23 '>
+            
+          </div>
+
+          <h1 className='font-mono text-lg text-center'>
+            Name
+          </h1>
+        </div>
         
     </div>
   )
