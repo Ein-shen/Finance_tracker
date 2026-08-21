@@ -84,7 +84,7 @@ export const Leftsidebar = () => {
         />
 
         <h1 className="font-mono text-lg">
-          Track ur Expenses
+          Expense Tracker
         </h1>
       </button>
 
