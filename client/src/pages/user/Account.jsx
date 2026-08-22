@@ -16,16 +16,15 @@ export const Account = () => {
         
 
 
-        <div className='flex flex-col'>
-          <div className=' flex justify-center border border-2 rounded-md h-32 w-23 '>
-            
+        <div className="flex flex-col items-center">
+          <div className="flex items-center justify-center border-2 rounded-md h-32 w-32">
+            {/* Image or icon here */}
           </div>
 
-          <h1 className='font-mono text-lg text-center'>
+          <h1 className="font-mono text-lg text-center mt-2">
             Name
           </h1>
         </div>
-        
     </div>
   )
 }
