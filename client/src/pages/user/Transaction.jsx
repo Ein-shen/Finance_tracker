@@ -229,7 +229,14 @@ export const Transaction = () => {
 
 
         {/* Transactions */}
-
+               <div className='gap-3'>
+                <button className='border border-2 rounded-md'>
+                  Delete
+                </button>
+                <button className='border border-2 rounded-md'>
+                  Edit
+                </button>
+              </div>
         {!loadingTransactions &&
           transactions.length > 0 && (
 
@@ -342,10 +349,10 @@ export const Transaction = () => {
             {/* ==================================
                 FORM
             ================================== */}
-
+            
             <div className="flex flex-col gap-4">
 
-
+              
               {/* Description */}
 
               <div className="flex flex-col gap-2">
