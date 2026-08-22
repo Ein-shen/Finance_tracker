@@ -24,6 +24,9 @@ export const Account = () => {
           <h1 className="font-mono text-lg text-center mt-2">
             Name
           </h1>
+          <h1 className="font-mono text-lg text-center mt-2">
+            Email
+          </h1>
         </div>
     </div>
   )
