@@ -9,7 +9,7 @@ export const Dashboard = () => {
       <Leftsidebar />
       
 
-      <div className="ml-64 mr-16 pt-20 p-4">
+      <div className="ml-0 md:ml-64  pt-20 p-4">
         <Outlet />
       </div>
     </div>

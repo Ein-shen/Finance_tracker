@@ -167,16 +167,16 @@ export const Transaction = () => {
 
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-16 md:pt-0">
 
 
       {/* ==================================
           TRANSACTION HEADER
       ================================== */}
 
-      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 gap-4">
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
 
-        <h1 className="font-mono text-lg sm:text-2xl theme-text">
+        <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transaction
         </h1>
 
@@ -186,11 +186,11 @@ export const Transaction = () => {
         <button
           type="button"
           onClick={() => setShow(true)}
-          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md border-2 rounded-md px-3 py-2 shrink-0 theme-border theme-text theme-hover"
+          className="flex items-center   justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md  rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={25} />
 
-          Add
+          
         </button>
 
       </div>
@@ -201,7 +201,7 @@ export const Transaction = () => {
           TRANSACTION LIST
       ================================== */}
 
-      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 ">
 
 
         {/* Loading */}
@@ -229,92 +229,88 @@ export const Transaction = () => {
 
 
 
-        {/* Transactions */}
-      
-        <div className='flex flex-row items-center'>    
-        <div className='w-full'>
-        {!loadingTransactions &&
-          transactions.length > 0 && (
+                {/* Transactions */}
 
-            <div className="flex flex-col gap-3">
-              
-              {transactions.map(
-                (transaction) => (
+        <div className='flex flex-row items-center gap-3'>
 
-                  <div
-                    key={transaction.id}
-                    className="theme-card theme-text theme-border border-2 rounded-md p-4"
-                  >
+          <div className='w-full'>
+            {!loadingTransactions &&
+              transactions.length > 0 && (
 
-                    {/* Top */}
+                <div className="flex flex-col gap-3">
 
-                    <div className="flex justify-between items-center gap-4">
+                  {transactions.map(
+                    (transaction) => (
 
-                     
+                      <div
+                        key={transaction.id}
+                        className="theme-card theme-text theme-border border-2 rounded-md p-4"
+                      >
 
-                      <span className="font-mono text-base sm:text-lg">
-                        {transaction.category}
-                      </span>
+                        {/* Top */}
 
+                        <div className="flex justify-between items-center gap-4">
 
-                      <span className="font-mono text-base sm:text-lg shrink-0">
+                          <span className="font-mono text-base sm:text-lg">
+                            {transaction.category}
+                          </span>
 
-                        ₱
-                        {Number(
-                          transaction.amount
-                        ).toFixed(2)}
+                          <span className="font-mono text-base sm:text-lg shrink-0">
+                            ₱
+                            {Number(
+                              transaction.amount
+                            ).toFixed(2)}
+                          </span>
 
-                      </span>
-
-                    </div>
+                        </div>
 
 
-                    {/* Bottom */}
-                    
-                    <div className="flex justify-between items-center mt-2 text-sm">
+                        {/* Bottom */}
 
-                      
-                       <h2 className="font-mono ">
-                        {transaction.description}
-                      </h2>
+                        <div className="flex justify-between items-center mt-2 text-sm">
 
-                      <span className="font-mono">
-                        {formatDate(
-                          transaction.transaction_date
-                        )}
-                      </span>
+                          <h2 className="font-mono ">
+                            {transaction.description}
+                          </h2>
 
-                    </div>
+                          <span className="font-mono">
+                            {formatDate(
+                              transaction.transaction_date
+                            )}
+                          </span>
 
-                  </div>
+                        </div>
 
-                )
+                      </div>
+
+                    )
+                  )}
+
+                </div>
+
               )}
 
-            </div>
+          </div>
 
-          )}
+          <div className='flex flex-col items-center justify-center gap-3'>
+            {!loadingTransactions &&
+              transactions.length > 0 && (
+                <>
+                  <button className="p-2">
+                    <Pencil size={18} />
+                  </button>
+
+                  <button className="p-2">
+                    <Trash2 size={18} />
+                  </button>
+                </>
+              )}
+
+          </div>
 
         </div>
-        
-        <div className=' right-0 p-4'>
-              {!loadingTransactions &&
-                transactions.length > 0 && (
-                  <>
-                    <button className="p-2">
-                      <Pencil size={18} />
-                    </button>
 
-                    <button className="p-2">
-                      <Trash2 size={18} />
-                    </button>
-                  </>
-                )} 
-      
-          </div>
-              
-          </div>
-      </div>
+      </div> 
 
 
 
