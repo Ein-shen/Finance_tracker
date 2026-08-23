@@ -16,9 +16,9 @@ export const Settings = () => {
         </h1>
       </div>
 
-      <div className=" pl-20 flex items-center gap-4 pl-20 mt-6 flex flex-col gap-4  ">
+      <div className="flex  gap-4 pl-20  flex flex-col gap-4  ">
 
-        <div className='border border-2 rounded-md  w-48 flex flex-row p-2 gap-3'>
+        <div className=' border border-2 rounded-md w-48  flex flex-row p-2 gap-3 '>
 
           <span className="flex items-center gap-2 font-mono">
           {isLight ? (

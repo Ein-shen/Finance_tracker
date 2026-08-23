@@ -250,9 +250,11 @@ export const Transaction = () => {
 
                     <div className="flex justify-between items-center gap-4">
 
-                      <h2 className="font-mono text-base sm:text-lg">
-                        {transaction.description}
-                      </h2>
+                     
+
+                      <span className="font-mono text-base sm:text-lg">
+                        {transaction.category}
+                      </span>
 
 
                       <span className="font-mono text-base sm:text-lg shrink-0">
@@ -271,10 +273,10 @@ export const Transaction = () => {
                     
                     <div className="flex justify-between items-center mt-2 text-sm">
 
-                      <span className="font-mono">
-                        {transaction.category}
-                      </span>
-
+                      
+                       <h2 className="font-mono ">
+                        {transaction.description}
+                      </h2>
 
                       <span className="font-mono">
                         {formatDate(
@@ -294,20 +296,26 @@ export const Transaction = () => {
           )}
 
         </div>
+        
+        <div className=' right-0 p-4'>
+              {!loadingTransactions &&
+                transactions.length > 0 && (
+                  <>
+                    <button className="p-2">
+                      <Pencil size={18} />
+                    </button>
 
-        <div className=' right-0'>
-                <button className='p-2'>
-                    <Pencil size={18} />
-                  </button>
-
-                  <button className='p-2'>
-                    <Trash2 size={18} />
-                  </button>
-              </div> 
-
+                    <button className="p-2">
+                      <Trash2 size={18} />
+                    </button>
+                  </>
+                )} 
+      
+          </div>
+              
+          </div>
       </div>
-           
-      </div>
+
 
 
 

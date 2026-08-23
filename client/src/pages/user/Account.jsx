@@ -16,8 +16,8 @@ export const Account = () => {
         
 
 
-        <div className="flex flex-col items-center">
-          <div className="flex items-center justify-center border-2 rounded-md h-32 w-32">
+        <div className="flex flex-col items-center pt-15">
+          <div className="flex items-center justify-center border-2 rounded-md h-32 w-32 ">
             {/* Image or icon here */}
           </div>
 
