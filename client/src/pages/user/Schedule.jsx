@@ -18,11 +18,11 @@ export const Schedule = () => {
           <button
             type="button"
             onClick={() => setShow(true)}
-            className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md border-2 rounded-md px-3 py-2 shrink-0 theme-border theme-text theme-hover"
+            className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md  px-3 py-2 shrink-0  theme-text theme-hover"
           >
-            <Plus className="w-4 h-4" />
+            <Plus siz={25} />
 
-            Add
+      
           </button>
 
         </div>

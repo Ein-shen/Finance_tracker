@@ -167,7 +167,7 @@ export const Transaction = () => {
 
 
   return (
-    <div className="w-full pt-16 md:pt-0">
+    <div className="w-full  md:pt-0">
 
 
       {/* ==================================

@@ -10,42 +10,39 @@ export const Settings = () => {
   return (
     <div className="flex flex-col gap-10">
 
-      <div className="flex flex-row">
-        <h1 className="font-mono text-2xl pl-20">
+      <div className="flex flex-row px-4 sm:px-8 md:px-12 lg:px-20">
+        <h1 className="font-mono text-xl">
           Settings
         </h1>
       </div>
 
-      <div className="flex  gap-4 pl-20  flex flex-col gap-4  ">
+      <div className="pt-10 flex flex-col items-center md:items-start gap-4 px-4 sm:px-8 md:px-12 lg:px-20">
 
-        <div className=' border border-2 rounded-md w-48  flex flex-row p-2 gap-3 '>
+        <div className="border-2 rounded-md w-48 flex flex-row p-2 gap-3">
+          <span className="flex gap-2 font-mono justify-center md:justify-start">
+            {isLight ? (
+              <>
+                <Sun className="w-5 h-5" />
+                Light Mode
+              </>
+            ) : (
+              <>
+                <Moon className="w-5 h-5" />
+                Dark Mode
+              </>
+            )}
+          </span>
 
-          <span className="flex items-center gap-2 font-mono">
-          {isLight ? (
-            <>
-              <Sun className="w-5 h-5" />
-               Light Mode
-            </>
-          ) : (
-            <>
-              <Moon className="w-5 h-5" />
-              Dark Mode
-            </>
-          )}
-        </span>
-
-        <Toogle />
-
+          <Toogle />
         </div>
-        <div className='border border-2 rounded-md p-2 w-48'>
-          <h1 className='font-mono text-md text-center'>
-            About 
+
+        <div className="border-2 rounded-md p-2 w-48">
+          <h1 className="font-mono text-md text-center">
+            About
           </h1>
         </div>
-        
 
       </div>
-
     </div>
   )
 }
