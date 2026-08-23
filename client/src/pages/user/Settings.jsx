@@ -16,9 +16,11 @@ export const Settings = () => {
         </h1>
       </div>
 
-      <div className=" pl-20 flex items-center gap-4 pl-20 mt-6 ">
+      <div className=" pl-20 flex items-center gap-4 pl-20 mt-6 flex flex-col gap-4  ">
 
-        <span className="flex items-center gap-2 font-mono">
+        <div className='border border-2 rounded-md  w-48 flex flex-row p-2 gap-3'>
+
+          <span className="flex items-center gap-2 font-mono">
           {isLight ? (
             <>
               <Sun className="w-5 h-5" />
@@ -33,6 +35,14 @@ export const Settings = () => {
         </span>
 
         <Toogle />
+
+        </div>
+        <div className='border border-2 rounded-md p-2 w-48'>
+          <h1 className='font-mono text-md text-center'>
+            About 
+          </h1>
+        </div>
+        
 
       </div>
 
