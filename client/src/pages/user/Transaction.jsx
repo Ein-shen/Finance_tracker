@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { auth } from '../../firebase'
+import { Pencil, Trash2 } from "lucide-react"
 
 export const Transaction = () => {
   const [show, setShow] = useState(false)
@@ -229,19 +230,14 @@ export const Transaction = () => {
 
 
         {/* Transactions */}
-               <div className='gap-3'>
-                <button className='border border-2 rounded-md'>
-                  Delete
-                </button>
-                <button className='border border-2 rounded-md'>
-                  Edit
-                </button>
-              </div>
+      
+        <div className='flex flex-row items-center'>    
+        <div className='w-full'>
         {!loadingTransactions &&
           transactions.length > 0 && (
 
             <div className="flex flex-col gap-3">
-
+              
               {transactions.map(
                 (transaction) => (
 
@@ -272,7 +268,7 @@ export const Transaction = () => {
 
 
                     {/* Bottom */}
-
+                    
                     <div className="flex justify-between items-center mt-2 text-sm">
 
                       <span className="font-mono">
@@ -297,6 +293,20 @@ export const Transaction = () => {
 
           )}
 
+        </div>
+
+        <div className=' right-0'>
+                <button className='p-2'>
+                    <Pencil size={18} />
+                  </button>
+
+                  <button className='p-2'>
+                    <Trash2 size={18} />
+                  </button>
+              </div> 
+
+      </div>
+           
       </div>
 
 
