@@ -1,51 +1,53 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
-import { Pencil, Trash2 } from "lucide-react"
 
 export const Transaction = () => {
-  const [show, setShow] = useState(false)
+  // POPUPS
+  const [showAdd, setShowAdd] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
-  // Form
+  // FORM
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [transactionDate, setTransactionDate] = useState('')
 
-  // Loading
+  // LOADING
   const [loading, setLoading] = useState(false)
   const [loadingTransactions, setLoadingTransactions] = useState(true)
 
-  // Transactions
+  // TRANSACTIONS
   const [transactions, setTransactions] = useState([])
 
+  // SELECTED TRANSACTION
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  // ==============================
   // GET TRANSACTIONS
-  // ==============================
-
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         setLoadingTransactions(true)
+        const response = await fetch('http://localhost:5000/api/transactions')
+        const contentType = response.headers.get('content-type')
 
-        const response = await fetch(
-          'http://localhost:5000/api/transactions'
-        )
-
-        const data = await response.json()
+        let data = {}
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json()
+        } else {
+          const text = await response.text()
+          console.error('Server returned non-JSON:', text)
+          throw new Error(`Server returned ${response.status} instead of JSON`)
+        }
 
         if (!response.ok) {
-          throw new Error(
-            data.message || 'Failed to get transactions'
-          )
+          throw new Error(data.message || 'Failed to get transactions')
         }
 
         setTransactions(data.transactions || [])
-
       } catch (error) {
         console.error('Get transactions error:', error)
-
+        alert(error.message || 'Failed to get transactions')
       } finally {
         setLoadingTransactions(false)
       }
@@ -54,18 +56,70 @@ export const Transaction = () => {
     fetchTransactions()
   }, [])
 
+  // DELETE TRANSACTION
+const handleDeleteTransaction = async () => {
+  // Check if selectedTransaction exists and has a valid ID
+  if (!selectedTransaction || !selectedTransaction.id) {
+    alert('Selected transaction is missing an ID.')
+    return
+  }
 
-  // ==============================
+  try {
+    setLoading(true)
+
+    const user = auth.currentUser
+    if (!user) {
+      throw new Error('You must be logged in first')
+    }
+
+    // Get the Firebase ID token
+    const token = await user.getIdToken()
+
+    // Send DELETE request with token in Authorization header
+    const response = await fetch(
+      `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const contentType = response.headers.get('content-type')
+    let data = {}
+
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      console.error('Server returned non-JSON:', text)
+      throw new Error(`Server returned status ${response.status}`)
+    }
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to delete transaction')
+    }
+
+    // Remove item from state without page reload
+    setTransactions((prevTransactions) =>
+      prevTransactions.filter((item) => item.id !== selectedTransaction.id)
+    )
+
+    setShowDelete(false)
+    setSelectedTransaction(null)
+  } catch (error) {
+    console.error('Delete transaction error:', error)
+    alert(error.message || 'Failed to delete transaction')
+  } finally {
+    setLoading(false)
+  }
+}
+
   // ADD TRANSACTION
-  // ==============================
-
   const handleAddTransaction = async () => {
-    if (
-      !description ||
-      !amount ||
-      !category ||
-      !transactionDate
-    ) {
+    if (!description || !amount || !category || !transactionDate) {
       alert('Please fill in all fields')
       return
     }
@@ -73,478 +127,305 @@ export const Transaction = () => {
     try {
       setLoading(true)
 
-      // Get Firebase user
       const user = auth.currentUser
-
       if (!user) {
-        alert('You must be logged in first')
-        return
+        throw new Error('You must be logged in first')
       }
 
-      // Get Firebase token
       const token = await user.getIdToken()
 
-      // Send transaction to server
-      const response = await fetch(
-        'http://localhost:5000/api/transactions',
-        {
-          method: 'POST',
+      const response = await fetch('http://localhost:5000/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          description,
+          amount: Number(amount),
+          category,
+          transaction_date: transactionDate,
+        }),
+      })
 
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const contentType = response.headers.get('content-type')
+      let data = {}
 
-          body: JSON.stringify({
-            token,
-            description,
-            amount: Number(amount),
-            category,
-            transaction_date: transactionDate,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || 'Failed to add transaction'
-        )
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned ${response.status} instead of JSON`)
       }
 
-      console.log(
-        'Transaction added:',
-        data.transaction
-      )
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add transaction')
+      }
 
-
-      // ==============================
-      // ADD NEW TRANSACTION TO LIST
-      // ==============================
-
-      setTransactions((prev) => [
+      setTransactions((previousTransactions) => [
         data.transaction,
-        ...prev,
+        ...previousTransactions,
       ])
-
-
-      // ==============================
-      // CLEAR FORM
-      // ==============================
 
       setDescription('')
       setAmount('')
       setCategory('')
       setTransactionDate('')
-
-
-      // Close popup
-      setShow(false)
-
+      setShowAdd(false)
     } catch (error) {
-      console.error(
-        'Transaction error:',
-        error
-      )
-
-      alert(error.message)
-
+      console.error('Transaction error:', error)
+      alert(error.message || 'Failed to add transaction')
     } finally {
       setLoading(false)
     }
   }
 
-
-  // ==============================
   // FORMAT DATE
-  // ==============================
-
   const formatDate = (date) => {
     if (!date) return ''
-
     return new Date(date).toLocaleDateString()
   }
 
-
   return (
-    <div className="w-full  md:pt-0">
-
-
-      {/* ==================================
-          TRANSACTION HEADER
-      ================================== */}
-
+    <div className="w-full md:pt-0">
+      {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
-
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transaction
         </h1>
 
-
-        {/* Add Button */}
-
         <button
           type="button"
-          onClick={() => setShow(true)}
-          className="flex items-center   justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md  rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
+          onClick={() => setShowAdd(true)}
+          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
         >
           <Plus size={25} />
-
-          
         </button>
-
       </div>
 
-
-
-      {/* ==================================
-          TRANSACTION LIST
-      ================================== */}
-
-      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 ">
-
-
-        {/* Loading */}
-
+      {/* TRANSACTION LIST */}
+      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {loadingTransactions && (
-
-          <p className="theme-text font-mono">
-            Loading transactions...
-          </p>
-
+          <p className="theme-text font-mono">Loading transactions...</p>
         )}
 
+        {!loadingTransactions && transactions.length === 0 && (
+          <p className="theme-text font-mono">No transactions yet.</p>
+        )}
 
+        {!loadingTransactions && transactions.length > 0 && (
+          <div className="flex flex-col gap-3">
+            {transactions.map((transaction) => {
+              const currentId = transaction.id || transaction._id
+              return (
+                <div key={currentId} className="flex items-center gap-3">
+                  {/* CARD */}
+                  <div className="flex-1 theme-card theme-text theme-border border-2 rounded-md p-4">
+                    <div className="flex justify-between items-center gap-4">
+                      <span className="font-mono text-base sm:text-lg">
+                        {transaction.category}
+                      </span>
+                      <span className="font-mono text-base sm:text-lg shrink-0">
+                        ₱{Number(transaction.amount).toFixed(2)}
+                      </span>
+                    </div>
 
-        {/* Empty */}
+                    <div className="flex justify-between items-center mt-2 text-sm">
+                      <h2 className="font-mono">{transaction.description}</h2>
+                      <span className="font-mono">
+                        {formatDate(transaction.transaction_date)}
+                      </span>
+                    </div>
+                  </div>
 
-        {!loadingTransactions &&
-          transactions.length === 0 && (
+                  {/* EDIT / DELETE */}
+                  <div className="flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        console.log('Edit transaction:', transaction)
+                      }
+                      className="p-2 theme-text theme-hover"
+                    >
+                      <Pencil size={18} />
+                    </button>
 
-            <p className="theme-text font-mono">
-              No transactions yet.
-            </p>
-
-          )}
-
-
-
-                {/* Transactions */}
-
-        <div className='flex flex-row items-center gap-3'>
-
-          <div className='w-full'>
-            {!loadingTransactions &&
-              transactions.length > 0 && (
-
-                <div className="flex flex-col gap-3">
-
-                  {transactions.map(
-                    (transaction) => (
-
-                      <div
-                        key={transaction.id}
-                        className="theme-card theme-text theme-border border-2 rounded-md p-4"
-                      >
-
-                        {/* Top */}
-
-                        <div className="flex justify-between items-center gap-4">
-
-                          <span className="font-mono text-base sm:text-lg">
-                            {transaction.category}
-                          </span>
-
-                          <span className="font-mono text-base sm:text-lg shrink-0">
-                            ₱
-                            {Number(
-                              transaction.amount
-                            ).toFixed(2)}
-                          </span>
-
-                        </div>
-
-
-                        {/* Bottom */}
-
-                        <div className="flex justify-between items-center mt-2 text-sm">
-
-                          <h2 className="font-mono ">
-                            {transaction.description}
-                          </h2>
-
-                          <span className="font-mono">
-                            {formatDate(
-                              transaction.transaction_date
-                            )}
-                          </span>
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )}
-
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedTransaction(transaction)
+                        setShowDelete(true)
+                      }}
+                      className="p-2 theme-text theme-hover"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
-
-              )}
-
+              )
+            })}
           </div>
+        )}
+      </div>
 
-          <div className='flex flex-col items-center justify-center gap-3'>
-            {!loadingTransactions &&
-              transactions.length > 0 && (
-                <>
-                  <button className="p-2">
-                    <Pencil size={18} />
-                  </button>
-
-                  <button className="p-2">
-                    <Trash2 size={18} />
-                  </button>
-                </>
-              )}
-
-          </div>
-
-        </div>
-
-      </div> 
-
-
-
-
-      {/* ==================================
-          POPUP
-      ================================== */}
-
-      {show && (
-
+      {/* DELETE POPUP */}
+      {showDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-
-
-          {/* Overlay */}
-
           <div
             className="absolute inset-0 bg-black/50"
-            onClick={() => setShow(false)}
+            onClick={() => {
+              if (!loading) {
+                setShowDelete(false)
+                setSelectedTransaction(null)
+              }
+            }}
           />
 
-
-          {/* Popup */}
-
           <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
-
-
-            {/* ==================================
-                POPUP HEADER
-            ================================== */}
-
-            <div className="flex items-center justify-between mb-6">
-
-              <h2 className="font-mono text-xl">
-                Add Transaction
+            <div className="relative flex items-center justify-between mb-6">
+              <h2 className="font-mono text-md">
+                Are you sure to delete this transaction?
               </h2>
-
 
               <button
                 type="button"
-                onClick={() => setShow(false)}
-                className="theme-text theme-hover rounded-md p-1"
+                disabled={loading}
+                onClick={() => {
+                  setShowDelete(false)
+                  setSelectedTransaction(null)
+                }}
+                className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
               >
                 <X className="w-5 h-5" />
               </button>
-
             </div>
 
+            <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDelete(false)
+                  setSelectedTransaction(null)
+                }}
+                disabled={loading}
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+              >
+                Cancel
+              </button>
 
+              <button
+                type="button"
+                onClick={handleDeleteTransaction}
+                disabled={loading}
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+              >
+                {loading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* ==================================
-                FORM
-            ================================== */}
-            
+      {/* ADD TRANSACTION POPUP */}
+      {showAdd && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              if (!loading) setShowAdd(false)
+            }}
+          />
+
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-mono text-xl">Add Transaction</h2>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setShowAdd(false)}
+                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             <div className="flex flex-col gap-4">
-
-              
-              {/* Description */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Description
-                </label>
-
-
+                <label className="font-mono text-sm">Description</label>
                 <input
                   type="text"
                   value={description}
-                  onChange={(e) =>
-                    setDescription(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Grocery"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
 
-
-
-              {/* Amount */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Amount
-                </label>
-
-
+                <label className="font-mono text-sm">Amount</label>
                 <input
                   type="number"
                   value={amount}
-                  onChange={(e) =>
-                    setAmount(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setAmount(e.target.value)}
                   placeholder="₱0.00"
                   min="0"
                   step="0.01"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
 
-
-
-              {/* Category */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Category
-                </label>
-
-
+                <label className="font-mono text-sm">Category</label>
                 <select
                   value={category}
-                  onChange={(e) =>
-                    setCategory(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setCategory(e.target.value)}
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-
-                  <option value="">
-                    Select category
-                  </option>
-
-                  <option value="food">
-                    Food
-                  </option>
-
-                  <option value="transportation">
-                    Transportation
-                  </option>
-
-                  <option value="shopping">
-                    Shopping
-                  </option>
-
-                  <option value="bills">
-                    Bills
-                  </option>
-
-                  <option value="entertainment">
-                    Entertainment
-                  </option>
-
-                  <option value="other">
-                    Other
-                  </option>
-
+                  <option value="">Select category</option>
+                  <option value="food">Food</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="bills">Bills</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
                 </select>
-
               </div>
 
-
-
-              {/* Date */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Date
-                </label>
-
-
+                <label className="font-mono text-sm">Date</label>
                 <input
                   type="date"
                   value={transactionDate}
-                  onChange={(e) =>
-                    setTransactionDate(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setTransactionDate(e.target.value)}
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
 
-
-
-              {/* ==================================
-                  BUTTONS
-              ================================== */}
-
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
-
-
-                {/* Cancel */}
-
                 <button
                   type="button"
-                  onClick={() =>
-                    setShow(false)
-                  }
+                  onClick={() => setShowAdd(false)}
                   disabled={loading}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
 
-
-
-                {/* Add Transaction */}
-
                 <button
                   type="button"
-                  onClick={
-                    handleAddTransaction
-                  }
+                  onClick={handleAddTransaction}
                   disabled={loading}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
-
-                  {loading
-                    ? 'Adding...'
-                    : 'Add Transaction'}
-
+                  {loading ? 'Adding...' : 'Add Transaction'}
                 </button>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       )}
-
     </div>
   )
 }
