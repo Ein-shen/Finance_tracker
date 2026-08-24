@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Pencil } from 'lucide-react'
 export const Account = () => {
   return (
 
@@ -21,9 +21,20 @@ export const Account = () => {
             {/* Image or icon here */}
           </div>
 
-          <h1 className="font-mono text-lg text-center mt-2">
+          <div className='flex flex-row'>
+
+            <h1 className="font-mono text-lg text-center mt-2">
+            
             Name
-          </h1>
+            
+            </h1>
+            <h1>
+              <Pencil size={20} />
+            </h1>
+
+            
+          </div>
+          
           <h1 className="font-mono text-lg text-center mt-2">
             Email
           </h1>
