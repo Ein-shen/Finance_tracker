@@ -16,6 +16,7 @@ export const Transaction = () => {
   // LOADING
   const [loading, setLoading] = useState(false)
   const [loadingTransactions, setLoadingTransactions] = useState(true)
+  const [authLoading, setAuthLoading] = useState(true)
 
   // TRANSACTIONS
   const [transactions, setTransactions] = useState([])
@@ -23,101 +24,148 @@ export const Transaction = () => {
   // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  // GET TRANSACTIONS
+  // ==========================================
+  // WAIT FOR FIREBASE AUTH
+  // ==========================================
+
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoadingTransactions(true)
-        const response = await fetch('http://localhost:5000/api/transactions')
-        const contentType = response.headers.get('content-type')
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log('Firebase user:', user)
+      setAuthLoading(false)
+    })
 
-        let data = {}
-        if (contentType && contentType.includes('application/json')) {
-          data = await response.json()
-        } else {
-          const text = await response.text()
-          console.error('Server returned non-JSON:', text)
-          throw new Error(`Server returned ${response.status} instead of JSON`)
-        }
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to get transactions')
-        }
-
-        setTransactions(data.transactions || [])
-      } catch (error) {
-        console.error('Get transactions error:', error)
-        alert(error.message || 'Failed to get transactions')
-      } finally {
-        setLoadingTransactions(false)
-      }
-    }
-
-    fetchTransactions()
+    return unsubscribe
   }, [])
 
-  // DELETE TRANSACTION
-const handleDeleteTransaction = async () => {
-  // Check if selectedTransaction exists and has a valid ID
-  if (!selectedTransaction || !selectedTransaction.id) {
-    alert('Selected transaction is missing an ID.')
-    return
-  }
+  // ==========================================
+  // GET TRANSACTIONS
+  // ==========================================
 
-  try {
-    setLoading(true)
+  const fetchTransactions = async () => {
+    try {
+      setLoadingTransactions(true)
 
-    const user = auth.currentUser
-    if (!user) {
-      throw new Error('You must be logged in first')
-    }
+      const user = auth.currentUser
 
-    // Get the Firebase ID token
-    const token = await user.getIdToken()
+      console.log('Current Firebase user:', user)
 
-    // Send DELETE request with token in Authorization header
-    const response = await fetch(
-      `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
-      {
-        method: 'DELETE',
+      if (!user) {
+        console.log('No Firebase user logged in')
+        setTransactions([])
+        return
+      }
+
+      const token = await user.getIdToken()
+
+      const response = await fetch('http://localhost:5000/api/transactions', {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+      })
+
+      const contentType = response.headers.get('content-type')
+
+      let data = {}
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned ${response.status} instead of JSON`)
       }
-    )
 
-    const contentType = response.headers.get('content-type')
-    let data = {}
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to get transactions')
+      }
 
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json()
-    } else {
-      const text = await response.text()
-      console.error('Server returned non-JSON:', text)
-      throw new Error(`Server returned status ${response.status}`)
+      setTransactions(data.transactions || [])
+    } catch (error) {
+      console.error('Get transactions error:', error)
+      alert(error.message || 'Failed to get transactions')
+    } finally {
+      setLoadingTransactions(false)
     }
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to delete transaction')
-    }
-
-    // Remove item from state without page reload
-    setTransactions((prevTransactions) =>
-      prevTransactions.filter((item) => item.id !== selectedTransaction.id)
-    )
-
-    setShowDelete(false)
-    setSelectedTransaction(null)
-  } catch (error) {
-    console.error('Delete transaction error:', error)
-    alert(error.message || 'Failed to delete transaction')
-  } finally {
-    setLoading(false)
   }
-}
 
+  // ==========================================
+  // LOAD TRANSACTIONS (only after auth resolves)
+  // ==========================================
+
+  useEffect(() => {
+    if (!authLoading) {
+      fetchTransactions()
+    }
+  }, [authLoading])
+
+  // ==========================================
+  // DELETE TRANSACTION
+  // ==========================================
+
+  const handleDeleteTransaction = async () => {
+    // Check if selectedTransaction exists and has a valid ID
+    if (!selectedTransaction || !selectedTransaction.id) {
+      alert('Selected transaction is missing an ID.')
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const user = auth.currentUser
+      if (!user) {
+        throw new Error('You must be logged in first')
+      }
+
+      // Get the Firebase ID token
+      const token = await user.getIdToken()
+
+      // Send DELETE request with token in Authorization header
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      const contentType = response.headers.get('content-type')
+      let data = {}
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned status ${response.status}`)
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete transaction')
+      }
+
+      // Remove item from state without page reload
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((item) => item.id !== selectedTransaction.id)
+      )
+
+      setShowDelete(false)
+      setSelectedTransaction(null)
+    } catch (error) {
+      console.error('Delete transaction error:', error)
+      alert(error.message || 'Failed to delete transaction')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ==========================================
   // ADD TRANSACTION
+  // ==========================================
+
   const handleAddTransaction = async () => {
     if (!description || !amount || !category || !transactionDate) {
       alert('Please fill in all fields')
@@ -185,6 +233,20 @@ const handleDeleteTransaction = async () => {
   const formatDate = (date) => {
     if (!date) return ''
     return new Date(date).toLocaleDateString()
+  }
+
+  // ==========================================
+  // AUTH LOADING
+  // ==========================================
+
+  if (authLoading) {
+    return (
+      <div className="w-full md:pt-0">
+        <p className="theme-text font-mono px-4 sm:px-8 md:px-12 lg:px-20">
+          Checking login...
+        </p>
+      </div>
+    )
   }
 
   return (
