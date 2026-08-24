@@ -25,12 +25,7 @@ export const Index = () => {
           <h2 className="text-2xl mt-2">₱14,500.00</h2>
         </div>
 
-        <div className="border border-gray-500 rounded-xl p-5">
-          <p className="text-gray-400">Remaining Budget</p>
-          <h2 className="text-2xl mt-2">₱5,500.00</h2>
         </div>
-
-      </div>
     </div>
   )
 }
