@@ -42,6 +42,18 @@ export const Settings = () => {
           </h1>
         </div>
 
+        <div className="border-2 rounded-md p-2 w-48">
+          <h1 className="font-mono text-md text-center">
+            Support
+          </h1>
+        </div>
+
+        <div className="border-2 rounded-md p-2 w-48">
+          <h1 className="font-mono text-md text-center">
+            Help
+          </h1>
+        </div>
+
       </div>
     </div>
   )
