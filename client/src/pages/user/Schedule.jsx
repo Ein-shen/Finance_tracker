@@ -317,12 +317,12 @@ export const Schedule = () => {
 
                 </div>
 
-                <div className="flex justify-end flex-row gap-3">
+                <div className="flex justify-end flex-row">
 
 
                   <button
                     type="button"
-                    className="mt-3 flex items-center gap-2 text-sm theme-text theme-hover"
+                    className="p-2 rounded-md mt-3 flex items-center  text-sm theme-text theme-hover"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -330,9 +330,9 @@ export const Schedule = () => {
                   <button
                     type="button"
                     onClick={() => handleDeleteSchedule(schedule.id)}
-                    className="mt-3 flex items-center gap-2 text-sm theme-text theme-hover"
+                    className="mt-3 p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className=" w-4 h-4" />
                   </button>
 
                   
