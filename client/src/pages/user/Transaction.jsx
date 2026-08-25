@@ -277,39 +277,39 @@ export const Transaction = () => {
         )}
 
         {!loadingTransactions && transactions.length > 0 && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
             {transactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
               return (
-                <div key={currentId} className="flex items-center gap-3">
+                <div key={currentId} className="theme-card theme-text theme-border border-2 rounded-md p-4">
                   {/* CARD */}
-                  <div className="flex-1 theme-card theme-text theme-border border-2 rounded-md p-4">
-                    <div className="flex justify-between items-center gap-4">
+                  <div className="flex justify-between items-center">
+                    <div className="space-y-1">
                       <h2 className="font-mono text-base sm:text-lg">
                          Type: <span>{transaction.category}</span>
                       </h2>
                       <h2 className="font-mono text-base sm:text-lg shrink-0">
                         Amount: <span className='text-md'>₱{Number(transaction.amount).toFixed(2)}</span>
                       </h2>
-                    </div>
 
-                    <div className="flex justify-between items-center mt-2 text-sm">
                       <h2 className="font-mono">
-                       Description: <span>{transaction.description}</span></h2>
+                       Description: <span>{transaction.description}</span>
+                      </h2>
                       <h2 className="font-mono">
                         Date: <span>{formatDate(transaction.transaction_date)}</span>
                       </h2>
                     </div>
+                   
                   </div>
 
                   {/* EDIT / DELETE */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex justify-end flex-row gap-2">
                     <button
                       type="button"
                       onClick={() =>
                         console.log('Edit transaction:', transaction)
                       }
-                      className="p-2 theme-text theme-hover"
+                      className="p-2 rounded-md theme-text theme-hover"
                     >
                       <Pencil size={18} />
                     </button>
@@ -320,7 +320,7 @@ export const Transaction = () => {
                         setSelectedTransaction(transaction)
                         setShowDelete(true)
                       }}
-                      className="p-2 theme-text theme-hover"
+                      className="p-2  rounded-md theme-text theme-hover"
                     >
                       <Trash2 size={18} />
                     </button>
