@@ -11,7 +11,7 @@ export const Settings = () => {
     <div className="flex flex-col gap-10">
 
       <div className="flex flex-row px-4 sm:px-8 md:px-12 lg:px-20">
-        <h1 className="font-mono text-xl">
+        <h1 className="font-mono text-2xl">
           Settings
         </h1>
       </div>
