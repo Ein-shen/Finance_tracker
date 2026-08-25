@@ -322,7 +322,7 @@ export const Schedule = () => {
 
                   <button
                     type="button"
-                    className="p-2 rounded-md mt-3 flex items-center  text-sm theme-text theme-hover"
+                    className="p-2 rounded-md  flex items-center  text-sm theme-text theme-hover"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -330,7 +330,7 @@ export const Schedule = () => {
                   <button
                     type="button"
                     onClick={() => handleDeleteSchedule(schedule.id)}
-                    className="mt-3 p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
+                    className=" p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
                   >
                     <Trash2 className=" w-4 h-4" />
                   </button>
