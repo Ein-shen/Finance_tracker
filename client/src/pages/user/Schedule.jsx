@@ -279,7 +279,7 @@ export const Schedule = () => {
             No schedules yet.
           </p>
         ) : (
-          <div className="flex flex-col gap-3">
+         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
 
             {schedules.map((schedule) => (
 
@@ -290,7 +290,7 @@ export const Schedule = () => {
 
                 <div className="flex justify-between items-center">
 
-                  <div>
+                  <div className='space-y-1'>
 
                     <h2 className="">
                     <span className=' font-bold text-md'> Description:</span>  {schedule.description}

@@ -285,19 +285,20 @@ export const Transaction = () => {
                   {/* CARD */}
                   <div className="flex-1 theme-card theme-text theme-border border-2 rounded-md p-4">
                     <div className="flex justify-between items-center gap-4">
-                      <span className="font-mono text-base sm:text-lg">
-                        {transaction.category}
-                      </span>
-                      <span className="font-mono text-base sm:text-lg shrink-0">
-                        ₱{Number(transaction.amount).toFixed(2)}
-                      </span>
+                      <h2 className="font-mono text-base sm:text-lg">
+                         Type: <span>{transaction.category}</span>
+                      </h2>
+                      <h2 className="font-mono text-base sm:text-lg shrink-0">
+                        Amount: <span className='text-md'>₱{Number(transaction.amount).toFixed(2)}</span>
+                      </h2>
                     </div>
 
                     <div className="flex justify-between items-center mt-2 text-sm">
-                      <h2 className="font-mono">{transaction.description}</h2>
-                      <span className="font-mono">
-                        {formatDate(transaction.transaction_date)}
-                      </span>
+                      <h2 className="font-mono">
+                       Description: <span>{transaction.description}</span></h2>
+                      <h2 className="font-mono">
+                        Date: <span>{formatDate(transaction.transaction_date)}</span>
+                      </h2>
                     </div>
                   </div>
 
