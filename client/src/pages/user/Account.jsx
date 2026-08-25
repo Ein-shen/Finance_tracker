@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Pencil } from 'lucide-react'
+
 import { auth } from '../../firebase'
 
 export const Account = () => {
@@ -62,9 +62,7 @@ export const Account = () => {
           <h1 className="font-mono text-lg">
             {loadingProfile ? '...' : name || 'No name set'}
           </h1>
-          <span className="flex items-center">
-            <Pencil size={15} />
-          </span>
+        
         </div>
 
         <h1 className="font-mono text-lg text-center mt-2">
