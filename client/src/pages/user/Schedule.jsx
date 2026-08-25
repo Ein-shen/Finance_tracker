@@ -109,7 +109,6 @@ export const Schedule = () => {
     try {
       setLoading(true)
 
-      // Get current Firebase user
       const user = auth.currentUser
 
       console.log('User before submit:', user)
@@ -119,7 +118,6 @@ export const Schedule = () => {
         return
       }
 
-      // Get Firebase ID token
       const token = await user.getIdToken()
 
       console.log('Token exists:', !!token)
@@ -129,7 +127,6 @@ export const Schedule = () => {
         return
       }
 
-      // Send request
       const response = await fetch(
         'http://localhost:5000/api/schedule',
         {
@@ -160,17 +157,14 @@ export const Schedule = () => {
 
       alert('Schedule added successfully!')
 
-      // Clear form
       setDescription('')
       setAmount('')
       setCategory('')
       setDueDate('')
       setRepeatType('Monthly')
 
-      // Close popup
       setShowAdd(false)
 
-      // Reload schedules
       fetchSchedules()
 
     } catch (error) {
@@ -260,7 +254,6 @@ export const Schedule = () => {
           className="flex items-center justify-center gap-2 font-mono text-sm sm:text-md rounded-md px-3 py-2 theme-border theme-text theme-hover"
         >
           <Plus className="w-5 h-5" />
-          
         </button>
 
       </div>
@@ -279,7 +272,7 @@ export const Schedule = () => {
             No schedules yet.
           </p>
         ) : (
-         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
 
             {schedules.map((schedule) => (
 
@@ -292,37 +285,37 @@ export const Schedule = () => {
 
                   <div className='space-y-1'>
 
-                    <h2 className="">
-                    <span className=' font-bold text-md'> Description:</span>  {schedule.description}
-                    </h2>
-
-                    <h2 className="">
-                    <span className='font-bold text-md'>Due: </span> {schedule.category}
-                    </h2>
-
-                    <h2 >
-                      <span className='font-bold text-md'>Amount: </span> ₱{Number(schedule.amount).toFixed(2)}
+                    <h2>
+                      <span className='font-bold text-md'>Description: </span>
+                      {schedule.description}
                     </h2>
 
                     <h2>
-                      <span className='font-bold text-md'>Due: </span> {schedule.due_date}
+                      <span className='font-bold text-md'>Category: </span>
+                      {schedule.category}
                     </h2>
 
-                    
-                      
+                    <h2>
+                      <span className='font-bold text-md'>Amount: </span>
+                      ₱{Number(schedule.amount).toFixed(2)}
+                    </h2>
 
-                      <span className='font-bold text-md'>
-                        {schedule.repeat_type}
-                      </span>
+                    <h2>
+                      <span className='font-bold text-md'>Due: </span>
+                      {new Date(schedule.due_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </h2>
+
+                    <span className='font-bold text-md'>
+                      {schedule.repeat_type}
+                    </span>
 
                   </div>
 
-                  
-
-
                 </div>
-
-                
 
                 <div className="flex justify-end">
                   <button
@@ -333,7 +326,6 @@ export const Schedule = () => {
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-                
 
               </div>
 
@@ -351,8 +343,6 @@ export const Schedule = () => {
 
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
 
-          {/* Overlay */}
-
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
@@ -362,12 +352,7 @@ export const Schedule = () => {
             }}
           />
 
-
-          {/* Popup */}
-
           <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
-
-            {/* Header */}
 
             <div className="flex items-center justify-between mb-6">
 
@@ -386,169 +371,75 @@ export const Schedule = () => {
 
             </div>
 
-
-            {/* FORM */}
-
             <div className="flex flex-col gap-4">
 
-              {/* DESCRIPTION */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Description
-                </label>
-
+                <label className="font-mono text-sm">Description</label>
                 <input
                   type="text"
                   value={description}
-                  onChange={(e) =>
-                    setDescription(e.target.value)
-                  }
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Internet"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
 
-
-              {/* AMOUNT */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Amount
-                </label>
-
+                <label className="font-mono text-sm">Amount</label>
                 <input
                   type="number"
                   value={amount}
-                  onChange={(e) =>
-                    setAmount(e.target.value)
-                  }
+                  onChange={(e) => setAmount(e.target.value)}
                   placeholder="₱0.00"
                   min="0"
                   step="0.01"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
 
-
-              {/* CATEGORY */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Category
-                </label>
-
+                <label className="font-mono text-sm">Category</label>
                 <select
                   value={category}
-                  onChange={(e) =>
-                    setCategory(e.target.value)
-                  }
+                  onChange={(e) => setCategory(e.target.value)}
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-
-                  <option value="">
-                    Select category
-                  </option>
-
-                  <option value="food">
-                    Food
-                  </option>
-
-                  <option value="transportation">
-                    Transportation
-                  </option>
-
-                  <option value="shopping">
-                    Shopping
-                  </option>
-
-                  <option value="bills">
-                    Bills
-                  </option>
-
-                  <option value="entertainment">
-                    Entertainment
-                  </option>
-
-                  <option value="other">
-                    Other
-                  </option>
-
+                  <option value="">Select category</option>
+                  <option value="food">Food</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="bills">Bills</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
                 </select>
-
               </div>
 
-
-              {/* DUE DATE */}
-
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Due Date
-                </label>
-
+                <label className="font-mono text-sm">Due Date</label>
                 <input
                   type="date"
                   value={dueDate}
-                  onChange={(e) =>
-                    setDueDate(e.target.value)
-                  }
+                  onChange={(e) => setDueDate(e.target.value)}
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
-
               </div>
-
-
-              {/* REPEAT */}
 
               <div className="flex flex-col gap-2">
-
-                <label className="font-mono text-sm">
-                  Repeat
-                </label>
-
+                <label className="font-mono text-sm">Repeat</label>
                 <select
                   value={repeatType}
-                  onChange={(e) =>
-                    setRepeatType(e.target.value)
-                  }
+                  onChange={(e) => setRepeatType(e.target.value)}
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-
-                  <option value="Once">
-                    Once
-                  </option>
-
-                  <option value="Daily">
-                    Daily
-                  </option>
-
-                  <option value="Weekly">
-                    Weekly
-                  </option>
-
-                  <option value="Monthly">
-                    Monthly
-                  </option>
-
-                  <option value="Yearly">
-                    Yearly
-                  </option>
-
+                  <option value="Once">Once</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
                 </select>
-
               </div>
 
-
-              {/* BUTTONS */}
-
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
-
                 <button
                   type="button"
                   disabled={loading}
@@ -564,11 +455,8 @@ export const Schedule = () => {
                   onClick={handleAddSchedule}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
-                  {loading
-                    ? 'Adding...'
-                    : 'Add Schedule'}
+                  {loading ? 'Adding...' : 'Add Schedule'}
                 </button>
-
               </div>
 
             </div>
