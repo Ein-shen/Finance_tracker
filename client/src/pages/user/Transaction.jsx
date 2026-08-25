@@ -252,7 +252,7 @@ export const Transaction = () => {
   return (
     <div className="w-full md:pt-0">
       {/* HEADER */}
-      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transaction
         </h1>
@@ -277,7 +277,7 @@ export const Transaction = () => {
         )}
 
         {!loadingTransactions && transactions.length > 0 && (
-          <div className="flex flex-col gap-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+          <div className="flex flex-col grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
             {transactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
               return (
@@ -285,25 +285,25 @@ export const Transaction = () => {
                   {/* CARD */}
                   <div className="flex justify-between items-center">
                     <div className="space-y-1">
-                      <h2 className="font-mono text-base sm:text-lg">
-                         Type: <span>{transaction.category}</span>
+                      <h2 >
+                         <span className="font-bold text-md">Type: </span>{transaction.category}
                       </h2>
-                      <h2 className="font-mono text-base sm:text-lg shrink-0">
-                        Amount: <span className='text-md'>₱{Number(transaction.amount).toFixed(2)}</span>
+                      <h2 >
+                        <span className="font-bold text-md shrink-0"> Amount: </span> ₱{Number(transaction.amount).toFixed(2)}
                       </h2>
 
-                      <h2 className="font-mono">
-                       Description: <span>{transaction.description}</span>
+                      <h2 >
+                        <span className="font-bold text-md">Description: </span>{transaction.description}
                       </h2>
-                      <h2 className="font-mono">
-                        Date: <span>{formatDate(transaction.transaction_date)}</span>
+                      <h2 >
+                        <span className="font-bold text-md">Date: </span> {formatDate(transaction.transaction_date)}
                       </h2>
                     </div>
                    
                   </div>
 
                   {/* EDIT / DELETE */}
-                  <div className="flex justify-end flex-row gap-2">
+                  <div className="flex justify-end flex-row ">
                     <button
                       type="button"
                       onClick={() =>
