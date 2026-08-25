@@ -465,6 +465,38 @@ app.delete('/api/schedule/:id', async (req, res) => {
   }
 })
 
+
+app.get('/api/user', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    const token = authHeader
+      ? authHeader.split('Bearer ')[1]
+      : null
+
+    if (!token) {
+      return res.status(401).json({
+        message: 'Firebase token is required',
+      })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+    const firebaseUid = decodedToken.uid
+
+    const result = await pool.query(
+      'SELECT name, email FROM users WHERE firebase_uid = $1',
+      [firebaseUid]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    res.json({ name: result.rows[0].name, email: result.rows[0].email })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
 // ==========================================
 // START SERVER
 // ==========================================
