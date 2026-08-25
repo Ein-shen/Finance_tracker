@@ -292,44 +292,48 @@ export const Schedule = () => {
 
                   <div>
 
-                    <h2 className="font-mono text-lg">
-                      {schedule.description}
+                    <h2 className="">
+                    <span className=' font-bold text-md'> Description:</span>  {schedule.description}
                     </h2>
 
-                    <p className="text-sm mt-1">
-                      {schedule.category}
-                    </p>
+                    <h2 className="">
+                    <span className='font-bold text-md'>Due: </span> {schedule.category}
+                    </h2>
+
+                    <h2 >
+                      <span className='font-bold text-md'>Amount: </span> ₱{Number(schedule.amount).toFixed(2)}
+                    </h2>
+
+                    <h2>
+                      <span className='font-bold text-md'>Due: </span> {schedule.due_date}
+                    </h2>
+
+                    
+                      
+
+                      <span className='font-bold text-md'>
+                        {schedule.repeat_type}
+                      </span>
 
                   </div>
 
-                  <span className="font-mono">
-                    ₱{Number(schedule.amount).toFixed(2)}
-                  </span>
+                  
+
 
                 </div>
 
-                <div className="flex justify-between items-center mt-3 text-sm">
+                
 
-                  <span>
-                    Due: {schedule.due_date}
-                  </span>
-
-                  <span>
-                    {schedule.repeat_type}
-                  </span>
-
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSchedule(schedule.id)}
+                    className="mt-3 flex items-center gap-2 text-sm theme-text theme-hover"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleDeleteSchedule(schedule.id)
-                  }
-                  className="mt-3 flex items-center gap-2 text-sm theme-text theme-hover"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </button>
+                
 
               </div>
 
