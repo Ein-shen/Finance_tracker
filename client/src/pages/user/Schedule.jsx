@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, X, Trash2 } from 'lucide-react'
+import { Plus, X, Trash2, Pencil } from 'lucide-react'
 import { auth } from '../../firebase'
 
 export const Schedule = () => {
@@ -317,7 +317,16 @@ export const Schedule = () => {
 
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end flex-row gap-3">
+
+
+                  <button
+                    type="button"
+                    className="mt-3 flex items-center gap-2 text-sm theme-text theme-hover"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  
                   <button
                     type="button"
                     onClick={() => handleDeleteSchedule(schedule.id)}
@@ -325,7 +334,11 @@ export const Schedule = () => {
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
+
+                  
                 </div>
+
+                
 
               </div>
 
