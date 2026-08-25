@@ -21,18 +21,13 @@ export const Account = () => {
             {/* Image or icon here */}
           </div>
 
-          <div className='flex flex-row'>
-
-            <h1 className="font-mono text-lg text-center mt-2">
-            
-            Name
-            
+          <div className='flex flex-row items-center gap-4'>
+            <h1 className="font-mono text-lg">
+              Name
             </h1>
-            <h1>
-              <Pencil size={20} />
-            </h1>
-
-            
+            <span className="flex items-center">
+              <Pencil size={15} />
+            </span>
           </div>
           
           <h1 className="font-mono text-lg text-center mt-2">
