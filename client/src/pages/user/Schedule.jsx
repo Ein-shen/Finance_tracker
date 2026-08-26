@@ -5,6 +5,7 @@ import { auth } from '../../firebase'
 export const Schedule = () => {
   const [showAdd, setShowAdd] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
 
   const [deleteId, setDeleteId] = useState(null)
 
@@ -328,6 +329,9 @@ export const Schedule = () => {
 
                   {/* Edit button */}
                   <button
+                  onClick={() => {
+                    setShowEdit(true)
+                  }}
                     type="button"
                     className="p-2 rounded-md  flex items-center  text-sm theme-text theme-hover"
                   >
@@ -360,6 +364,22 @@ export const Schedule = () => {
         )}
 
       </div>
+
+
+    {/* EDIT POPUP button */}
+
+    {showEdit && (
+      <div className='fixed inset-0 z-50 flex items-center justify-center px-4'>
+         <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              if (!loading) {
+                setShowEdit(false)
+              }
+            }}
+          />
+      </div>
+    )}
 
 
 
