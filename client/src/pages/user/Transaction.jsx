@@ -362,13 +362,14 @@ export const Transaction = () => {
                   </button>
                 </div>
 
-                <div className='flex flex-row justify-center'>
-                  <button className='border border-2 rounded-md px-2 py-2'>
+                <div className='flex flex-row justify-center gap-4'>
+                  <button 
+                  className='border border-2 rounded-md px-2 py-2'>
                     Cancel
                   </button>
 
-                  <button className='border border-2'>
-                    Edit Transaction
+                  <button className='border border-2 rounded-md w-18 '>
+                    Edit 
                   </button>
                 </div>
               </div>
