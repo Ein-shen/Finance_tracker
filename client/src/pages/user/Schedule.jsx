@@ -402,6 +402,31 @@ export const Schedule = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+
+              {/* Cancel confirm button */}
+              <button
+                type="button"
+                onClick={() =>
+                  setShowEdit(false)}
+                disabled={loading}
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              {/* Delete confirm*/}
+              <button
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                onClick={() => {
+                  
+                }}
+                disabled={loading}
+                
+              >
+               Edit
+              </button>
+            </div>
           </div>
       </div>
     )}
