@@ -362,8 +362,8 @@ export const Transaction = () => {
                   </button>
                 </div>
 
-                <div className='flex f;ex-row'>
-                  <button className='border border-2 rounded-md'>
+                <div className='flex flex-row justify-center'>
+                  <button className='border border-2 rounded-md px-2 py-2'>
                     Cancel
                   </button>
                 </div>
