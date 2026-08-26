@@ -361,7 +361,7 @@ export const Schedule = () => {
       {/* DELETE POPUP */}
 
       {showDelete && (
-        <div>
+        <div className='fixed inset-0 z-50 flex items-center justify-center px-4'>
          <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
@@ -373,11 +373,18 @@ export const Schedule = () => {
 
           <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
             <div className='flex items-center justify-between mb-6'>
-              <h1 className='font-mono text-md'>
-                Are you sure to delete this schedule
+              <h1 className='font-mono text-md text-center'>
+                Are you sure to delete this schedule?
               </h1>
 
-              
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setShowDelete(false)}
+                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
             </div>
           </div>
