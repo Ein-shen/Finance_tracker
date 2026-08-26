@@ -3,9 +3,10 @@ import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 
 export const Transaction = () => {
-  // POPUPS
+  // POPUPS DELETE, EDIT, ADD
   const [showAdd, setShowAdd] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
 
   // FORM
   const [description, setDescription] = useState('')
@@ -307,7 +308,7 @@ export const Transaction = () => {
                     <button
                       type="button"
                       onClick={() =>
-                        console.log('Edit transaction:', transaction)
+                        setShowEdit(true)
                       }
                       className="p-2 rounded-md theme-text theme-hover"
                     >
@@ -331,6 +332,39 @@ export const Transaction = () => {
           </div>
         )}
       </div>
+
+
+      {showEdit &&(
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              if (!loading) {
+                setShowEdit(true)
+              }
+            }}  
+            />
+              <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+                <div className="relative flex items-center justify-center mb-6">
+                  <h2 className="font-mono text-md text-center">
+                    Edit Transaction
+                  </h2>
+
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => {
+                      setShowEdit(false)
+                    }}
+                    className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+         
+      )}
 
       {/* DELETE POPUP */}
       {showDelete && (
