@@ -1,14 +1,50 @@
 import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
+import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 import { pool } from './db.js'
 import { firebaseAuth } from './firebaseAdmin.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
+
+// ==========================================
+// MULTER CONFIG FOR PHOTO UPLOADS
+// ==========================================
+
+const fileStorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads'))
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname))
+  },
+})
+
+const upload = multer({
+  storage: fileStorageEngine,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp/
+    const valid = allowed.test(path.extname(file.originalname).toLowerCase())
+    if (valid) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files (jpg, png, webp) are allowed'))
+    }
+  },
+})
+
+// serve uploaded photos as static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // ==========================================
 // TEST POSTGRESQL
@@ -185,7 +221,7 @@ app.post('/api/transactions', async (req, res) => {
 })
 
 // ==========================================
-// GET TRANSACTIONS   <-- NEW ROUTE
+// GET TRANSACTIONS
 // ==========================================
 
 app.get('/api/transactions', async (req, res) => {
@@ -409,6 +445,7 @@ app.post('/api/schedule', async (req, res) => {
     })
   }
 })
+
 // ==========================================
 // DELETE SCHEDULE
 // ==========================================
@@ -465,6 +502,9 @@ app.delete('/api/schedule/:id', async (req, res) => {
   }
 })
 
+// ==========================================
+// GET USER PROFILE
+// ==========================================
 
 app.get('/api/user', async (req, res) => {
   try {
@@ -483,7 +523,7 @@ app.get('/api/user', async (req, res) => {
     const firebaseUid = decodedToken.uid
 
     const result = await pool.query(
-      'SELECT name, email FROM users WHERE firebase_uid = $1',
+      'SELECT name, email, photo_url FROM users WHERE firebase_uid = $1',
       [firebaseUid]
     )
 
@@ -491,12 +531,74 @@ app.get('/api/user', async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    res.json({ name: result.rows[0].name, email: result.rows[0].email })
+    res.json({
+      name: result.rows[0].name,
+      email: result.rows[0].email,
+      photo_url: result.rows[0].photo_url,
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Server error' })
   }
 })
+
+// ==========================================
+// UPLOAD PHOTO
+// ==========================================
+
+app.post('/api/user/photo', upload.single('photo'), async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    const token = authHeader
+      ? authHeader.split('Bearer ')[1]
+      : null
+
+    if (!token) {
+      return res.status(401).json({
+        message: 'Firebase token is required',
+      })
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: 'No photo uploaded',
+      })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+    const firebaseUid = decodedToken.uid
+
+    const photoUrl = `/uploads/${req.file.filename}`
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET photo_url = $1
+      WHERE firebase_uid = $2
+      RETURNING id, firebase_uid, email, name, photo_url
+      `,
+      [photoUrl, firebaseUid]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: 'User not found',
+      })
+    }
+
+    res.status(200).json({
+      message: 'Photo uploaded successfully',
+      user: result.rows[0],
+    })
+  } catch (error) {
+    console.error('Photo upload error:', error)
+
+    res.status(500).json({
+      message: 'Failed to upload photo',
+    })
+  }
+})
+
 // ==========================================
 // START SERVER
 // ==========================================
