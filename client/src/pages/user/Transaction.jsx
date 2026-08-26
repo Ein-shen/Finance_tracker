@@ -361,6 +361,12 @@ export const Transaction = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+
+                <div className='flex f;ex-row'>
+                  <button className='border border-2 rounded-md'>
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
          
