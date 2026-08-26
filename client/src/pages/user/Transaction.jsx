@@ -364,7 +364,10 @@ export const Transaction = () => {
 
                 <div className='flex flex-row justify-center gap-4'>
                   <button 
-                  className='border border-2 rounded-md px-2 py-2'>
+                  className='border border-2 rounded-md px-2 py-2'
+                  onClick={() => {
+                    setShowEdit(false)
+                  }}>
                     Cancel
                   </button>
 
