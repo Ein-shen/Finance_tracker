@@ -6,6 +6,8 @@ export const Schedule = () => {
   const [showAdd, setShowAdd] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
+  const [deleteId, setDeleteId] = useState(null)
+
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
@@ -14,9 +16,11 @@ export const Schedule = () => {
 
   const [schedules, setSchedules] = useState([])
 
+
   const [loading, setLoading] = useState(false)
   const [loadingSchedules, setLoadingSchedules] = useState(true)
   const [authLoading, setAuthLoading] = useState(true)
+  
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -335,7 +339,8 @@ export const Schedule = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setShowDelete(true)
+                      setDeleteId(schedule.id)
+                     setShowDelete(true)
                     }}
                     className=" p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
                   >
@@ -366,7 +371,7 @@ export const Schedule = () => {
             className="absolute inset-0 bg-black/50"
             onClick={() => {
               if (!loading) {
-                setShowAdd(false)
+                setShowDelete(false)
               }
             }}
           />
@@ -386,6 +391,34 @@ export const Schedule = () => {
                 <X className="w-5 h-5" />
               </button>
 
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 mt-2">
+
+              {/* Cancel confirm button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDelete(false)
+                  
+                }}
+                disabled={loading}
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              {/* Delete confirm*/}
+              <button
+                onClick={() => {
+                  handleDeleteSchedule(deleteId)
+                  setShowDelete(false)
+                }}
+                disabled={loading}
+                
+              >
+                {loading ? 'Deleting...' : 'Delete'}
+              </button>
             </div>
           </div>
         </div>
