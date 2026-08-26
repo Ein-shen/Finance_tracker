@@ -373,7 +373,9 @@ export const Schedule = () => {
 
           <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
             <div className='flex items-center justify-between mb-6'>
-              
+              <h1 className='font-mono text-md'>
+                Are you sure to delete this schedule
+              </h1>
 
               
 
