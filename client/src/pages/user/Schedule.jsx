@@ -287,9 +287,15 @@ export const Schedule = () => {
                 className="theme-card theme-text theme-border border-2 rounded-md p-4"
               >
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center w-full">
 
-                  <div className='space-y-1'>
+                  <div className='space-y-1 w-full'>
+
+                    <div className='flex justify-center w-full'>
+                      <span className='font-bold text-lg'>
+                        {schedule.repeat_type}
+                      </span>
+                    </div>
 
                     <h2>
                       <span className='font-bold text-md'>Description: </span>
@@ -315,9 +321,7 @@ export const Schedule = () => {
                       })}
                     </h2>
 
-                    <span className='font-bold text-md'>
-                      {schedule.repeat_type}
-                    </span>
+                    
 
                   </div>
 
