@@ -4,6 +4,7 @@ import { auth } from '../../firebase'
 
 export const Schedule = () => {
   const [showAdd, setShowAdd] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
@@ -316,20 +317,26 @@ export const Schedule = () => {
                   </div>
 
                 </div>
+                
 
+                {/* Buttons */}
                 <div className="flex justify-end flex-row">
 
-
+                  {/* Edit button */}
                   <button
                     type="button"
                     className="p-2 rounded-md  flex items-center  text-sm theme-text theme-hover"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
+                  
 
+                  {/* Delete button */}
                   <button
                     type="button"
-                    onClick={() => handleDeleteSchedule(schedule.id)}
+                    onClick={() => {
+                      setShowDelete(true)
+                    }}
                     className=" p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
                   >
                     <Trash2 className=" w-4 h-4" />
@@ -348,6 +355,32 @@ export const Schedule = () => {
         )}
 
       </div>
+
+
+
+      {/* DELETE POPUP */}
+
+      {showDelete && (
+        <div>
+         <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              if (!loading) {
+                setShowAdd(false)
+              }
+            }}
+          />
+
+          <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
+            <div className='flex items-center justify-between mb-6'>
+              
+
+              
+
+            </div>
+          </div>
+        </div>
+      )}
 
 
       {/* ADD SCHEDULE POPUP */}
