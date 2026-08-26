@@ -364,14 +364,14 @@ export const Transaction = () => {
 
                 <div className='flex flex-row justify-center gap-4'>
                   <button 
-                  className='border border-2 rounded-md px-2 py-2'
+                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                   onClick={() => {
                     setShowEdit(false)
                   }}>
                     Cancel
                   </button>
 
-                  <button className='border border-2 rounded-md w-18 '>
+                  <button  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50" >
                     Edit 
                   </button>
                 </div>
