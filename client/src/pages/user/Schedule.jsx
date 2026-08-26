@@ -398,10 +398,8 @@ export const Schedule = () => {
               {/* Cancel confirm button */}
               <button
                 type="button"
-                onClick={() => {
-                  setShowDelete(false)
-                  
-                }}
+                onClick={() =>
+                  setShowDelete(false)}
                 disabled={loading}
                 className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
@@ -410,6 +408,7 @@ export const Schedule = () => {
 
               {/* Delete confirm*/}
               <button
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 onClick={() => {
                   handleDeleteSchedule(deleteId)
                   setShowDelete(false)
