@@ -17,19 +17,19 @@ export const Schedule = () => {
 
   const [schedules, setSchedules] = useState([])
 
-
   const [loading, setLoading] = useState(false)
   const [loadingSchedules, setLoadingSchedules] = useState(true)
   const [authLoading, setAuthLoading] = useState(true)
-  
 
-  //EDIT FORM
+  // SELECTED SCHEDULE
+  const [selectedSchedule, setSelectedSchedule] = useState(null)
+
+  // EDIT FORM
   const [editDescription, setEditDescription] = useState('')
-  const [editAmount, setEditAmount] = usestate('')
+  const [editAmount, setEditAmount] = useState('')
   const [editCategory, setEditCategory] = useState('')
   const [editDueDate, setEditDueDate] = useState('')
   const [editRepeatType, setEditRepeatType] = useState('')
-
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -193,18 +193,98 @@ export const Schedule = () => {
   // ==========================================
   // OPEN EDIT MODAL (pre-fill form)
   // ==========================================
+
   const openEditModal = (schedule) => {
-    setSelectedTransaction(schedule)
+    setSelectedSchedule(schedule)
     setEditDescription(schedule.description)
     setEditAmount(schedule.amount)
     setEditCategory(schedule.category)
-    setEditRepeatType(schedule.repeatType)
+    setEditRepeatType(schedule.repeat_type)
     setEditDueDate(
-      schedule.schedule_date ? schedule.schedule_date.split('T')[0] : ''
+      schedule.due_date ? schedule.due_date.split('T')[0] : ''
     )
     setShowEdit(true)
   }
 
+  // ==========================================
+  // EDIT SCHEDULE
+  // ==========================================
+
+  const handleEditSchedule = async () => {
+    if (!selectedSchedule || !selectedSchedule.id) {
+      alert('No schedule selected.')
+      return
+    }
+
+    if (
+      !editDescription ||
+      !editAmount ||
+      !editCategory ||
+      !editDueDate ||
+      !editRepeatType
+    ) {
+      alert('Please fill in the fields')
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const user = auth.currentUser
+      if (!user) {
+        throw new Error('You must be logged in first')
+      }
+
+      const token = await user.getIdToken()
+
+      const response = await fetch(
+        `http://localhost:5000/api/schedule/${selectedSchedule.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            description: editDescription,
+            amount: Number(editAmount),
+            category: editCategory,
+            due_date: editDueDate,
+            repeat_type: editRepeatType,
+          }),
+        }
+      )
+
+      const contentType = response.headers.get('content-type')
+      let data = {}
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned ${response.status} instead of JSON`)
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to edit schedule')
+      }
+
+      setSchedules((prev) =>
+        prev.map((item) =>
+          item.id === selectedSchedule.id ? data.schedule : item
+        )
+      )
+
+      setShowEdit(false)
+      setSelectedSchedule(null)
+    } catch (error) {
+      console.error('Edit schedule error:', error)
+      alert(error.message || 'Failed to edit schedule')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // ==========================================
   // DELETE SCHEDULE
@@ -357,9 +437,7 @@ export const Schedule = () => {
 
                   {/* Edit button */}
                   <button
-                  onClick={() => {
-                    setShowEdit(true)
-                  }}
+                    onClick={() => openEditModal(schedule)}
                     type="button"
                     className="p-2 rounded-md  flex items-center  text-sm theme-text theme-hover"
                   >
@@ -394,11 +472,7 @@ export const Schedule = () => {
       </div>
 
 
-
-
-
-
-    {/* EDIT POPUP button */}
+    {/* EDIT SCHEDULE POPUP */}
 
     {showEdit && (
       <div className='fixed inset-0 z-50 flex items-center justify-center px-4'>
@@ -407,49 +481,122 @@ export const Schedule = () => {
             onClick={() => {
               if (!loading) {
                 setShowEdit(false)
+                setSelectedSchedule(null)
               }
             }}
           />
 
           <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
             <div className='flex items-center justify-between mb-6'>
-              <h1 className='font-mono text-md text-center'>
-                Are you sure to edit this schedule?
-              </h1>
-            
-              <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => setShowEdit(false)}
-                  className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              <h2 className='font-mono text-xl'>
+                Edit Schedule
+              </h2>
 
-              {/* Cancel confirm button */}
               <button
                 type="button"
-                onClick={() =>
-                  setShowEdit(false)}
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
-              >
-                Cancel
-              </button>
-
-              {/* Delete confirm*/}
-              <button
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 onClick={() => {
-                  
+                  setShowEdit(false)
+                  setSelectedSchedule(null)
                 }}
-                disabled={loading}
-                
+                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
               >
-               Edit
+                <X className="w-5 h-5" />
               </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Description</label>
+                <input
+                  type="text"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Amount</label>
+                <input
+                  type="number"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  min="0"
+                  step="0.01"
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Category</label>
+                <select
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                >
+                  <option value="">Select category</option>
+                  <option value="food">Food</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="bills">Bills</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Due Date</label>
+                <input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Repeat</label>
+                <select
+                  value={editRepeatType}
+                  onChange={(e) => setEditRepeatType(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                >
+                  <option value="">Select repeat</option>
+                  <option value="Once">Once</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+
+                {/* Cancel confirm button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEdit(false)
+                    setSelectedSchedule(null)
+                  }}
+                  disabled={loading}
+                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                {/* Save changes */}
+                <button
+                  type="button"
+                  onClick={handleEditSchedule}
+                  disabled={loading}
+                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
             </div>
           </div>
       </div>
