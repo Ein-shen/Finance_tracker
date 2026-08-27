@@ -398,7 +398,7 @@ export const Transaction = () => {
                   </div>
 
                   {/* EDIT / DELETE */}
-                  <div className="flex justify-end flex-row ">
+                  <div className="flex justify-end flex-row pt-3">
                     <button
                       type="button"
                       onClick={() => openEditModal(transaction)}
