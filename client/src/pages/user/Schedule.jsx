@@ -642,24 +642,20 @@ export const Schedule = () => {
                   >
 
                     {/* CARD */}
-
                     <div className="flex justify-between items-center">
 
-                      <div className="space-y-1">
+                      <div className="space-y-1 w-full">
 
-                        <h2>
+                        <h2 className="w-full flex justify-center items-center">
                           <span className="font-bold text-md">
-                            Repeat:{' '}
+                            {schedule.repeat_type}
                           </span>
-
-                          {schedule.repeat_type}
                         </h2>
 
                         <h2>
                           <span className="font-bold text-md">
                             Type:{' '}
                           </span>
-
                           {schedule.category}
                         </h2>
 
@@ -667,18 +663,14 @@ export const Schedule = () => {
                           <span className="font-bold text-md">
                             Amount:{' '}
                           </span>
-
                           ₱
-                          {Number(
-                            schedule.amount
-                          ).toFixed(2)}
+                          {Number(schedule.amount).toFixed(2)}
                         </h2>
 
                         <h2>
                           <span className="font-bold text-md">
                             Description:{' '}
                           </span>
-
                           {schedule.description}
                         </h2>
 
@@ -686,16 +678,12 @@ export const Schedule = () => {
                           <span className="font-bold text-md">
                             Due:{' '}
                           </span>
-
-                          {formatDate(
-                            schedule.due_date
-                          )}
+                          {formatDate(schedule.due_date)}
                         </h2>
 
                       </div>
 
                     </div>
-
                     {/* EDIT / DELETE */}
 
                     <div className="flex justify-end flex-row pt-3">
