@@ -25,28 +25,11 @@ export const Transaction = () => {
   // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  //EDIT FORM
+  // EDIT FORM
   const [editDescription, setEditDescription] = useState('')
   const [editAmount, setEditAmount] = useState('')
   const [editCategory, setEditCategory] = useState('')
   const [editTransactionDate, setEditTransactionDate] = useState('')
-
-
-  // ==========================================
-  // OPEN EDIT MODAL (pre-fill form)
-  // ========================================== 
-
-  const openEditModal = (transaction) => {
-    setSelectedTransaction(transaction)
-    setEditDescription(transaction.description)
-    setEditAmount(transaction.amount)
-    setEditCategory(transaction.category)
-    setEditTransactionDate(
-      transaction.transaction_date ? transaction.transaction_date.split('T')[0] : ''
-    )
-    setShowEdit(true)
-
-  }
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -253,6 +236,94 @@ export const Transaction = () => {
     }
   }
 
+  // ==========================================
+  // OPEN EDIT MODAL (pre-fill form)
+  // ==========================================
+
+  const openEditModal = (transaction) => {
+    setSelectedTransaction(transaction)
+    setEditDescription(transaction.description)
+    setEditAmount(transaction.amount)
+    setEditCategory(transaction.category)
+    setEditTransactionDate(
+      transaction.transaction_date ? transaction.transaction_date.split('T')[0] : ''
+    )
+    setShowEdit(true)
+  }
+
+  // ==========================================
+  // EDIT TRANSACTION
+  // ==========================================
+
+  const handleEditTransaction = async () => {
+    if (!selectedTransaction || !selectedTransaction.id) {
+      alert('No transaction selected.')
+      return
+    }
+
+    if (!editDescription || !editAmount || !editCategory || !editTransactionDate) {
+      alert('Please fill in the fields')
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const user = auth.currentUser
+      if (!user) {
+        throw new Error('You must be logged in first')
+      }
+
+      const token = await user.getIdToken()
+
+      const response = await fetch(
+        `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            description: editDescription,
+            amount: Number(editAmount),
+            category: editCategory,
+            transaction_date: editTransactionDate,
+          }),
+        }
+      )
+
+      const contentType = response.headers.get('content-type')
+      let data = {}
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned ${response.status} instead of JSON`)
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to edit transaction')
+      }
+
+      setTransactions((prev) =>
+        prev.map((item) =>
+          item.id === selectedTransaction.id ? data.transaction : item
+        )
+      )
+
+      setShowEdit(false)
+      setSelectedTransaction(null)
+    } catch (error) {
+      console.error('Edit transaction error:', error)
+      alert(error.message || 'Failed to edit transaction')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // FORMAT DATE
   const formatDate = (date) => {
     if (!date) return ''
@@ -330,9 +401,7 @@ export const Transaction = () => {
                   <div className="flex justify-end flex-row ">
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowEdit(true)
-                      }
+                      onClick={() => openEditModal(transaction)}
                       className="p-2 rounded-md theme-text theme-hover"
                     >
                       <Pencil size={18} />
@@ -356,51 +425,111 @@ export const Transaction = () => {
         )}
       </div>
 
-
-      {showEdit &&(
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      {/* EDIT TRANSACTION POPUP */}
+      {showEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
               if (!loading) {
-                setShowEdit(true)
+                setShowEdit(false)
+                setSelectedTransaction(null)
               }
-            }}  
-            />
-              <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
-                <div className="relative flex items-center justify-center mb-6">
-                  <h2 className="font-mono text-md text-center">
-                    Edit Transaction
-                  </h2>
+            }}
+          />
 
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => {
-                      setShowEdit(false)
-                    }}
-                    className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-mono text-xl">Edit Transaction</h2>
 
-                <div className='flex flex-row justify-center gap-4'>
-                  <button 
-                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => {
+                  setShowEdit(false)
+                  setSelectedTransaction(null)
+                }}
+                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Description</label>
+                <input
+                  type="text"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Amount</label>
+                <input
+                  type="number"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  min="0"
+                  step="0.01"
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Category</label>
+                <select
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                >
+                  <option value="">Select category</option>
+                  <option value="food">Food</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="bills">Bills</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="font-mono text-sm">Date</label>
+                <input
+                  type="date"
+                  value={editTransactionDate}
+                  onChange={(e) => setEditTransactionDate(e.target.value)}
+                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                <button
+                  type="button"
                   onClick={() => {
                     setShowEdit(false)
-                  }}>
-                    Cancel
-                  </button>
+                    setSelectedTransaction(null)
+                  }}
+                  disabled={loading}
+                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                >
+                  Cancel
+                </button>
 
-                  <button  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50" >
-                    Edit 
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleEditTransaction}
+                  disabled={loading}
+                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
               </div>
             </div>
-         
+          </div>
+        </div>
       )}
 
       {/* DELETE POPUP */}
