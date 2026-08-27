@@ -264,56 +264,21 @@ app.get('/api/transactions', async (req, res) => {
 })
 
 // ==========================================
-// GET SCHEDULES
+// EDIT SCHEDULE
 // ==========================================
 
-app.get('/api/schedule', async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization
-    const token = authHeader
-      ? authHeader.split('Bearer ')[1]
-      : null
-
-    if (!token) {
-      return res.status(401).json({
-        message: 'Firebase token is required',
-      })
-    }
-
-    const decodedToken = await firebaseAuth.verifyIdToken(token)
-
-    const firebaseUid = decodedToken.uid
-
-    const result = await pool.query(
-      `
-      SELECT *
-      FROM schedule
-      WHERE firebase_uid = $1
-      ORDER BY due_date ASC, id DESC
-      `,
-      [firebaseUid]
-    )
-
-    res.status(200).json({
-      schedules: result.rows,
-    })
-  } catch (error) {
-    console.error('Get schedules error:', error)
-
-    res.status(500).json({
-      message: 'Failed to get schedules',
-    })
-  }
-})
-
-// ==========================================
-// DELETE TRANSACTION
-// ==========================================
-
-app.delete('/api/transactions/:id', async (req, res) => {
+app.put('/api/schedule/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const transactionId = Number(id)
+    const scheduleId = Number(id)
+
+    const {
+      description,
+      amount,
+      category,
+      due_date,
+      repeat_type,
+    } = req.body
 
     const authHeader = req.headers.authorization
     const token = authHeader
@@ -330,34 +295,67 @@ app.delete('/api/transactions/:id', async (req, res) => {
 
     const firebaseUid = decodedToken.uid
 
+    if (
+      !description ||
+      amount === undefined ||
+      amount === null ||
+      amount === '' ||
+      !category ||
+      !due_date ||
+      !repeat_type
+    ) {
+      return res.status(400).json({
+        message: 'All fields are required',
+      })
+    }
+
+    const numericAmount = Number(amount)
+
+    if (!Number.isFinite(numericAmount)) {
+      return res.status(400).json({
+        message: 'Amount must be a valid number',
+      })
+    }
+
     const result = await pool.query(
       `
-      DELETE FROM transactions
-      WHERE id = $1
-      AND firebase_uid = $2
+      UPDATE schedule
+      SET
+        description = $1,
+        amount = $2,
+        category = $3,
+        due_date = $4,
+        repeat_type = $5
+      WHERE id = $6
+      AND firebase_uid = $7
       RETURNING *
       `,
       [
-        transactionId,
+        description,
+        numericAmount,
+        category,
+        due_date,
+        repeat_type,
+        scheduleId,
         firebaseUid,
       ]
     )
 
     if (result.rows.length === 0) {
       return res.status(404).json({
-        message: 'Transaction not found',
+        message: 'Schedule not found',
       })
     }
 
     res.status(200).json({
-      message: 'Transaction deleted successfully',
-      transaction: result.rows[0],
+      message: 'Schedule updated successfully',
+      schedule: result.rows[0],
     })
   } catch (error) {
-    console.error('Delete transaction error:', error)
+    console.error('Edit schedule error:', error)
 
     res.status(500).json({
-      message: 'Failed to delete transaction',
+      message: 'Failed to edit schedule',
     })
   }
 })
@@ -536,6 +534,49 @@ app.post('/api/schedule', async (req, res) => {
 
     res.status(500).json({
       message: 'Failed to add schedule',
+    })
+  }
+})
+
+// ==========================================
+// GET SCHEDULES
+// ==========================================
+
+app.get('/api/schedule', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    const token = authHeader
+      ? authHeader.split('Bearer ')[1]
+      : null
+
+    if (!token) {
+      return res.status(401).json({
+        message: 'Firebase token is required',
+      })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+
+    const firebaseUid = decodedToken.uid
+
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM schedule
+      WHERE firebase_uid = $1
+      ORDER BY due_date ASC, id DESC
+      `,
+      [firebaseUid]
+    )
+
+    res.status(200).json({
+      schedules: result.rows,
+    })
+  } catch (error) {
+    console.error('Get schedules error:', error)
+
+    res.status(500).json({
+      message: 'Failed to get schedules',
     })
   }
 })

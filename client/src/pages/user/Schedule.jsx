@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, X, Trash2, Pencil } from 'lucide-react'
+import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 
 export const Schedule = () => {
+  // ==========================================
+  // POPUPS
+  // ==========================================
+
   const [showAdd, setShowAdd] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
 
-  const [deleteId, setDeleteId] = useState(null)
+  // ==========================================
+  // ADD FORM
+  // ==========================================
 
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
@@ -15,16 +21,30 @@ export const Schedule = () => {
   const [dueDate, setDueDate] = useState('')
   const [repeatType, setRepeatType] = useState('')
 
-  const [schedules, setSchedules] = useState([])
+  // ==========================================
+  // LOADING
+  // ==========================================
 
   const [loading, setLoading] = useState(false)
   const [loadingSchedules, setLoadingSchedules] = useState(true)
   const [authLoading, setAuthLoading] = useState(true)
 
+  // ==========================================
+  // SCHEDULES
+  // ==========================================
+
+  const [schedules, setSchedules] = useState([])
+
+  // ==========================================
   // SELECTED SCHEDULE
+  // ==========================================
+
   const [selectedSchedule, setSelectedSchedule] = useState(null)
 
+  // ==========================================
   // EDIT FORM
+  // ==========================================
+
   const [editDescription, setEditDescription] = useState('')
   const [editAmount, setEditAmount] = useState('')
   const [editCategory, setEditCategory] = useState('')
@@ -59,25 +79,48 @@ export const Schedule = () => {
 
       if (!user) {
         console.log('No Firebase user logged in')
+
         setSchedules([])
+
         return
       }
 
       const token = await user.getIdToken()
 
-      console.log('Firebase token exists:', !!token)
+      console.log('Firebase token received')
 
       const response = await fetch(
         'http://localhost:5000/api/schedule',
         {
           method: 'GET',
+
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       )
 
-      const data = await response.json()
+      const contentType = response.headers.get('content-type')
+
+      let data = {}
+
+      if (
+        contentType &&
+        contentType.includes('application/json')
+      ) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+
+        console.error(
+          'Server returned non-JSON:',
+          text
+        )
+
+        throw new Error(
+          `Server returned ${response.status} instead of JSON`
+        )
+      }
 
       if (!response.ok) {
         throw new Error(
@@ -85,17 +128,26 @@ export const Schedule = () => {
         )
       }
 
-      setSchedules(data.schedules)
+      console.log('Schedules received:', data)
 
+      setSchedules(data.schedules || [])
     } catch (error) {
-      console.error('Get schedules error:', error)
+      console.error(
+        'Get schedules error:',
+        error
+      )
+
+      alert(
+        error.message ||
+          'Failed to get schedules'
+      )
     } finally {
       setLoadingSchedules(false)
     }
   }
 
   // ==========================================
-  // LOAD SCHEDULES
+  // LOAD SCHEDULES AFTER AUTH
   // ==========================================
 
   useEffect(() => {
@@ -103,6 +155,112 @@ export const Schedule = () => {
       fetchSchedules()
     }
   }, [authLoading])
+
+  // ==========================================
+  // DELETE SCHEDULE
+  // ==========================================
+
+  const handleDeleteSchedule = async () => {
+    if (
+      !selectedSchedule ||
+      !selectedSchedule.id
+    ) {
+      alert(
+        'Selected schedule is missing an ID.'
+      )
+
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const user = auth.currentUser
+
+      if (!user) {
+        throw new Error(
+          'You must be logged in first'
+        )
+      }
+
+      const token = await user.getIdToken()
+
+      console.log(
+        'Deleting schedule:',
+        selectedSchedule.id
+      )
+
+      const response = await fetch(
+        `http://localhost:5000/api/schedule/${selectedSchedule.id}`,
+        {
+          method: 'DELETE',
+
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      const contentType =
+        response.headers.get(
+          'content-type'
+        )
+
+      let data = {}
+
+      if (
+        contentType &&
+        contentType.includes('application/json')
+      ) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+
+        console.error(
+          'Server returned non-JSON:',
+          text
+        )
+
+        throw new Error(
+          `Server returned status ${response.status}`
+        )
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Failed to delete schedule'
+        )
+      }
+
+      // Remove from UI
+      setSchedules((prevSchedules) =>
+        prevSchedules.filter(
+          (item) =>
+            item.id !== selectedSchedule.id
+        )
+      )
+
+      setShowDelete(false)
+      setSelectedSchedule(null)
+
+      console.log(
+        'Schedule deleted successfully'
+      )
+    } catch (error) {
+      console.error(
+        'Delete schedule error:',
+        error
+      )
+
+      alert(
+        error.message ||
+          'Failed to delete schedule'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // ==========================================
   // ADD SCHEDULE
@@ -117,6 +275,7 @@ export const Schedule = () => {
       !repeatType
     ) {
       alert('Please fill in all fields')
+
       return
     }
 
@@ -125,84 +284,132 @@ export const Schedule = () => {
 
       const user = auth.currentUser
 
-      console.log('User before submit:', user)
-
       if (!user) {
-        alert('You must be logged in first')
-        return
+        throw new Error(
+          'You must be logged in first'
+        )
       }
 
       const token = await user.getIdToken()
-
-      console.log('Token exists:', !!token)
-
-      if (!token) {
-        alert('Could not get Firebase token')
-        return
-      }
 
       const response = await fetch(
         'http://localhost:5000/api/schedule',
         {
           method: 'POST',
+
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type':
+              'application/json',
+
+            Authorization: `Bearer ${token}`,
           },
+
           body: JSON.stringify({
-            token: token,
-            description: description,
+            description,
             amount: Number(amount),
-            category: category,
+            category,
             due_date: dueDate,
             repeat_type: repeatType,
           }),
         }
       )
 
-      const data = await response.json()
+      const contentType =
+        response.headers.get(
+          'content-type'
+        )
 
-      console.log('Server response:', data)
+      let data = {}
 
-      if (!response.ok) {
+      if (
+        contentType &&
+        contentType.includes('application/json')
+      ) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+
+        console.error(
+          'Server returned non-JSON:',
+          text
+        )
+
         throw new Error(
-          data.message || 'Failed to add schedule'
+          `Server returned status ${response.status}`
         )
       }
 
-      alert('Schedule added successfully!')
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Failed to add schedule'
+        )
+      }
 
+      console.log(
+        'Schedule added:',
+        data.schedule
+      )
+
+      setSchedules(
+        (previousSchedules) => [
+          data.schedule,
+          ...previousSchedules,
+        ]
+      )
+
+      // Reset form
       setDescription('')
       setAmount('')
       setCategory('')
       setDueDate('')
-      setRepeatType('Monthly')
+      setRepeatType('')
 
       setShowAdd(false)
-
-      fetchSchedules()
-
     } catch (error) {
-      console.error('Schedule error:', error)
-      alert(error.message)
+      console.error(
+        'Schedule error:',
+        error
+      )
 
+      alert(
+        error.message ||
+          'Failed to add schedule'
+      )
     } finally {
       setLoading(false)
     }
   }
 
   // ==========================================
-  // OPEN EDIT MODAL (pre-fill form)
+  // OPEN EDIT MODAL
   // ==========================================
 
   const openEditModal = (schedule) => {
     setSelectedSchedule(schedule)
-    setEditDescription(schedule.description)
-    setEditAmount(schedule.amount)
-    setEditCategory(schedule.category)
-    setEditRepeatType(schedule.repeat_type)
-    setEditDueDate(
-      schedule.due_date ? schedule.due_date.split('T')[0] : ''
+
+    setEditDescription(
+      schedule.description || ''
     )
+
+    setEditAmount(
+      schedule.amount || ''
+    )
+
+    setEditCategory(
+      schedule.category || ''
+    )
+
+    setEditRepeatType(
+      schedule.repeat_type || ''
+    )
+
+    setEditDueDate(
+      schedule.due_date
+        ? schedule.due_date.split('T')[0]
+        : ''
+    )
+
     setShowEdit(true)
   }
 
@@ -211,8 +418,12 @@ export const Schedule = () => {
   // ==========================================
 
   const handleEditSchedule = async () => {
-    if (!selectedSchedule || !selectedSchedule.id) {
+    if (
+      !selectedSchedule ||
+      !selectedSchedule.id
+    ) {
       alert('No schedule selected.')
+
       return
     }
 
@@ -223,7 +434,8 @@ export const Schedule = () => {
       !editDueDate ||
       !editRepeatType
     ) {
-      alert('Please fill in the fields')
+      alert('Please fill in all fields')
+
       return
     }
 
@@ -231,102 +443,122 @@ export const Schedule = () => {
       setLoading(true)
 
       const user = auth.currentUser
+
       if (!user) {
-        throw new Error('You must be logged in first')
+        throw new Error(
+          'You must be logged in first'
+        )
       }
 
       const token = await user.getIdToken()
+
+      console.log(
+        'Editing schedule:',
+        selectedSchedule.id
+      )
 
       const response = await fetch(
         `http://localhost:5000/api/schedule/${selectedSchedule.id}`,
         {
           method: 'PUT',
+
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type':
+              'application/json',
+
             Authorization: `Bearer ${token}`,
           },
+
           body: JSON.stringify({
-            description: editDescription,
+            description:
+              editDescription,
+
             amount: Number(editAmount),
-            category: editCategory,
-            due_date: editDueDate,
-            repeat_type: editRepeatType,
+
+            category:
+              editCategory,
+
+            due_date:
+              editDueDate,
+
+            repeat_type:
+              editRepeatType,
           }),
         }
       )
 
-      const contentType = response.headers.get('content-type')
+      const contentType =
+        response.headers.get(
+          'content-type'
+        )
+
       let data = {}
 
-      if (contentType && contentType.includes('application/json')) {
+      if (
+        contentType &&
+        contentType.includes('application/json')
+      ) {
         data = await response.json()
       } else {
         const text = await response.text()
-        console.error('Server returned non-JSON:', text)
-        throw new Error(`Server returned ${response.status} instead of JSON`)
+
+        console.error(
+          'Server returned non-JSON:',
+          text
+        )
+
+        throw new Error(
+          `Server returned status ${response.status}`
+        )
       }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to edit schedule')
+        throw new Error(
+          data.message ||
+            'Failed to edit schedule'
+        )
       }
+
+      console.log(
+        'Schedule updated:',
+        data.schedule
+      )
 
       setSchedules((prev) =>
         prev.map((item) =>
-          item.id === selectedSchedule.id ? data.schedule : item
+          item.id === selectedSchedule.id
+            ? data.schedule
+            : item
         )
       )
 
       setShowEdit(false)
       setSelectedSchedule(null)
     } catch (error) {
-      console.error('Edit schedule error:', error)
-      alert(error.message || 'Failed to edit schedule')
+      console.error(
+        'Edit schedule error:',
+        error
+      )
+
+      alert(
+        error.message ||
+          'Failed to edit schedule'
+      )
     } finally {
       setLoading(false)
     }
   }
 
   // ==========================================
-  // DELETE SCHEDULE
+  // FORMAT DATE
   // ==========================================
 
-  const handleDeleteSchedule = async (id) => {
-    try {
-      const user = auth.currentUser
+  const formatDate = (date) => {
+    if (!date) return ''
 
-      if (!user) {
-        alert('You must be logged in first')
-        return
-      }
-
-      const token = await user.getIdToken()
-
-      const response = await fetch(
-        `http://localhost:5000/api/schedule/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || 'Failed to delete schedule'
-        )
-      }
-
-      setSchedules((prev) =>
-        prev.filter((schedule) => schedule.id !== id)
-      )
-
-    } catch (error) {
-      console.error('Delete schedule error:', error)
-      alert(error.message)
-    }
+    return new Date(
+      date
+    ).toLocaleDateString()
   }
 
   // ==========================================
@@ -335,8 +567,8 @@ export const Schedule = () => {
 
   if (authLoading) {
     return (
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20">
-        <p className="theme-text">
+      <div className="w-full md:pt-0">
+        <p className="theme-text font-mono px-4 sm:px-8 md:px-12 lg:px-20">
           Checking login...
         </p>
       </div>
@@ -344,151 +576,194 @@ export const Schedule = () => {
   }
 
   // ==========================================
-  // PAGE
+  // UI
   // ==========================================
 
   return (
-    <div className="w-full">
+    <div className="w-full md:pt-0">
 
-      {/* HEADER */}
+      {/* ======================================
+          HEADER
+      ====================================== */}
 
-      <div className="w-full flex justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 gap-4">
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
 
-        <h1 className="font-mono text-lg sm:text-2xl theme-text">
+        <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Schedule
         </h1>
 
         <button
           type="button"
-          onClick={() => setShowAdd(true)}
-          className="flex items-center justify-center gap-2 font-mono text-sm sm:text-md rounded-md px-3 py-2 theme-border theme-text theme-hover"
+          onClick={() =>
+            setShowAdd(true)
+          }
+          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
         >
-          <Plus className="w-5 h-5" />
+          <Plus size={25} />
         </button>
 
       </div>
 
-
-      {/* SCHEDULE LIST */}
+      {/* ======================================
+          SCHEDULE LIST
+      ====================================== */}
 
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
 
-        {loadingSchedules ? (
-          <p className="theme-text">
+        {loadingSchedules && (
+          <p className="theme-text font-mono">
             Loading schedules...
           </p>
-        ) : schedules.length === 0 ? (
-          <p className="theme-text">
-            No schedules yet.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+        )}
 
-            {schedules.map((schedule) => (
+        {!loadingSchedules &&
+          schedules.length === 0 && (
+            <p className="theme-text font-mono">
+              No schedules yet.
+            </p>
+          )}
 
-              <div
-                key={schedule.id}
-                className="theme-card theme-text theme-border border-2 rounded-md p-4"
-              >
+        {!loadingSchedules &&
+          schedules.length > 0 && (
 
-                <div className="flex justify-between items-center w-full">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
 
-                  <div className='space-y-1 w-full'>
+              {schedules.map((schedule) => {
 
-                    <div className='flex justify-center w-full'>
-                      <span className='font-bold text-lg'>
-                        {schedule.repeat_type}
-                      </span>
+                const currentId =
+                  schedule.id ||
+                  schedule._id
+
+                return (
+
+                  <div
+                    key={currentId}
+                    className="theme-card theme-text theme-border border-2 rounded-md p-4"
+                  >
+
+                    {/* CARD */}
+
+                    <div className="flex justify-between items-center">
+
+                      <div className="space-y-1">
+
+                        <h2>
+                          <span className="font-bold text-md">
+                            Repeat:{' '}
+                          </span>
+
+                          {schedule.repeat_type}
+                        </h2>
+
+                        <h2>
+                          <span className="font-bold text-md">
+                            Type:{' '}
+                          </span>
+
+                          {schedule.category}
+                        </h2>
+
+                        <h2>
+                          <span className="font-bold text-md">
+                            Amount:{' '}
+                          </span>
+
+                          ₱
+                          {Number(
+                            schedule.amount
+                          ).toFixed(2)}
+                        </h2>
+
+                        <h2>
+                          <span className="font-bold text-md">
+                            Description:{' '}
+                          </span>
+
+                          {schedule.description}
+                        </h2>
+
+                        <h2>
+                          <span className="font-bold text-md">
+                            Due:{' '}
+                          </span>
+
+                          {formatDate(
+                            schedule.due_date
+                          )}
+                        </h2>
+
+                      </div>
+
                     </div>
 
-                    <h2>
-                      <span className='font-bold text-md'>Description: </span>
-                      {schedule.description}
-                    </h2>
+                    {/* EDIT / DELETE */}
 
-                    <h2>
-                      <span className='font-bold text-md'>Category: </span>
-                      {schedule.category}
-                    </h2>
+                    <div className="flex justify-end flex-row pt-3">
 
-                    <h2>
-                      <span className='font-bold text-md'>Amount: </span>
-                      ₱{Number(schedule.amount).toFixed(2)}
-                    </h2>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openEditModal(
+                            schedule
+                          )
+                        }
+                        className="p-2 rounded-md theme-text theme-hover"
+                      >
+                        <Pencil size={18} />
+                      </button>
 
-                    <h2>
-                      <span className='font-bold text-md'>Due: </span>
-                      {new Date(schedule.due_date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </h2>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedSchedule(
+                            schedule
+                          )
 
-                    
+                          setShowDelete(true)
+                        }}
+                        className="p-2 rounded-md theme-text theme-hover"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+
+                    </div>
 
                   </div>
 
-                </div>
-                
+                )
+              })}
 
-                {/* Buttons */}
-                <div className="flex justify-end flex-row">
+            </div>
 
-                  {/* Edit button */}
-                  <button
-                    onClick={() => openEditModal(schedule)}
-                    type="button"
-                    className="p-2 rounded-md  flex items-center  text-sm theme-text theme-hover"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  
-
-                  {/* Delete button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDeleteId(schedule.id)
-                     setShowDelete(true)
-                    }}
-                    className=" p-2 rounded-md flex items-center  text-sm theme-text theme-hover"
-                  >
-                    <Trash2 className=" w-4 h-4" />
-                  </button>
-
-                  
-                </div>
-
-                
-
-              </div>
-
-            ))}
-
-          </div>
-        )}
+          )}
 
       </div>
 
+      {/* ======================================
+          EDIT SCHEDULE POPUP
+      ====================================== */}
 
-    {/* EDIT SCHEDULE POPUP */}
+      {showEdit && (
 
-    {showEdit && (
-      <div className='fixed inset-0 z-50 flex items-center justify-center px-4'>
-         <div
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+
+          <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
+
               if (!loading) {
                 setShowEdit(false)
                 setSelectedSchedule(null)
               }
+
             }}
           />
 
-          <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
-            <div className='flex items-center justify-between mb-6'>
-              <h2 className='font-mono text-xl'>
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+
+            <div className="flex items-center justify-between mb-6">
+
+              <h2 className="font-mono text-xl">
                 Edit Schedule
               </h2>
 
@@ -503,78 +778,176 @@ export const Schedule = () => {
               >
                 <X className="w-5 h-5" />
               </button>
+
             </div>
 
             <div className="flex flex-col gap-4">
 
+              {/* DESCRIPTION */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Description</label>
+
+                <label className="font-mono text-sm">
+                  Description
+                </label>
+
                 <input
                   type="text"
                   value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
+                  onChange={(e) =>
+                    setEditDescription(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
 
+              {/* AMOUNT */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Amount</label>
+
+                <label className="font-mono text-sm">
+                  Amount
+                </label>
+
                 <input
                   type="number"
                   value={editAmount}
-                  onChange={(e) => setEditAmount(e.target.value)}
+                  onChange={(e) =>
+                    setEditAmount(
+                      e.target.value
+                    )
+                  }
                   min="0"
                   step="0.01"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
 
+              {/* CATEGORY */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Category</label>
+
+                <label className="font-mono text-sm">
+                  Category
+                </label>
+
                 <select
                   value={editCategory}
-                  onChange={(e) => setEditCategory(e.target.value)}
+                  onChange={(e) =>
+                    setEditCategory(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-                  <option value="">Select category</option>
-                  <option value="food">Food</option>
-                  <option value="transportation">Transportation</option>
-                  <option value="shopping">Shopping</option>
-                  <option value="bills">Bills</option>
-                  <option value="entertainment">Entertainment</option>
-                  <option value="other">Other</option>
+
+                  <option value="">
+                    Select category
+                  </option>
+
+                  <option value="food">
+                    Food
+                  </option>
+
+                  <option value="transportation">
+                    Transportation
+                  </option>
+
+                  <option value="shopping">
+                    Shopping
+                  </option>
+
+                  <option value="bills">
+                    Bills
+                  </option>
+
+                  <option value="entertainment">
+                    Entertainment
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+
                 </select>
+
               </div>
 
+              {/* DUE DATE */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Due Date</label>
+
+                <label className="font-mono text-sm">
+                  Due Date
+                </label>
+
                 <input
                   type="date"
                   value={editDueDate}
-                  onChange={(e) => setEditDueDate(e.target.value)}
+                  onChange={(e) =>
+                    setEditDueDate(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
 
+              {/* REPEAT */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Repeat</label>
+
+                <label className="font-mono text-sm">
+                  Repeat
+                </label>
+
                 <select
                   value={editRepeatType}
-                  onChange={(e) => setEditRepeatType(e.target.value)}
+                  onChange={(e) =>
+                    setEditRepeatType(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-                  <option value="">Select repeat</option>
-                  <option value="Once">Once</option>
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Yearly">Yearly</option>
+
+                  <option value="">
+                    Select repeat
+                  </option>
+
+                  <option value="Once">
+                    Once
+                  </option>
+
+                  <option value="Daily">
+                    Daily
+                  </option>
+
+                  <option value="Weekly">
+                    Weekly
+                  </option>
+
+                  <option value="Monthly">
+                    Monthly
+                  </option>
+
+                  <option value="Yearly">
+                    Yearly
+                  </option>
+
                 </select>
+
               </div>
+
+              {/* BUTTONS */}
 
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
 
-                {/* Cancel confirm button */}
                 <button
                   type="button"
                   onClick={() => {
@@ -587,47 +960,65 @@ export const Schedule = () => {
                   Cancel
                 </button>
 
-                {/* Save changes */}
                 <button
                   type="button"
-                  onClick={handleEditSchedule}
+                  onClick={
+                    handleEditSchedule
+                  }
                   disabled={loading}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {loading
+                    ? 'Saving...'
+                    : 'Save Changes'}
                 </button>
+
               </div>
+
             </div>
+
           </div>
-      </div>
-    )}
 
+        </div>
 
+      )}
 
-      {/* DELETE POPUP */}
+      {/* ======================================
+          DELETE POPUP
+      ====================================== */}
 
       {showDelete && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center px-4'>
-         <div
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+
+          <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
+
               if (!loading) {
                 setShowDelete(false)
+                setSelectedSchedule(null)
               }
+
             }}
           />
 
-          <div className='relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border'>
-            <div className='flex items-center justify-between mb-6'>
-              <h1 className='font-mono text-md text-center'>
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+
+            <div className="relative flex items-center justify-between mb-6">
+
+              <h2 className="font-mono text-md">
                 Are you sure to delete this schedule?
-              </h1>
+              </h2>
 
               <button
                 type="button"
                 disabled={loading}
-                onClick={() => setShowDelete(false)}
-                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+                onClick={() => {
+                  setShowDelete(false)
+                  setSelectedSchedule(null)
+                }}
+                className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -636,36 +1027,42 @@ export const Schedule = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 mt-2">
 
-              {/* Cancel confirm button */}
               <button
                 type="button"
-                onClick={() =>
-                  setShowDelete(false)}
+                onClick={() => {
+                  setShowDelete(false)
+                  setSelectedSchedule(null)
+                }}
                 disabled={loading}
                 className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
 
-              {/* Delete confirm*/}
               <button
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
-                onClick={() => {
-                  handleDeleteSchedule(deleteId)
-                  setShowDelete(false)
-                }}
+                type="button"
+                onClick={
+                  handleDeleteSchedule
+                }
                 disabled={loading}
-                
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
-                {loading ? 'Deleting...' : 'Delete'}
+                {loading
+                  ? 'Deleting...'
+                  : 'Delete'}
               </button>
+
             </div>
+
           </div>
+
         </div>
+
       )}
 
-
-      {/* ADD SCHEDULE POPUP */}
+      {/* ======================================
+          ADD SCHEDULE POPUP
+      ====================================== */}
 
       {showAdd && (
 
@@ -674,9 +1071,11 @@ export const Schedule = () => {
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => {
+
               if (!loading) {
                 setShowAdd(false)
               }
+
             }}
           />
 
@@ -691,7 +1090,9 @@ export const Schedule = () => {
               <button
                 type="button"
                 disabled={loading}
-                onClick={() => setShowAdd(false)}
+                onClick={() =>
+                  setShowAdd(false)
+                }
                 className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
               >
                 <X className="w-5 h-5" />
@@ -701,77 +1102,179 @@ export const Schedule = () => {
 
             <div className="flex flex-col gap-4">
 
+              {/* DESCRIPTION */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Description</label>
+
+                <label className="font-mono text-sm">
+                  Description
+                </label>
+
                 <input
                   type="text"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) =>
+                    setDescription(
+                      e.target.value
+                    )
+                  }
                   placeholder="e.g. Internet"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
 
+              {/* AMOUNT */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Amount</label>
+
+                <label className="font-mono text-sm">
+                  Amount
+                </label>
+
                 <input
                   type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) =>
+                    setAmount(
+                      e.target.value
+                    )
+                  }
                   placeholder="₱0.00"
                   min="0"
                   step="0.01"
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
 
+              {/* CATEGORY */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Category</label>
+
+                <label className="font-mono text-sm">
+                  Category
+                </label>
+
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) =>
+                    setCategory(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-                  <option value="">Select category</option>
-                  <option value="food">Food</option>
-                  <option value="transportation">Transportation</option>
-                  <option value="shopping">Shopping</option>
-                  <option value="bills">Bills</option>
-                  <option value="entertainment">Entertainment</option>
-                  <option value="other">Other</option>
+
+                  <option value="">
+                    Select category
+                  </option>
+
+                  <option value="food">
+                    Food
+                  </option>
+
+                  <option value="transportation">
+                    Transportation
+                  </option>
+
+                  <option value="shopping">
+                    Shopping
+                  </option>
+
+                  <option value="bills">
+                    Bills
+                  </option>
+
+                  <option value="entertainment">
+                    Entertainment
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+
                 </select>
+
               </div>
 
+              {/* DUE DATE */}
+
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Due Date</label>
+
+                <label className="font-mono text-sm">
+                  Due Date
+                </label>
+
                 <input
                   type="date"
                   value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
+                  onChange={(e) =>
+                    setDueDate(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
+
               </div>
+
+              {/* REPEAT */}
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Repeat</label>
+
+                <label className="font-mono text-sm">
+                  Repeat
+                </label>
+
                 <select
                   value={repeatType}
-                  onChange={(e) => setRepeatType(e.target.value)}
+                  onChange={(e) =>
+                    setRepeatType(
+                      e.target.value
+                    )
+                  }
                   className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
-                  <option value="Once">Once</option>
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Yearly">Yearly</option>
+
+                  <option value="">
+                    Select repeat
+                  </option>
+
+                  <option value="Once">
+                    Once
+                  </option>
+
+                  <option value="Daily">
+                    Daily
+                  </option>
+
+                  <option value="Weekly">
+                    Weekly
+                  </option>
+
+                  <option value="Monthly">
+                    Monthly
+                  </option>
+
+                  <option value="Yearly">
+                    Yearly
+                  </option>
+
                 </select>
+
               </div>
 
+              {/* BUTTONS */}
+
               <div className="flex flex-col sm:flex-row gap-3 mt-2">
+
                 <button
                   type="button"
+                  onClick={() =>
+                    setShowAdd(false)
+                  }
                   disabled={loading}
-                  onClick={() => setShowAdd(false)}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
@@ -779,12 +1282,17 @@ export const Schedule = () => {
 
                 <button
                   type="button"
+                  onClick={
+                    handleAddSchedule
+                  }
                   disabled={loading}
-                  onClick={handleAddSchedule}
                   className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
-                  {loading ? 'Adding...' : 'Add Schedule'}
+                  {loading
+                    ? 'Adding...'
+                    : 'Add Schedule'}
                 </button>
+
               </div>
 
             </div>
