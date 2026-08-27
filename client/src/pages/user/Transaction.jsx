@@ -25,6 +25,14 @@ export const Transaction = () => {
   // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
+  //EDIT FORM
+  const [editDescription, setEditDescription] = useState('')
+  const [editAmount, setEditAmount] = useState('')
+  const [editCategory, setEditCategory] = useState('')
+  const [editTransactionDate, setEditTransactionDate] = useState('')
+
+
+
   // ==========================================
   // WAIT FOR FIREBASE AUTH
   // ==========================================
