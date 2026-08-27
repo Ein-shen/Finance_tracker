@@ -30,7 +30,7 @@ export const Schedule = () => {
   const [editDueDate, setEditDueDate] = useState('')
   const [editRepeatType, setEditRepeatType] = useState('')
 
-  
+
   // ==========================================
   // WAIT FOR FIREBASE AUTH
   // ==========================================
@@ -189,6 +189,22 @@ export const Schedule = () => {
       setLoading(false)
     }
   }
+
+  // ==========================================
+  // OPEN EDIT MODAL (pre-fill form)
+  // ==========================================
+  const openEditModal = (schedule) => {
+    setSelectedTransaction(schedule)
+    setEditDescription(schedule.description)
+    setEditAmount(schedule.amount)
+    setEditCategory(schedule.category)
+    setEditRepeatType(schedule.repeatType)
+    setEditDueDate(
+      schedule.schedule_date ? schedule.schedule_date.split('T')[0] : ''
+    )
+    setShowEdit(true)
+  }
+
 
   // ==========================================
   // DELETE SCHEDULE
