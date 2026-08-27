@@ -7,6 +7,10 @@ export const Analytics = () => {
         <h1 className="font-mono text-lg sm:text-2xl theme-text">
           Analytics
         </h1>
+
+        <h2>
+          Analytics settings
+        </h2>
     </div>
   )
 }
