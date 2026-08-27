@@ -349,7 +349,7 @@ export const Transaction = () => {
       {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
-          Transaction
+          Transactions
         </h1>
 
         <button
