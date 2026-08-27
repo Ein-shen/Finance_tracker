@@ -32,6 +32,21 @@ export const Transaction = () => {
   const [editTransactionDate, setEditTransactionDate] = useState('')
 
 
+  // ==========================================
+  // OPEN EDIT MODAL (pre-fill form)
+  // ========================================== 
+
+  const openEditModal = (transaction) => {
+    setSelectedTransaction(transaction)
+    setEditDescription(transaction.description)
+    setEditAmount(transaction.amount)
+    setEditCategory(transaction.category)
+    setEditTransactionDate(
+      transaction.transaction_date ? transaction.transaction_date.split('T')[0] : ''
+    )
+    setShowEdit(true)
+
+  }
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
