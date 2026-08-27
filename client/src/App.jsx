@@ -11,6 +11,7 @@ import { Schedule } from './pages/user/Schedule.jsx'
 import { Analytics } from './pages/user/Analytics.jsx'
 import { Index } from './pages/user/index'
 import { Settings } from './pages/user/Settings'
+import { About } from './pages/user/About.jsx'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="account" element={<Account />} />
         <Route path="schedule" element={<Schedule />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="about" element={<About />} />
       </Route>
     </Routes>
   )

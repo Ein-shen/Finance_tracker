@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Toogle, useTheme } from "./Toogle"
 import { Sun, Moon } from 'lucide-react'
-
+import { useNavigate } from 'react-router-dom'
 export const Settings = () => {
+
+  const navigate = useNavigate()
+
+  const [showOpen, setShowOpen] = useState(false)
+
+  const handleNavigate = (path) => {
+    navigate(path)
+
+  }
   const { theme } = useTheme()
 
   const isLight = theme === 'light'
@@ -36,11 +45,16 @@ export const Settings = () => {
           <Toogle />
         </div>
 
-        <div className="border-2 rounded-md p-2 w-48">
-          <h1 className="font-mono text-md text-center">
+
+          <button 
+            className="font-mono text-md text-center border-2 rounded-md p-2 w-48"
+            onClick={() => {
+              setShowOpen(false)
+              handleNavigate('/dashboard/about')
+            }}>
             About
-          </h1>
-        </div>
+          </button>
+        
 
         <div className="border-2 rounded-md p-2 w-48">
           <h1 className="font-mono text-md text-center">
