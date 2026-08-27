@@ -23,6 +23,14 @@ export const Schedule = () => {
   const [authLoading, setAuthLoading] = useState(true)
   
 
+  //EDIT FORM
+  const [editDescription, setEditDescription] = useState('')
+  const [editAmount, setEditAmount] = usestate('')
+  const [editCategory, setEditCategory] = useState('')
+  const [editDueDate, setEditDueDate] = useState('')
+  const [editRepeatType, setEditRepeatType] = useState('')
+
+  
   // ==========================================
   // WAIT FOR FIREBASE AUTH
   // ==========================================
