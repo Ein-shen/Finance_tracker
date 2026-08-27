@@ -362,6 +362,100 @@ app.delete('/api/transactions/:id', async (req, res) => {
   }
 })
 
+
+// ==========================================
+// EDIT TRANSACTION
+// ==========================================
+
+app.put('/api/transactions/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const transactionId = Number(id)
+
+    const {
+      description,
+      amount,
+      category,
+      transaction_date,
+    } = req.body
+
+    const authHeader = req.headers.authorization
+    const token = authHeader
+      ? authHeader.split('Bearer ')[1]
+      : null
+
+    if (!token) {
+      return res.status(401).json({
+        message: 'Firebase token is required',
+      })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+
+    const firebaseUid = decodedToken.uid
+
+    if (
+      !description ||
+      amount === undefined ||
+      amount === null ||
+      amount === '' ||
+      !category ||
+      !transaction_date
+    ) {
+      return res.status(400).json({
+        message: 'All fields are required',
+      })
+    }
+
+    const numericAmount = Number(amount)
+
+    if (!Number.isFinite(numericAmount)) {
+      return res.status(400).json({
+        message: 'Amount must be a valid number',
+      })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE transactions
+      SET
+        description = $1,
+        amount = $2,
+        category = $3,
+        transaction_date = $4
+      WHERE id = $5
+      AND firebase_uid = $6
+      RETURNING *
+      `,
+      [
+        description,
+        numericAmount,
+        category,
+        transaction_date,
+        transactionId,
+        firebaseUid,
+      ]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: 'Transaction not found',
+      })
+    }
+
+    res.status(200).json({
+      message: 'Transaction updated successfully',
+      transaction: result.rows[0],
+    })
+  } catch (error) {
+    console.error('Edit transaction error:', error)
+
+    res.status(500).json({
+      message: 'Failed to edit transaction',
+    })
+  }
+})
+
 // ==========================================
 // ADD SCHEDULE
 // ==========================================
