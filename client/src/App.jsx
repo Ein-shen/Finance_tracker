@@ -15,6 +15,9 @@ import { About } from './pages/user/About.jsx'
 import { Support } from './pages/user/Support.jsx'
 
 import { Help } from './pages/user/Help.jsx'
+
+
+import { SalesChart } from './components/SalesChart.jsx'
 function App() {
   return (
     <Routes>
@@ -32,6 +35,7 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="help" element={<Help />} />
         <Route path="support" element={<Support />} />
+        <Route path="saleschart" element={<SalesChart />} />
       </Route>
     </Routes>
   )
