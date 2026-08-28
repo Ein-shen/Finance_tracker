@@ -8,9 +8,7 @@ export const Analytics = () => {
           Analytics
         </h1>
 
-        <h2>
-          Analytics settings
-        </h2>
+        
     </div>
   )
 }
