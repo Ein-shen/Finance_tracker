@@ -8,15 +8,25 @@ const productsales = [
 
 export const SalesChart = () => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={productsales}>
-        <Area
-          dataKey="product1"
-          type="monotone"
-          stroke="#2563eb"
-          fill="#3b82f6"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+    <div className="w-full h-96">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={productsales}>
+          <Area
+            dataKey="product1"
+            type="monotone"
+            stroke="#2563eb"
+            fill="#3b82f6"
+          />
+
+          <Area
+            type="monotone" 
+            dataKey="product2"
+            stroke="#7c3aed"
+            fill="#8b5cf6"
+            stackId='1'
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
