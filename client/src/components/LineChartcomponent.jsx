@@ -1,4 +1,4 @@
-import { BarChart, Bar, ResponsiveContainer, YAxis, XAxis, CartesianGrid, Tooltip, Legend } from "recharts"
+import { LineChart, Line, ResponsiveContainer, YAxis, XAxis, CartesianGrid, Tooltip, Legend } from "recharts"
 
 const productsales = [
   { name: 'shen', product1: 3000, product2: 2000 },
@@ -29,26 +29,19 @@ const CustomTooltip = ({ active, payload, label }) => {
   )
 }
 
-export const LineChartComponent = () => {
+export const LineChartcomponent = () => {
   return (
     <div className="w-full h-96">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChartComponent 
-        
-        width={500}
-        height={300}
-        data={productsales}
-        margin={{
-            right:300
-        }}>
+        <LineChart data={productsales}>
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           <YAxis />
           <XAxis dataKey="name" />
           <CartesianGrid strokeDasharray="5 5" />
-          <Bar type="monotone" dataKey="revenue" fill="#2563eb" />
-          <Bar type="monotone" dataKey="profit" fill="#8b5cf6" />
-        </LineChartComponent>
+          <Line type="monotone" dataKey="product1" stroke="#2563eb" />
+          <Line type="monotone" dataKey="product2" stroke="#8b5cf6" />
+        </LineChart>
       </ResponsiveContainer>
     </div>
   )

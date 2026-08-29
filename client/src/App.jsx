@@ -19,7 +19,7 @@ import { Help } from './pages/user/Help.jsx'
 
 import { SalesChart } from './components/SalesChart.jsx'
 import { BarChartComponent } from './components/BarChartComponent.jsx'
-import { LineChartComponent } from './components/LineChartComponent.jsx'
+import { LineChartcomponent } from './components/LineChartcomponent.jsx'
 function App() {
   return (
     <Routes>
@@ -39,7 +39,7 @@ function App() {
         <Route path="support" element={<Support />} />
         <Route path="saleschart" element={<SalesChart />} />
         <Route path="barchart" element={<BarChartComponent />} />
-        <Route path="linechartcomponent" element={<LineChartComponent />} />
+        <Route path="linechartcomponent" element={<LineChartcomponent />} />
       </Route>
     </Routes>
   )
