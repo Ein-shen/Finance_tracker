@@ -1,4 +1,4 @@
-import { AreaChart, Area, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, ResponsiveContainer, YAxis, XAxis, CartesianGrid, Tooltip, Legend } from "recharts"
 
 const productsales = [
   { name: 'shen', product1: 3000, product2: 2000 },
@@ -11,11 +11,17 @@ export const SalesChart = () => {
     <div className="w-full h-96">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={productsales}>
+          <Tooltip />
+          <Legend />
+          <YAxis />
+          <XAxis dataKey="name"/>
+          <CartesianGrid strokeDasharray="5 5" />
           <Area
             dataKey="product1"
             type="monotone"
             stroke="#2563eb"
             fill="#3b82f6"
+            stackId='1'
           />
 
           <Area
@@ -23,7 +29,7 @@ export const SalesChart = () => {
             dataKey="product2"
             stroke="#7c3aed"
             fill="#8b5cf6"
-            stackId='1'
+            stackId='1 '
           />
         </AreaChart>
       </ResponsiveContainer>
