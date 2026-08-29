@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   )
 }
 
-const BarChartComponent = () => {
+export const BarChartComponent = () => {
   return (
     <div className="w-full h-96">
       <ResponsiveContainer width="100%" height="100%">
@@ -46,5 +46,3 @@ const BarChartComponent = () => {
     </div>
   )
 }
-
-export default BarChartComponent

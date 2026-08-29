@@ -18,7 +18,7 @@ import { Help } from './pages/user/Help.jsx'
 
 
 import { SalesChart } from './components/SalesChart.jsx'
-import { BarChart } from 'recharts'
+import { BarChartComponent } from './components/BarChartComponent.jsx'
 function App() {
   return (
     <Routes>
@@ -37,6 +37,7 @@ function App() {
         <Route path="help" element={<Help />} />
         <Route path="support" element={<Support />} />
         <Route path="saleschart" element={<SalesChart />} />
+        <Route path="barchart" element={<BarChartComponent />} />
       </Route>
     </Routes>
   )
