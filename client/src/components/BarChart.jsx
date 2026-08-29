@@ -6,23 +6,30 @@ const productsales = [
   { name: 'ouch', product1: 500, product2: 9000 },
 ]
 
-// 1. Define the tooltip component FIRST, outside/above SalesChart
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
+
+  const revenue = payload.find(p => p.dataKey === 'product1')?.value
+  const profit = payload.find(p => p.dataKey === 'product2')?.value
+
   return (
-    <div className="bg-white p-2 border rounded">
-      <p className="font-medium">{label}</p>
-      {payload.map((entry) => (
-        <p key={entry.dataKey} style={{ color: entry.color }}>
-          {entry.dataKey}: {entry.value}
-        </p>
-      ))}
+    <div className="p-4 bg-slate-900 flex flex-col gap-2 rounded-md">
+      <p className="font-medium text-lg text-white">{label}</p>
+      <p className="text-sm flex items-center gap-2 text-blue-400">
+        <span className="w-2 h-2 bg-blue-400 inline-block" />
+        Revenue:
+        <span className="ml-2 text-white">${revenue}</span>
+      </p>
+      <p className="text-sm flex items-center gap-2 text-indigo-400">
+        <span className="w-2 h-2 bg-indigo-400 inline-block" />
+        Profit:
+        <span className="ml-2 text-white">${profit}</span>
+      </p>
     </div>
   )
 }
 
-// 2. Use it inside SalesChart via the `content` prop
-export const BarChart = () => {
+const BarChart = () => {
   return (
     <div className="w-full h-96">
       <ResponsiveContainer width="100%" height="100%">
@@ -32,22 +39,12 @@ export const BarChart = () => {
           <YAxis />
           <XAxis dataKey="name" />
           <CartesianGrid strokeDasharray="5 5" />
-          <Area
-            dataKey="product1"
-            type="monotone"
-            stroke="#2563eb"
-            fill="#3b82f6"
-            stackId="1"
-          />
-          <Area
-            type="monotone"
-            dataKey="product2"
-            stroke="#7c3aed"
-            fill="#8b5cf6"
-            stackId="1"
-          />
+          <Bar dataKey="product1" fill="#2563eb" />
+          <Bar dataKey="product2" fill="#8b5cf6" />
         </BarChart>
       </ResponsiveContainer>
     </div>
   )
 }
+
+export default BarChart
