@@ -18,7 +18,7 @@ import { Help } from './pages/user/Help.jsx'
 
 
 import { SalesChart } from './components/SalesChart.jsx'
-
+import { BarChart } from 'recharts'
 function App() {
   return (
     <Routes>
