@@ -33,15 +33,22 @@ export const LineChartComponent = () => {
   return (
     <div className="w-full h-96">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={productsales}>
+        <LineChartComponent 
+        
+        width={500}
+        height={300}
+        data={productsales}
+        margin={{
+            right:300
+        }}>
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           <YAxis />
           <XAxis dataKey="name" />
           <CartesianGrid strokeDasharray="5 5" />
-          <Bar dataKey="product1" fill="#2563eb" />
-          <Bar dataKey="product2" fill="#8b5cf6" />
-        </BarChart>
+          <Bar type="monotone" dataKey="revenue" fill="#2563eb" />
+          <Bar type="monotone" dataKey="profit" fill="#8b5cf6" />
+        </LineChartComponent>
       </ResponsiveContainer>
     </div>
   )
