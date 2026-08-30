@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { auth } from '../../firebase'
-import { SalesChart } from '../../components/SalesChart'
-import { BarChartComponent } from '../../components/BarChartComponent'
-import { LineChartcomponent } from '../../components/LineChartcomponent'
 import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
