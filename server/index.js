@@ -1023,6 +1023,41 @@ app.use(
 )
 
 // ==========================================
+// GETTING THE ANALYTICS DATA
+// ==========================================
+
+app.get(
+  '/api/analytics',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const firebaseUid = req.firebaseUid
+
+      const result = await pool.query(
+        `SELECT category, SUM(amount) AS total
+         FROM transactions
+         WHERE firebase_uid = $1
+         GROUP BY category`,
+        [firebaseUid]
+      )
+
+      const total = result.rows.reduce((sum, r) => sum + Number(r.total), 0)
+
+      res.json({
+        byCategory: result.rows.map(r => ({
+          category: r.category,
+          total: Number(r.total),
+        })),
+        totalSpent: total,
+      })
+    } catch (error) {
+      console.error(error)
+      res.status(500).json({ message: 'Failed to get analytics' })
+    }
+  }
+)
+
+// ==========================================
 // START SERVER
 // ==========================================
 
