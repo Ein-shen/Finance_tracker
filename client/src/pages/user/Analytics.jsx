@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { auth } from '../../firebase'
-import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
+import { SalesChart } from '../../components/SalesChart'
+import { BarChartComponent } from '../../components/BarChartComponent'
+import { LineChartcomponent } from '../../components/LineChartcomponent'
+import { fetchAnalytics, mergeCategoryData } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
 
@@ -96,7 +99,9 @@ export const Analytics = () => {
       </h1>
 
       <div className="w-full h-96 flex-1 flex-col">
-        
+        <SalesChart data={mergeCategoryData(analytics)} />
+        <BarChartComponent />
+        <LineChartcomponent />
       </div>
 
       <div>
@@ -115,10 +120,7 @@ export const Analytics = () => {
         {!loadingAnalytics && analytics && (
           <>
             <SummaryCards data={analytics} />
-            <CategoryChart
-              spending={analytics.spendingByCategory}
-              upcoming={analytics.upcomingByCategory}
-            />
+            <CategoryChart data={mergeCategoryData(analytics)} />
           </>
         )}
       </div>

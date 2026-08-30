@@ -1,64 +1,50 @@
-import React from 'react'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-} from 'recharts'
+import { BarChart, Bar, ResponsiveContainer, YAxis, XAxis, CartesianGrid, Tooltip, Legend } from "recharts"
 
-export const CategoryChart = ({ spending, upcoming }) => {
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null
+
+  const spent = payload.find(p => p.dataKey === 'spent')?.value
+  const upcoming = payload.find(p => p.dataKey === 'upcoming')?.value
+
   return (
-    <div className="flex flex-col gap-8 mt-6">
+    <div className="p-4 bg-slate-900 flex flex-col gap-2 rounded-md">
+      <p className="font-medium text-lg text-white capitalize">{label}</p>
+      <p className="text-sm flex items-center gap-2 text-blue-400">
+        <span className="w-2 h-2 bg-blue-400 inline-block" />
+        Spent:
+        <span className="ml-2 text-white">₱{spent}</span>
+      </p>
+      <p className="text-sm flex items-center gap-2 text-indigo-400">
+        <span className="w-2 h-2 bg-indigo-400 inline-block" />
+        Upcoming:
+        <span className="ml-2 text-white">₱{upcoming}</span>
+      </p>
+    </div>
+  )
+}
 
-      <div>
-        <h2 className="theme-text font-mono text-lg mb-2">
-          Spending by Category
-        </h2>
-
-        {!spending || spending.length === 0 ? (
-          <p className="theme-text font-mono">
-            No spending data yet.
-          </p>
-        ) : (
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={spending}>
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Bar
-                dataKey="total"
-                fill="#2f6fed"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+export const CategoryChart = ({ data }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-96 flex items-center justify-center theme-text font-mono">
+        No category data yet.
       </div>
+    )
+  }
 
-      <div>
-        <h2 className="theme-text font-mono text-lg mb-2">
-          Upcoming Bills by Category
-        </h2>
-
-        {!upcoming || upcoming.length === 0 ? (
-          <p className="theme-text font-mono">
-            No upcoming bills.
-          </p>
-        ) : (
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={upcoming}>
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Bar
-                dataKey="total"
-                fill="#8b5cf6"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
+  return (
+    <div className="w-full h-96">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data}>
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+          <YAxis />
+          <XAxis dataKey="name" />
+          <CartesianGrid strokeDasharray="5 5" />
+          <Bar dataKey="spent" fill="#2563eb" />
+          <Bar dataKey="upcoming" fill="#8b5cf6" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   )
 }
