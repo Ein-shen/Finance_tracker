@@ -71,13 +71,50 @@ export const Analytics = () => {
       )}
 
       {!loadingAnalytics && analytics && (
-        <>
-          <SummaryCards data={analytics} />
+        <div className="flex flex-col gap-10">
 
-          <div className="mt-6">
-            <CategoryChart data={analytics.spendingByCategory} />
+          {/* ======================================
+              TRANSACTIONS
+          ====================================== */}
+
+          <div>
+            <h2 className="font-mono text-xl theme-text mb-4">
+              Transactions
+            </h2>
+
+            <SummaryCards
+              cards={[
+                { label: 'Total Spent', value: `₱${analytics.totalSpent}` },
+              ]}
+            />
+
+            <div className="mt-6">
+              <CategoryChart data={analytics.spendingByCategory} />
+            </div>
           </div>
-        </>
+
+          {/* ======================================
+              SCHEDULE
+          ====================================== */}
+
+          <div>
+            <h2 className="font-mono text-xl theme-text mb-4">
+              Schedule
+            </h2>
+
+            <SummaryCards
+              cards={[
+                { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
+                { label: 'Unpaid Bills', value: analytics.unpaidCount },
+              ]}
+            />
+
+            <div className="mt-6">
+              <CategoryChart data={analytics.upcomingByCategory} />
+            </div>
+          </div>
+
+        </div>
       )}
 
     </div>
