@@ -1,5 +1,8 @@
 import React from 'react'
 import { SalesChart } from '../../components/SalesChart'
+import { BarChartComponent } from '../../components/BarChartComponent'
+import { LineChartcomponent } from '../../components/LineChartcomponent'
+
 
 export const Analytics = () => {
   return (
@@ -9,8 +12,10 @@ export const Analytics = () => {
         Analytics
       </h1>
 
-     <div className="w-full h-96 flex-1">
+     <div className="w-full h-96 flex-1 flex-col">
         <SalesChart />
+        <BarChartComponent />
+        <LineChartcomponent />
       </div>
 
     </div>
