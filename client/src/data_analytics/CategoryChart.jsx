@@ -1,7 +1,16 @@
 import React from 'react'
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 
-export const CategoryChart = () => {
+export const CategoryChart = ({ data }) => {
+  if (!data || data.length === 0) return <div>No category data yet.</div>
+
   return (
-    <div>CategoryChart</div>
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={data}>
+        <XAxis dataKey="category" />
+        <YAxis />
+        <Bar dataKey="total" fill="#2f6fed" />
+      </BarChart>
+    </ResponsiveContainer>
   )
 }

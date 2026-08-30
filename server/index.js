@@ -993,6 +993,86 @@ app.post(
 )
 
 // ==========================================
+// GET ANALYTICS
+// ==========================================
+
+app.get(
+  '/api/analytics',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const firebaseUid = req.firebaseUid
+
+      // Spending (from transactions)
+
+      const transactionsResult = await pool.query(
+        `
+        SELECT category, SUM(amount) AS total
+        FROM transactions
+        WHERE firebase_uid = $1
+        GROUP BY category
+        `,
+        [firebaseUid]
+      )
+
+      const totalSpent = transactionsResult.rows.reduce(
+        (sum, r) => sum + Number(r.total),
+        0
+      )
+
+      // Upcoming bills (from schedule)
+
+      const scheduleResult = await pool.query(
+        `
+        SELECT category, SUM(amount) AS total
+        FROM schedule
+        WHERE firebase_uid = $1
+        GROUP BY category
+        `,
+        [firebaseUid]
+      )
+
+      const totalUpcoming = scheduleResult.rows.reduce(
+        (sum, r) => sum + Number(r.total),
+        0
+      )
+
+      const unpaidCountResult = await pool.query(
+        `
+        SELECT COUNT(*) AS count
+        FROM schedule
+        WHERE firebase_uid = $1
+        AND is_paid = false
+        `,
+        [firebaseUid]
+      )
+
+      res.status(200).json({
+        totalSpent,
+        totalUpcoming,
+        unpaidCount: Number(unpaidCountResult.rows[0].count),
+
+        spendingByCategory: transactionsResult.rows.map((r) => ({
+          category: r.category,
+          total: Number(r.total),
+        })),
+
+        upcomingByCategory: scheduleResult.rows.map((r) => ({
+          category: r.category,
+          total: Number(r.total),
+        })),
+      })
+    } catch (error) {
+      console.error('Analytics error:', error)
+
+      res.status(500).json({
+        message: 'Failed to get analytics',
+      })
+    }
+  }
+)
+
+// ==========================================
 // 404 HANDLER
 // ==========================================
 
@@ -1019,41 +1099,6 @@ app.use(
       message:
         'Internal server error',
     })
-  }
-)
-
-// ==========================================
-// GETTING THE ANALYTICS DATA
-// ==========================================
-
-app.get(
-  '/api/analytics',
-  authenticateFirebase,
-  async (req, res) => {
-    try {
-      const firebaseUid = req.firebaseUid
-
-      const result = await pool.query(
-        `SELECT category, SUM(amount) AS total
-         FROM transactions
-         WHERE firebase_uid = $1
-         GROUP BY category`,
-        [firebaseUid]
-      )
-
-      const total = result.rows.reduce((sum, r) => sum + Number(r.total), 0)
-
-      res.json({
-        byCategory: result.rows.map(r => ({
-          category: r.category,
-          total: Number(r.total),
-        })),
-        totalSpent: total,
-      })
-    } catch (error) {
-      console.error(error)
-      res.status(500).json({ message: 'Failed to get analytics' })
-    }
   }
 )
 
