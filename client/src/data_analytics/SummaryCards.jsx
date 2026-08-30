@@ -1,13 +1,7 @@
 import React from 'react'
 
-export const SummaryCards = ({ data }) => {
-  if (!data) return null
-
-  const cards = [
-    { label: 'Total Spent', value: `₱${data.totalSpent}` },
-    { label: 'Upcoming Bills', value: `₱${data.totalUpcoming}` },
-    { label: 'Unpaid Bills', value: data.unpaidCount },
-  ]
+export const SummaryCards = ({ cards }) => {
+  if (!cards || cards.length === 0) return null
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
