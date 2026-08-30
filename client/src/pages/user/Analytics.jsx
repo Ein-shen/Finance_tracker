@@ -99,7 +99,7 @@ export const Analytics = () => {
       </h1>
 
       <div className="w-full h-96 flex-1 flex-col">
-       
+        
       </div>
 
       <div>
@@ -118,7 +118,10 @@ export const Analytics = () => {
         {!loadingAnalytics && analytics && (
           <>
             <SummaryCards data={analytics} />
-            <CategoryChart data={analytics.byCategory} />
+            <CategoryChart
+              spending={analytics.spendingByCategory}
+              upcoming={analytics.upcomingByCategory}
+            />
           </>
         )}
       </div>
