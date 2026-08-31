@@ -12,6 +12,12 @@ export const AdminDashboard = () => {
         <button className='border border-2 rounded-md text-lg'>
           user
         </button>
+
+        <div>
+          <h1>
+            Hay nako
+          </h1>
+        </div>
       </div>
     </div>
   )
