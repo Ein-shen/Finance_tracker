@@ -14,7 +14,7 @@ export const AdminDashboard = () => {
         </button>
 
         <div>
-          <h1>
+          <h1 className='text-lg font-bold'>
             Hay nako
           </h1>
         </div>
