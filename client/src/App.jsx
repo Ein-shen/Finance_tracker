@@ -225,11 +225,6 @@ function App() {
         />
 
         <Route
-          path="saleschart"
-          element={<SalesChart />}
-        />
-
-        <Route
           path="barchart"
           element={<BarChartComponent />}
         />
