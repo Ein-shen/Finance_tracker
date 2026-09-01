@@ -1,16 +1,14 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
+import { Upperbar } from './Upperbar'
 
 export const AdminDashboard = () => {
   return (
-     <div>
-     <h1>
-      Welcom to admin
-     </h1>
-     
+    <div>
+      <Upperbar />
       
-     
-      <div className="pt-25 md:pt-20 ml-0 md:ml-64 pt-16 md:pt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+      {/* Container with clean top-padding and left-margin for fixed sidebar offset */}
+      <div className="pt-20 md:ml-64 px-4 sm:px-8 md:px-12 lg:px-20">
         <Outlet />
       </div>
     </div>
