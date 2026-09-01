@@ -1,4 +1,3 @@
-
 import './index.css'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
@@ -30,11 +29,9 @@ import { Help } from './pages/user/Help.jsx'
 import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 
-
 // ==========================================
 // COMPONENT IMPORTS
 // ==========================================
-
 
 import { BarChartComponent } from './components/BarChartComponent.jsx'
 
@@ -45,9 +42,7 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 function LoadingScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-300">
-      <p className="text-lg text-gray-500">
-        Loading...
-      </p>
+      <p className="text-lg text-gray-500">Loading...</p>
     </div>
   )
 }
@@ -66,234 +61,104 @@ function App() {
   // ==========================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (user) => {
-        try {
-          // ========================================
-          // USER IS LOGGED OUT
-          // ========================================
-
-          if (!user) {
-            setSession(null)
-            setRole(null)
-            setAuthLoading(false)
-            return
-          }
-
-          // ========================================
-          // USER IS LOGGED IN
-          // ========================================
-
-          setSession(user)
-
-          // Get Firebase ID token
-          const idToken = await user.getIdToken(true)
-
-          console.log('Firebase UID:', user.uid)
-
-          // ========================================
-          // GET ROLE FROM BACKEND
-          // ========================================
-
-          const response = await fetch(
-            'http://localhost:5000/api/users/role',
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            }
-          )
-
-          if (!response.ok) {
-            console.error(
-              'Failed to get role:',
-              response.status
-            )
-
-            setRole('user')
-            return
-          }
-
-          const data = await response.json()
-
-          console.log('User role:', data.role)
-
-          setRole(data.role || 'user')
-        } catch (error) {
-          console.error(
-            'Authentication / role error:',
-            error
-          )
-
-          setRole('user')
-        } finally {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (!user) {
+          setSession(null)
+          setRole(null)
           setAuthLoading(false)
+          return
         }
+
+        setSession(user)
+        const idToken = await user.getIdToken(true)
+
+        // ========================================
+        // GET ROLE FROM BACKEND
+        // ========================================
+
+        const response = await fetch('http://localhost:5000/api/users/role', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+
+        if (!response.ok) {
+          setRole('user')
+          return
+        }
+
+        const data = await response.json()
+        setRole(data.role || 'user')
+      } catch (error) {
+        console.error('Authentication / role error:', error)
+        setRole('user')
+      } finally {
+        setAuthLoading(false)
       }
-    )
+    })
 
     return () => unsubscribe()
   }, [])
-
-  // ==========================================
-  // AUTH LOADING
-  // ==========================================
 
   if (authLoading) {
     return <LoadingScreen />
   }
 
-  // ==========================================
-  // ROUTES
-  // ==========================================
-
   return (
     <Routes>
+      {/* PUBLIC ROUTES */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-      {/* ======================================
-          PUBLIC ROUTES
-      ====================================== */}
-
-      <Route
-        path="/"
-        element={<Home />}
-      />
-
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      <Route
-        path="/signup"
-        element={<Signup />}
-      />
-
-      {/* ======================================
-          USER DASHBOARD
-      ====================================== */}
-
-      <Route
-        path="/dashboard"
-        element={<Dashboard />}
-      >
-        <Route
-          index
-          element={<Index />}
-        />
-
-        <Route
-          path="transaction"
-          element={<Transaction />}
-        />
-
-        <Route
-          path="settings"
-          element={<Settings />}
-        />
-
-        <Route
-          path="account"
-          element={<Account />}
-        />
-
-        <Route
-          path="schedule"
-          element={<Schedule />}
-        />
-
-        <Route
-          path="analytics"
-          element={<Analytics />}
-        />
-
-        <Route
-          path="about"
-          element={<About />}
-        />
-
-        <Route
-          path="help"
-          element={<Help />}
-        />
-
-        <Route
-          path="support"
-          element={<Support />}
-        />
-
-        <Route
-          path="barchart"
-          element={<BarChartComponent />}
-        />
+      {/* USER DASHBOARD */}
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route index element={<Index />} />
+        <Route path="transaction" element={<Transaction />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="account" element={<Account />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="about" element={<About />} />
+        <Route path="help" element={<Help />} />
+        <Route path="support" element={<Support />} />
+        <Route path="barchart" element={<BarChartComponent />} />
       </Route>
 
-      {/* ======================================
-          ADMIN LOGIN
-      ====================================== */}
-
+      {/* ADMIN LOGIN */}
       <Route
         path="/admin-login"
         element={
           session && role === 'admin' ? (
-            <Navigate
-              to="/admin/admindashboard"
-              replace
-            />
+            <Navigate to="/admin/admindashboard" replace />
           ) : (
             <Adminlogin />
           )
         }
       />
 
-      {/* ======================================
-          ADMIN DASHBOARD
-      ====================================== */}
-
+      {/* ADMIN DASHBOARD */}
       <Route
         path="/admin/admindashboard"
         element={
           session && role === 'admin' ? (
             <AdminDashboard />
           ) : (
-            <Navigate
-              to="/admin-login"
-              replace
-            />
+            <Navigate to="/admin-login" replace />
           )
         }
       />
 
-      {/* ======================================
-          /admin → /admin/admindashboard
-      ====================================== */}
-
+      {/* ADMIN REDIRECT */}
       <Route
         path="/admin"
-        element={
-          <Navigate
-            to="/admin/admindashboard"
-            replace
-          />
-        }
+        element={<Navigate to="/admin/admindashboard" replace />}
       />
 
-      {/* ======================================
-          UNKNOWN ROUTE
-      ====================================== */}
-
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to="/"
-            replace
-          />
-        }
-      />
-
+      {/* FALLBACK ROUTE */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
