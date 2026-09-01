@@ -1,183 +1,102 @@
-
-import {
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
-} from 'firebase/auth'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { auth } from '../../firebase'
-import { useNavigate } from 'react-router-dom'
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth'
 
 const googleProvider = new GoogleAuthProvider()
 
 export const Adminlogin = () => {
-  const [error, setError] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const navigate = useNavigate()
 
-  // ==========================================
-  // HANDLE GOOGLE REDIRECT RESULT
-  // ==========================================
+  // Helper method to verify backend status & role after authentication
+  const processAdminAuth = async (user) => {
+    const idToken = await user.getIdToken()
 
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+    // 1. Save / Update User in PostgreSQL
+    const saveRes = await fetch('http://localhost:5000/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token: idToken,
+        name: user.displayName || '',
+      }),
+    })
 
-        const result = await getRedirectResult(auth)
-
-        // No redirect result means normal page load
-        if (!result) {
-          setLoading(false)
-          return
-        }
-
-        const user = result.user
-
-        console.log('Google login successful:', user.email)
-
-        // ==========================================
-        // GET FIREBASE ID TOKEN
-        // ==========================================
-
-        const idToken = await user.getIdToken()
-
-        // ==========================================
-        // SAVE / UPDATE USER IN POSTGRESQL
-        // ==========================================
-
-        const saveRes = await fetch(
-          'http://localhost:5000/api/users',
-          {
-            method: 'POST',
-
-            headers: {
-              'Content-Type': 'application/json',
-            },
-
-            body: JSON.stringify({
-              token: idToken,
-              name: user.displayName || '',
-            }),
-          }
-        )
-
-        if (!saveRes.ok) {
-          const data = await saveRes
-            .json()
-            .catch(() => null)
-
-          throw new Error(
-            data?.message ||
-              'Failed to save user'
-          )
-        }
-
-        // ==========================================
-        // CHECK USER ROLE
-        // ==========================================
-
-        const roleRes = await fetch(
-          'http://localhost:5000/api/users/role',
-          {
-            method: 'GET',
-
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        )
-
-        if (!roleRes.ok) {
-          const data = await roleRes
-            .json()
-            .catch(() => null)
-
-          throw new Error(
-            data?.message ||
-              'Failed to check role'
-          )
-        }
-
-        const roleData = await roleRes.json()
-
-        console.log('User role:', roleData.role)
-
-        // ==========================================
-        // ADMIN CHECK
-        // ==========================================
-
-        if (roleData.role === 'admin') {
-          navigate('/admin', {
-            replace: true,
-          })
-        } else {
-          await auth.signOut()
-
-          setError(
-            'This account does not have admin access.'
-          )
-        }
-      } catch (err) {
-        console.error(
-          'Admin login error:',
-          err
-        )
-
-        setError(
-          err.message ||
-            'Something went wrong during login.'
-        )
-      } finally {
-        setLoading(false)
-      }
+    if (!saveRes.ok) {
+      const data = await saveRes.json().catch(() => null)
+      throw new Error(data?.message || 'Failed to save user')
     }
 
-    handleRedirectResult()
-  }, [navigate])
+    // 2. Check User Role
+    const roleRes = await fetch('http://localhost:5000/api/users/role', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${idToken}` },
+    })
 
-  // ==========================================
-  // GOOGLE LOGIN
-  // ==========================================
+    if (!roleRes.ok) {
+      const data = await roleRes.json().catch(() => null)
+      throw new Error(data?.message || 'Failed to check role')
+    }
 
-  const handleGoogle = async () => {
-    if (loading) return
+    const roleData = await roleRes.json()
+
+    // 3. Confirm Admin authorization
+    if (roleData.role === 'admin') {
+      navigate('/admin', { replace: true })
+    } else {
+      await auth.signOut()
+      throw new Error('This account does not have admin access.')
+    }
+  }
+
+  // Handle Standard Email/Password Login
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
 
     try {
-      setLoading(true)
-      setError(null)
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      await processAdminAuth(userCredential.user)
 
-      await signInWithRedirect(
-        auth,
-        googleProvider
-      )
+      setEmail('')
+      setPassword('')
     } catch (err) {
-      console.error(
-        'Google redirect error:',
-        err
-      )
-
-      setError(
-        err.message ||
-          'Unable to start Google login.'
-      )
-
+      setError(err.message || 'Something went wrong during login.')
+    } finally {
       setLoading(false)
     }
   }
 
-  // ==========================================
-  // UI
-  // ==========================================
+  // Handle Google Popup Login
+  const handleGoogle = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      await processAdminAuth(result.user)
+    } catch (err) {
+      setError(err.message || 'Something went wrong during login.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center overflow-y-auto py-8">
+    <div className="min-h-screen flex items-center justify-center overflow-y-auto py-8">
+      <div className="p-8 rounded-xl shadow-md w-full max-w-md">
 
-      <div className="bg-[#f3f3f3] text-gray-900 p-8 rounded-xl shadow-md w-full max-w-md border border-gray-200">
-
-        {/* ICON */}
+        {/* Logo / Welcome */}
         <div className="flex flex-col items-center gap-2 mb-6">
           <img
             src="/suitcase.png"
@@ -186,21 +105,19 @@ export const Adminlogin = () => {
           />
         </div>
 
-        {/* TITLE */}
         <h1 className="text-2xl font-mono mb-6 text-center">
           Welcome to Finance Tracker
         </h1>
 
-        {/* ERROR */}
+        {/* Error */}
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
             ❌ {error}
           </div>
         )}
 
-        {/* DIVIDER */}
+        {/* Divider */}
         <div className="flex items-center my-5">
-
           <hr className="flex-1 border-gray-400" />
 
           <span className="mx-3 text-gray-500 text-sm">
@@ -208,37 +125,82 @@ export const Adminlogin = () => {
           </span>
 
           <hr className="flex-1 border-gray-400" />
-
         </div>
 
-        {/* ADMIN TITLE */}
-        <h2 className="text-xl font-mono mb-6 text-center pb-10">
-          Login as Admin
-        </h2>
+        <div>
+          <h2 className="text-xl font-mono mb-6 text-center pb-10">
+            Admin Login
+          </h2>
+        </div>
 
-        {/* GOOGLE BUTTON */}
+        {/* Email/Password Form */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="admin@example.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+          >
+            {loading ? 'Logging in...' : 'Sign In as Admin'}
+          </button>
+        </form>
+
+        {/* Google Login */}
         <button
           type="button"
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full border border-black text-gray-900 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
+          className="w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
         >
-
           <img
             src="https://www.google.com/favicon.ico"
             alt="Google"
             className="w-5 h-5"
           />
-
-          {loading
-            ? 'Redirecting...'
-            : 'Continue with Google'}
-
+          {loading ? 'Authenticating...' : 'Continue with Google'}
         </button>
 
-      </div>
+        {/* Signup Link */}
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Don't have an account?{' '}
+          <Link
+            to="/signup"
+            className="text-blue-500 hover:underline"
+          >
+            Sign up
+          </Link>
+        </p>
 
+      </div>
     </div>
   )
 }
 
+export default Adminlogin
