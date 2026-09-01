@@ -1,6 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export const Adminlogin = () => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleGoogle = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      // TODO: wire up your actual Google auth logic here
+      // e.g. await signInWithGoogle()
+    } catch (err) {
+      setError(err.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center overflow-y-auto py-8">
       <div className="p-8 rounded-xl shadow-md w-full max-w-md">
@@ -42,7 +59,6 @@ export const Adminlogin = () => {
           </h2>
         </div>
 
-       
         {/* Google Login */}
         <button
           type="button"
