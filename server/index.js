@@ -221,9 +221,10 @@ app.post(
           INSERT INTO users (
             firebase_uid,
             email,
-            name
+            name,
+            role
           )
-          VALUES ($1, $2, $3)
+          VALUES ($1, $2, $3, 'user')
           ON CONFLICT (firebase_uid)
           DO UPDATE SET
             email = EXCLUDED.email,
@@ -232,7 +233,8 @@ app.post(
             id,
             firebase_uid,
             email,
-            name
+            name,
+            role
           `,
           [
             firebaseUid,
@@ -255,6 +257,43 @@ app.post(
       res.status(500).json({
         message:
           'Failed to save user',
+      })
+    }
+  }
+)
+
+
+// ==========================================
+// GET USER ROLE
+// ==========================================
+
+app.get(
+  '/api/users/role',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const firebaseUid = req.firebaseUid
+
+      const result = await pool.query(
+        `
+        SELECT role
+        FROM users
+        WHERE firebase_uid = $1
+        `,
+        [firebaseUid]
+      )
+
+      if (result.rows.length === 0) {
+        return res.status(200).json({ role: 'user' })
+      }
+
+      res.status(200).json({
+        role: result.rows[0].role || 'user',
+      })
+    } catch (error) {
+      console.error('Get role error:', error)
+      res.status(500).json({
+        message: 'Failed to get role',
       })
     }
   }
