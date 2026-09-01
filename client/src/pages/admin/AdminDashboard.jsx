@@ -1,23 +1,17 @@
 import React from 'react'
+import { Outlet } from 'react-router-dom'
 
 export const AdminDashboard = () => {
   return (
-    <div className='flex flex-col items-center'>
+     <div>
+     <h1>
+      Welcom to admin
+     </h1>
+     
       
-      <div className='font-bold text-lg border border-2'>
 
-        AdminDashboard
-
-
-        <button className='border border-2 rounded-md text-lg'>
-          user
-        </button>
-
-        <div>
-          <h1 className='text-lg font-bold'>
-            Hay nako
-          </h1>
-        </div>
+      <div className="pt-25 md:pt-20 ml-0 md:ml-64 pt-16 md:pt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+        <Outlet />
       </div>
     </div>
   )
