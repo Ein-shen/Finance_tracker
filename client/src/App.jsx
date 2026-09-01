@@ -35,7 +35,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 // COMPONENT IMPORTS
 // ==========================================
 
-import { SalesChart } from './components/SalesChart.jsx'
+
 import { BarChartComponent } from './components/BarChartComponent.jsx'
 
 // ==========================================
