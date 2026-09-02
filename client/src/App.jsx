@@ -29,6 +29,7 @@ import { Help } from './pages/user/Help.jsx'
 import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 import { Manage } from './pages/admin/Manage.jsx'
+import { Bottombar } from './pages/admin/Bottombar.jsx'
 
 
 // ==========================================
@@ -153,6 +154,7 @@ function App() {
           }
         >
           <Route path="manage" element={<Manage />} />
+          <Route path="bottombar" element={<Bottombar />} />
         </Route>
 
         {/* ADMIN REDIRECT */}
