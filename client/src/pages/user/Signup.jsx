@@ -57,8 +57,8 @@ export const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center overflow-y-auto py-8">
-      <div className="p-8 rounded-xl shadow-md w-full max-w-md">
+    <div className="theme-bg min-h-screen flex items-center justify-center overflow-y-auto py-8">
+      <div className="theme-card p-8 rounded-xl shadow-md w-full max-w-md">
 
         {/* Logo / Welcome */}
         <div className="flex flex-col items-center gap-2 mb-6">
