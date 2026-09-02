@@ -146,16 +146,7 @@ export const Adminlogin = () => {
           {loading ? 'Authenticating...' : 'Continue with Google'}
         </button>
 
-        {/* Signup Link */}
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Don't have an account?{' '}
-          <Link
-            to="/signup"
-            className="text-blue-500 hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
+        
 
       </div>
     </div>
