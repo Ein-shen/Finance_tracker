@@ -25,6 +25,7 @@ import { Help } from './pages/user/Help.jsx'
 // ==========================================
 // ADMIN IMPORTS
 // ==========================================
+import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 import { AdminHome } from './pages/admin/AdminHome.jsx'
 import { AdminUser } from './pages/admin/AdminUser.jsx'
@@ -155,7 +156,7 @@ function App() {
           }
         >
             
-            <Route index element={<AdminHome />} />
+            <Route path="adminhome" element={<AdminHome />} />
             <Route path="user" element={<AdminUser />} />
             <Route path="admindashboard" element={<AdminDashboard />} />
             <Route path="settings" element={<AdminSettings />} />
