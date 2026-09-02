@@ -1,9 +1,7 @@
 import React from 'react'
 
-export const 
- = () => {
+export const Settings = () => {
   return (
-    <div>
-    </div>
+    <div>Settings</div>
   )
 }
