@@ -154,7 +154,7 @@ function App() {
           }
         >
           <Route path="manage" element={<Manage />} />
-          <Route path="bottombar" element={<Bottombar />} />
+       
         </Route>
 
         {/* ADMIN REDIRECT */}
