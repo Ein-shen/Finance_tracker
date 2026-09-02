@@ -28,6 +28,7 @@ import { Help } from './pages/user/Help.jsx'
 
 import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
+import { Manage } from './pages/admin/Manage.jsx'
 
 // ==========================================
 // COMPONENT IMPORTS
@@ -127,39 +128,41 @@ function App() {
         <Route path="barchart" element={<BarChartComponent />} />
       </Route>
 
-      {/* ADMIN LOGIN */}
-      <Route
-        path="/admin-login"
-        element={
-          session && role === 'admin' ? (
-            <Navigate to="/admin/admindashboard" replace />
-          ) : (
-            <Adminlogin />
-          )
-        }
-      />
+     {/* ADMIN LOGIN */}
+        <Route
+          path="/admin-login"
+          element={
+            session && role === 'admin' ? (
+              <Navigate to="/admin/admindashboard" replace />
+            ) : (
+              <Adminlogin />
+            )
+          }
+        />
 
-      {/* ADMIN DASHBOARD */}
-      <Route
-        path="/admin/admindashboard"
-        element={
-          session && role === 'admin' ? (
-            <AdminDashboard />
-          ) : (
-            <Navigate to="/admin-login" replace />
-          )
-        }
-      />
+        {/* ADMIN DASHBOARD */}
+        <Route
+          path="/admin/admindashboard"
+          element={
+            session && role === 'admin' ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/admin-login" replace />
+            )
+          }
+        >
+          <Route path="manage" element={<Manage />} />
+        </Route>
 
-      {/* ADMIN REDIRECT */}
-      <Route
-        path="/admin"
-        element={<Navigate to="/admin/admindashboard" replace />}
-      />
+        {/* ADMIN REDIRECT */}
+        <Route
+          path="/admin"
+          element={<Navigate to="/admin/admindashboard" replace />}
+        />
 
-      {/* FALLBACK ROUTE */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* FALLBACK ROUTE */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
   )
 }
 
