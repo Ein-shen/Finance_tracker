@@ -52,8 +52,8 @@ export const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center overflow-y-auto py-8">
-      <div className="p-8 rounded-xl shadow-md w-full max-w-md">
+    <div className="theme-bg min-h-screen flex items-center justify-center overflow-y-auto py-8">
+      <div className=" theme-card p-8 rounded-xl shadow-md w-full max-w-md">
 
         {/* Logo / Welcome */}
         <div className="flex flex-col items-center gap-2 mb-6">
@@ -98,7 +98,7 @@ export const Login = () => {
           type="button"
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
+          className="hover:bg-white/10 w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
         >
           <img
             src="https://www.google.com/favicon.ico"
