@@ -24,7 +24,7 @@ export const Adminsignout = () => {
       <div>
         <button 
         onClick={handleSignOut}
-        className='rounded-md border border-2 p-2'>
+        className='cursor-pointer bg-[#f3f3f3] hover:bg-white/10 rounded-md border border-2 p-2'>
           Signout
         </button>
       </div>
