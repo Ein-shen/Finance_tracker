@@ -15,12 +15,12 @@ export const Bottombar = () => {
           <User />
         </NavLink>
 
-        <NavLink to='settings' className='theme-bg theme-hover p-4 rounded-md'>
-          <Settings />
-        </NavLink>
-
         <NavLink to='adminanalytics' className='theme-bg theme-hover p-4 rounded-md'>
           <BarChart3 />
+        </NavLink>
+
+        <NavLink to='settings' className='theme-bg theme-hover p-4 rounded-md'>
+          <Settings />
         </NavLink>
 
         <span  className='theme-bg theme-hover p-4 rounded-md'>
