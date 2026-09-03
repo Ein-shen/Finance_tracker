@@ -1157,6 +1157,72 @@ app.get(
   }
 )
 
+
+// ==========================================
+// BAN / UNBAN USER (toggle status)
+// ==========================================
+
+app.patch(
+  '/api/users/:id/status',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const firebaseUid = req.firebaseUid
+      const targetId = Number(req.params.id)
+
+      if (!Number.isInteger(targetId)) {
+        return res.status(400).json({ message: 'Invalid user ID' })
+      }
+
+      // Verify requester is admin
+      const roleCheck = await pool.query(
+        `SELECT role FROM users WHERE firebase_uid = $1`,
+        [firebaseUid]
+      )
+
+      if (roleCheck.rows.length === 0 || roleCheck.rows[0].role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' })
+      }
+
+      // Get target user
+      const targetResult = await pool.query(
+        `SELECT id, firebase_uid, status FROM users WHERE id = $1`,
+        [targetId]
+      )
+
+      if (targetResult.rows.length === 0) {
+        return res.status(404).json({ message: 'User not found' })
+      }
+
+      const target = targetResult.rows[0]
+
+      // Prevent self-ban
+      if (target.firebase_uid === firebaseUid) {
+        return res.status(400).json({ message: "You can't ban yourself" })
+      }
+
+      const newStatus = target.status === 'banned' ? 'active' : 'banned'
+
+      const updateResult = await pool.query(
+        `
+        UPDATE users
+        SET status = $1
+        WHERE id = $2
+        RETURNING id, firebase_uid, name, email, role, status, photo_url
+        `,
+        [newStatus, targetId]
+      )
+
+      res.status(200).json({
+        message: `User status updated to ${newStatus}`,
+        user: updateResult.rows[0],
+      })
+    } catch (error) {
+      console.error('Toggle status error:', error)
+      res.status(500).json({ message: 'Failed to update user status' })
+    }
+  }
+)
 // ==========================================
 // 404 HANDLER
 // ==========================================
