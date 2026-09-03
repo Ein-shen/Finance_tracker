@@ -4,10 +4,6 @@ import { useState, useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './firebase'
 
-// ==========================================
-// USER IMPORTS
-// ==========================================
-
 import { Home } from './pages/Home'
 import { Dashboard } from './pages/user/Dashboard'
 import { Login } from './pages/user/Login'
@@ -22,27 +18,15 @@ import { About } from './pages/user/About.jsx'
 import { Support } from './pages/user/Support.jsx'
 import { Help } from './pages/user/Help.jsx'
 
-// ==========================================
-// ADMIN IMPORTS
-// ==========================================
 import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 import { AdminHome } from './pages/admin/AdminHome.jsx'
 import { AdminUser } from './pages/admin/AdminUser.jsx'
 import { AdminSettings } from './pages/admin/AdminSettings.jsx'
+import { AdminAnalytics } from './pages/admin/AdminAnalytics.jsx'
 import { Manage } from './pages/admin/Manage.jsx'
 
-
-
-// ==========================================
-// COMPONENT IMPORTS
-// ==========================================
-
 import { BarChartComponent } from './components/BarChartComponent.jsx'
-
-// ==========================================
-// LOADING SCREEN
-// ==========================================
 
 function LoadingScreen() {
   return (
@@ -52,18 +36,10 @@ function LoadingScreen() {
   )
 }
 
-// ==========================================
-// APP
-// ==========================================
-
 function App() {
   const [session, setSession] = useState(null)
   const [role, setRole] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
-
-  // ==========================================
-  // FIREBASE AUTH STATE
-  // ==========================================
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -77,10 +53,6 @@ function App() {
 
         setSession(user)
         const idToken = await user.getIdToken(true)
-
-        // ========================================
-        // GET ROLE FROM BACKEND
-        // ========================================
 
         const response = await fetch('http://localhost:5000/api/users/role', {
           method: 'GET',
@@ -113,12 +85,10 @@ function App() {
 
   return (
     <Routes>
-      {/* PUBLIC ROUTES */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      {/* USER DASHBOARD */}
       <Route path="/dashboard" element={<Dashboard />}>
         <Route index element={<Index />} />
         <Route path="transaction" element={<Transaction />} />
@@ -132,48 +102,42 @@ function App() {
         <Route path="barchart" element={<BarChartComponent />} />
       </Route>
 
-     {/* ADMIN LOGIN */}
-        <Route
-          path="/admin-login"
-          element={
-            session && role === 'admin' ? (
-              <Navigate to="/admin/admindashboard" replace />
-            ) : (
-              <Adminlogin />
-            )
-          }
-        />
+      <Route
+        path="/admin-login"
+        element={
+          session && role === 'admin' ? (
+            <Navigate to="/admin/admindashboard" replace />
+          ) : (
+            <Adminlogin />
+          )
+        }
+      />
 
-        {/* ADMIN DASHBOARD */}
-        <Route
-          path="/admin/admindashboard"
-          element={
-            session && role === 'admin' ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/admin-login" replace />
-            )
-          }
-        >
-            
-            <Route index element={<AdminHome />} />
-            <Route path="adminhome" element={<AdminHome />} />
-            <Route path="user" element={<AdminUser />} />
-            
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="manage" element={<Manage />} />
-       
-        </Route>
+      <Route
+        path="/admin/admindashboard"
+        element={
+          session && role === 'admin' ? (
+            <AdminDashboard />
+          ) : (
+            <Navigate to="/admin-login" replace />
+          )
+        }
+      >
+        <Route index element={<AdminHome />} />
+        <Route path="adminhome" element={<AdminHome />} />
+        <Route path="user" element={<AdminUser />} />
+        <Route path="adminanalytics" element={<AdminAnalytics />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="manage" element={<Manage />} />
+      </Route>
 
-        {/* ADMIN REDIRECT */}
-        <Route
-          path="/admin"
-          element={<Navigate to="/admin/admindashboard" replace />}
-        />
+      <Route
+        path="/admin"
+        element={<Navigate to="/admin/admindashboard" replace />}
+      />
 
-        {/* FALLBACK ROUTE */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 

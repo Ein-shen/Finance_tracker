@@ -1,5 +1,5 @@
 import React from 'react'
-import { House, User, Settings } from 'lucide-react'
+import { House, User, Settings, BarChart3 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { Adminsignout } from './Adminsignout'
 
@@ -19,9 +19,13 @@ export const Bottombar = () => {
           <Settings />
         </NavLink>
 
-        <button  className='theme-bg theme-hover p-4 rounded-md'>
+        <NavLink to='adminanalytics' className='theme-bg theme-hover p-4 rounded-md'>
+          <BarChart3 />
+        </NavLink>
+
+        <span  className='theme-bg theme-hover p-4 rounded-md'>
           <Adminsignout />
-        </button>
+        </span>
         
       </div>
     </div>
