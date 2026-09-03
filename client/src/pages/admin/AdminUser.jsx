@@ -4,55 +4,50 @@ import { Ban, CheckCircle2 } from 'lucide-react'
 
 export const AdminUser = () => {
   const [loadingUser, setLoadingUser] = useState(true)
-  const [authLoading, setAuthLoading] = useState(true)
   const [users, setUsers] = useState([])
   const [busyId, setBusyId] = useState(null)
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setAuthLoading(false)
-    })
-    return () => unsubscribe()
-  }, [])
-
-  const fetchUsers = async () => {
-    try {
-      setLoadingUser(true)
-      const user = auth.currentUser
-      if (!user) {
+    // Listen directly to auth changes and fetch within the observer
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (!currentUser) {
         setUsers([])
+        setLoadingUser(false)
         return
       }
-      const token = await user.getIdToken()
-      const response = await fetch('http://localhost:5000/api/users', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const contentType = response.headers.get('content-type')
-      let data = {}
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json()
-      } else {
-        const text = await response.text()
-        throw new Error(`Server returned ${response.status} instead of JSON`)
-      }
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get users')
-      }
-      setUsers(data.users || [])
-    } catch (error) {
-      console.error('Fetch users error:', error)
-      setUsers([])
-    } finally {
-      setLoadingUser(false)
-    }
-  }
 
-  useEffect(() => {
-    if (!authLoading) {
-      fetchUsers()
-    }
-  }, [authLoading])
+      try {
+        setLoadingUser(true)
+        const token = await currentUser.getIdToken()
+        const response = await fetch('http://localhost:5000/api/users', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        const contentType = response.headers.get('content-type')
+        let data = {}
+
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json()
+        } else {
+          throw new Error(`Server returned ${response.status} instead of JSON`)
+        }
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to get users')
+        }
+
+        setUsers(data.users || [])
+      } catch (error) {
+        console.error('Fetch users error:', error)
+        setUsers([])
+      } finally {
+        setLoadingUser(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   // ==========================================
   // BAN / UNBAN
@@ -105,61 +100,64 @@ export const AdminUser = () => {
       </div>
 
       <div className="overflow-y-auto pb-10 pt-10">
-        <table className="w-full border-collapse  ">
+        <table className="w-full border-collapse table-fixed">
           <thead>
             <tr className="text-center border theme-border-2 ">
-              <th className="text-center py-2 ">User</th>
-              <th className="text-center py-2">Role</th>
-              <th className="text-center py-2 ">Status</th>
-              <th className="text-center py-2 ">Actions</th>
+              <th className="w-2/5 text-center py-2 ">User</th>
+              <th className="w-1/5 text-center py-2">Role</th>
+              <th className="w-1/5 text-center py-2 ">Status</th>
+              <th className="w-1/5 text-center py-2 ">Actions</th>
             </tr>
           </thead>
-         <tbody>
-              {loadingUser ? (
-                <tr>
-                  <td colSpan={4} className="py-4 text-center">
-                    Loading...
+          <tbody>
+            {loadingUser ? (
+              <tr>
+                <td colSpan={4} className="py-4 text-center">
+                  Loading...
+                </td>
+              </tr>
+            ) : users.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-4 text-center">
+                  No users found
+                </td>
+              </tr>
+            ) : (
+              users.map((details) => (
+                <tr key={details.id}>
+                  <td 
+                    className="pt-10 pb-2 text-center truncate" 
+                    title={details.name || details.email}
+                  >
+                    {details.name || details.email}
+                  </td>
+
+                  <td className="pt-10 pb-2 text-center">
+                    {details.role}
+                  </td>
+
+                  <td className="pt-10 pb-2 text-center">
+                    {details.status}
+                  </td>
+
+                  <td className="pt-10 pb-2 text-center">
+                    <button
+                      disabled={busyId === details.id}
+                      onClick={() => handleToggleBan(details)}
+                      title={details.status === 'banned' ? 'Unban' : 'Ban'}
+                      className="inline-flex p-2 border theme-border rounded-md disabled:opacity-40"
+                    >
+                      {details.status === 'banned' ? (
+                        <CheckCircle2 size={16} />
+                      ) : (
+                        <Ban size={16} />
+                      )}
+                    </button>
                   </td>
                 </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="py-4 text-center">
-                    No users found
-                  </td>
-                </tr>
-              ) : (
-                users.map((details) => (
-                  <tr key={details.id}>
-                    <td className="pt-10 pb-2 text-center">
-                      {details.name || details.email}
-                    </td>
-
-                    <td className="pt-10 pb-2 text-center">
-                      {details.role}
-                    </td>
-
-                    <td className="pt-10 pb-2 text-center">
-                      {details.status}
-                    </td>
-
-                    <td className="pt-10 pb-2 text-center">
-                      <button
-                        disabled={busyId === details.id}
-                        onClick={() => handleToggleBan(details)}
-                        title={details.status === 'banned' ? 'Unban' : 'Ban'}
-                        className="inline-flex p-2 border theme-border rounded-md disabled:opacity-40"
-                      >
-                        {details.status === 'banned' ? (
-                          <CheckCircle2 size={16} />
-                        ) : (
-                          <Ban size={16} />
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
+              ))
+            )}
+          </tbody>
         </table>
       </div>
     </div>
