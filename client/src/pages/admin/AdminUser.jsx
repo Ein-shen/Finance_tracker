@@ -90,9 +90,7 @@ export const AdminUser = () => {
             <tr className="text-left border theme-border-2 ">
               <th className="py-2 px-4">User</th>
               <th className="py-2 pr-4">Role</th>
-              <th className="py-2 pr-4">Status</th>
-              <th className="py-2 pr-4">Last active</th>
-              <th className="py-2 pr-4">Actions</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -109,9 +107,7 @@ export const AdminUser = () => {
                 <tr key={details.id} className="">
                   <td className="py-2 px-4">{details.name ||details.email}</td>
                   <td className="py-2 pr-4">{details.role}</td>
-                  <td className="py-2 pr-4">—</td>
-                  <td className="py-2 pr-4">—</td>
-                  <td className="py-2 pr-4">—</td>
+                 
                 </tr>
               ))
             )}
