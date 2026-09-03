@@ -1,5 +1,5 @@
 import React from 'react'
-import { Adminsignout } from './Adminsignout'
+
 
 
 export const Upperbar = () => {
@@ -12,7 +12,7 @@ export const Upperbar = () => {
 
 
         <div className='fixed right-0 px-6'>
-            <Adminsignout />
+            
         </div>
         
         

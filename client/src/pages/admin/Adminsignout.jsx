@@ -22,10 +22,10 @@ export const Adminsignout = () => {
       <div>
         <button
           onClick={handleSignOut}
-          className='theme-bg theme-hover cursor-pointer rounded-md border border-2 p-2 flex flex-row space-x-1'
+          className='theme-bg theme-hover cursor-pointer  flex flex-row '
         >
           <LogOut size={20} />
-          <User2Icon size={20} />
+          
         </button>
       </div>
     </div>
