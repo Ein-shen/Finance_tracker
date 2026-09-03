@@ -156,9 +156,10 @@ function App() {
           }
         >
             
+            <Route index element={<AdminHome />} />
             <Route path="adminhome" element={<AdminHome />} />
             <Route path="user" element={<AdminUser />} />
-            <Route path="admindashboard" element={<AdminDashboard />} />
+            
             <Route path="settings" element={<AdminSettings />} />
             <Route path="manage" element={<Manage />} />
        
