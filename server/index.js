@@ -1127,6 +1127,77 @@ app.get(
   }
 )
 
+// ==========================================
+// GET ALL USERS ANALYTICS (ADMIN)
+// ==========================================
+
+app.get(
+  '/api/admin/analytics',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      // 1. Spending across ALL users (from transactions)
+      const transactionsResult = await pool.query(
+        `
+        SELECT category, SUM(amount) AS total
+        FROM transactions
+        GROUP BY category
+        `
+      )
+
+      const totalSpent = transactionsResult.rows.reduce(
+        (sum, r) => sum + Number(r.total),
+        0
+      )
+
+      // 2. Upcoming bills across ALL users (from schedule)
+      const scheduleResult = await pool.query(
+        `
+        SELECT category, SUM(amount) AS total
+        FROM schedule
+        GROUP BY category
+        `
+      )
+
+      const totalUpcoming = scheduleResult.rows.reduce(
+        (sum, r) => sum + Number(r.total),
+        0
+      )
+
+      // 3. Unpaid schedules across ALL users
+      const unpaidCountResult = await pool.query(
+        `
+        SELECT COUNT(*) AS count
+        FROM schedule
+        WHERE is_paid = false
+        `
+      )
+
+      res.status(200).json({
+        totalSpent,
+        totalUpcoming,
+        unpaidCount: Number(unpaidCountResult.rows[0].count),
+
+        spendingByCategory: transactionsResult.rows.map((r) => ({
+          category: r.category,
+          total: Number(r.total),
+        })),
+
+        upcomingByCategory: scheduleResult.rows.map((r) => ({
+          category: r.category,
+          total: Number(r.total),
+        })),
+      })
+    } catch (error) {
+      console.error('Analytics error:', error)
+
+      res.status(500).json({
+        message: 'Failed to get analytics',
+      })
+    }
+  }
+)
+
 
 // ==========================================
 // GET USERS IN USER DATABASE ADMINUSER
