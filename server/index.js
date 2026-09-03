@@ -1126,7 +1126,6 @@ app.get(
     try {
       const firebaseUid = req.firebaseUid
 
-      // Verify the requester is an admin
       const roleCheck = await pool.query(
         `SELECT role FROM users WHERE firebase_uid = $1`,
         [firebaseUid]
@@ -1151,7 +1150,6 @@ app.get(
       })
     } catch (error) {
       console.error('User error:', error)
-
       res.status(500).json({
         message: 'Failed to get users',
       })
