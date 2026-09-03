@@ -8,7 +8,7 @@ export const Upperbar = () => {
       <div className="font-semibold text-gray-800 flex flex-row items-center theme-text">
         
         <img src="/suitcase.png" alt="Admin" className="w-10 h-10 ml-2" />
-        Admin
+        <span className='text-2xl font-mono'>Admin</span>
 
 
         <div className='fixed right-0 px-6'>
