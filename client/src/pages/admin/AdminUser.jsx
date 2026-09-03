@@ -104,45 +104,62 @@ export const AdminUser = () => {
         <h1 className="font-mono text-2xl">Manage user</h1>
       </div>
 
-      <div className="overflow-y-auto pb-10">
-        <table className="w-full border-collapse ">
+      <div className="overflow-y-auto pb-10 pt-10">
+        <table className="w-full border-collapse  ">
           <thead>
-            <tr className="text-left border theme-border-2 ">
-              <th className="py-2 px-4">User</th>
-              <th className="py-2 pr-4">Role</th>
-              <th className="py-2 pr-4">Status</th>
-              <th className="py-2 pr-4">Actions</th>
+            <tr className="text-center border theme-border-2 ">
+              <th className="text-center py-2 ">User</th>
+              <th className="text-center py-2">Role</th>
+              <th className="text-center py-2 ">Status</th>
+              <th className="text-center py-2 ">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {loadingUser ? (
-              <tr>
-                <td colSpan={4} className="py-4">Loading...</td>
-              </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="py-4">No users found</td>
-              </tr>
-            ) : (
-              users.map((details) => (
-                <tr key={details.id}>
-                  <td className="py-2 px-4">{details.name || details.email}</td>
-                  <td className="py-2 pr-4">{details.role}</td>
-                  <td className="py-2 pr-4">{details.status}</td>
-                  <td className="py-2 pr-4">
-                    <button
-                      disabled={busyId === details.id}
-                      onClick={() => handleToggleBan(details)}
-                      title={details.status === 'banned' ? 'Unban' : 'Ban'}
-                      className="p-2 border-2 border-black rounded-md disabled:opacity-40"
-                    >
-                      {details.status === 'banned' ? <CheckCircle2 size={16} /> : <Ban size={16} />}
-                    </button>
+         <tbody>
+              {loadingUser ? (
+                <tr>
+                  <td colSpan={4} className="py-4 text-center">
+                    Loading...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-4 text-center">
+                    No users found
+                  </td>
+                </tr>
+              ) : (
+                users.map((details) => (
+                  <tr key={details.id}>
+                    <td className="pt-10 pb-2 text-center">
+                      {details.name || details.email}
+                    </td>
+
+                    <td className="pt-10 pb-2 text-center">
+                      {details.role}
+                    </td>
+
+                    <td className="pt-10 pb-2 text-center">
+                      {details.status}
+                    </td>
+
+                    <td className="pt-10 pb-2 text-center">
+                      <button
+                        disabled={busyId === details.id}
+                        onClick={() => handleToggleBan(details)}
+                        title={details.status === 'banned' ? 'Unban' : 'Ban'}
+                        className="inline-flex p-2 border theme-border rounded-md disabled:opacity-40"
+                      >
+                        {details.status === 'banned' ? (
+                          <CheckCircle2 size={16} />
+                        ) : (
+                          <Ban size={16} />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
         </table>
       </div>
     </div>
