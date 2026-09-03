@@ -7,10 +7,19 @@ export const AdminUser = () => {
         <h1 className="font-mono text-2xl">Manage user</h1>
       </div>
 
-      <div className="pt-10 flex flex-col items-center md:items-start gap-4 px-4 sm:px-8 md:px-12 lg:px-20 items-center">
-        <div className=" w-48 flex flex-row p-2 gap-3">
+      <div className="overflow-y-auto pb-10">
+          <table className="w-full border-collapse ">
+              <thead>
+                <tr className="text-left border theme-border-2">
+                    <th className="py-2 pr-4">User</th>
+                    <th className="py-2 pr-4">Role</th>
+                    <th className="py-2 pr-4">Status</th>
+                    <th className="py-2 pr-4">Last active</th>
+                    <th className="py-2 pr-4">Actions</th>
+                </tr>
+              </thead>
+          </table>
         </div>
-      </div>
     </div>
   )
 }

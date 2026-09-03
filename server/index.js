@@ -825,6 +825,9 @@ app.put(
   }
 )
 
+
+
+
 // ==========================================
 // DELETE SCHEDULE
 // ==========================================
@@ -1106,6 +1109,51 @@ app.get(
 
       res.status(500).json({
         message: 'Failed to get analytics',
+      })
+    }
+  }
+)
+
+
+// ==========================================
+// GET USERS IN USER DATABASE ADMINUSER
+// ==========================================
+
+app.get(
+  '/api/users',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const firebaseUid = req.firebaseUid
+
+      // Verify the requester is an admin
+      const roleCheck = await pool.query(
+        `SELECT role FROM users WHERE firebase_uid = $1`,
+        [firebaseUid]
+      )
+
+      if (roleCheck.rows.length === 0 || roleCheck.rows[0].role !== 'admin') {
+        return res.status(403).json({
+          message: 'Admin access required',
+        })
+      }
+
+      const result = await pool.query(
+        `
+        SELECT id, firebase_uid, name, email, role, photo_url
+        FROM users
+        ORDER BY name ASC
+        `
+      )
+
+      res.status(200).json({
+        users: result.rows,
+      })
+    } catch (error) {
+      console.error('User error:', error)
+
+      res.status(500).json({
+        message: 'Failed to get users',
       })
     }
   }
