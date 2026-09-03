@@ -98,10 +98,11 @@ export const AdminAnalytics = () => {
   // Main Render
   // ------------------------------------------
   return (
-    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20">
+    <div className="w-full px-4 gap-10 pt-10 sm:px-8 md:px-12 lg:px-20 pb-30">
       <h1 className="font-mono text-lg sm:text-2xl theme-text mb-6">
         Admin Analytics
       </h1>
+
 
       {loadingAnalytics && (
         <p className="theme-text font-mono">Loading analytics...</p>
@@ -125,8 +126,8 @@ export const AdminAnalytics = () => {
             {/* Inline Summary Card: Transactions */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
-                <p className="theme-text font-mono text-sm opacity-70">Total Spent</p>
-                <p className="theme-text font-mono text-2xl font-bold">₱{analytics.totalSpent}</p>
+                <p className="theme-text font-mono text-sm opacity-70 text-center">Total transactions</p>
+                <p className="theme-text font-mono text-2xl font-bold text-center">₱{analytics.totalSpent}</p>
               </div>
             </div>
 
@@ -160,12 +161,8 @@ export const AdminAnalytics = () => {
             {/* Inline Summary Cards: Schedule */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
-                <p className="theme-text font-mono text-sm opacity-70">Upcoming Bills</p>
-                <p className="theme-text font-mono text-2xl font-bold">₱{analytics.totalUpcoming}</p>
-              </div>
-              <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
-                <p className="theme-text font-mono text-sm opacity-70">Unpaid Bills</p>
-                <p className="theme-text font-mono text-2xl font-bold">{analytics.unpaidCount}</p>
+                <p className="theme-text font-mono text-sm opacity-70 text-center">Upcoming Bills</p>
+                <p className="theme-text font-mono text-2xl font-bold text-center">₱{analytics.totalUpcoming}</p>
               </div>
             </div>
 
