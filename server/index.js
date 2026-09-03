@@ -1136,6 +1136,7 @@ app.get(
   '/api/users',
   authenticateFirebase,
   async (req, res) => {
+    res.set('Cache-Control', 'no-store')
     try {
       const firebaseUid = req.firebaseUid
 
