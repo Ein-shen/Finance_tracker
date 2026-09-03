@@ -109,6 +109,19 @@ const authenticateFirebase = async (req, res, next) => {
     req.firebaseUid = decodedToken.uid
     req.firebaseEmail = decodedToken.email
 
+    // ✅ NEW: block banned users at the middleware level,
+    // before any protected route logic runs
+    const statusCheck = await pool.query(
+      `SELECT status FROM users WHERE firebase_uid = $1`,
+      [req.firebaseUid]
+    )
+
+    if (statusCheck.rows.length > 0 && statusCheck.rows[0].status === 'banned') {
+      return res.status(403).json({
+        message: 'Your account has been banned',
+      })
+    }
+
     next()
   } catch (error) {
     console.error(
@@ -1139,7 +1152,7 @@ app.get(
 
       const result = await pool.query(
         `
-        SELECT id, firebase_uid, name, email, role, photo_url
+        SELECT id, firebase_uid, name, email, role, status, photo_url
         FROM users
         ORDER BY name ASC
         `

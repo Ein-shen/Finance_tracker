@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './firebase'
 
+// ==========================================
+// USER IMPORTS
+// ==========================================
+
 import { Home } from './pages/Home'
 import { Dashboard } from './pages/user/Dashboard'
 import { Login } from './pages/user/Login'
@@ -18,6 +22,9 @@ import { About } from './pages/user/About.jsx'
 import { Support } from './pages/user/Support.jsx'
 import { Help } from './pages/user/Help.jsx'
 
+// ==========================================
+// ADMIN IMPORTS
+// ==========================================
 import { Adminlogin } from './pages/admin/Adminlogin.jsx'
 import { AdminDashboard } from './pages/admin/AdminDashboard.jsx'
 import { AdminHome } from './pages/admin/AdminHome.jsx'
@@ -26,7 +33,15 @@ import { AdminSettings } from './pages/admin/AdminSettings.jsx'
 import { AdminAnalytics } from './pages/admin/AdminAnalytics.jsx'
 import { Manage } from './pages/admin/Manage.jsx'
 
+// ==========================================
+// COMPONENT IMPORTS
+// ==========================================
+
 import { BarChartComponent } from './components/BarChartComponent.jsx'
+
+// ==========================================
+// LOADING SCREEN
+// ==========================================
 
 function LoadingScreen() {
   return (
@@ -36,10 +51,18 @@ function LoadingScreen() {
   )
 }
 
+// ==========================================
+// APP
+// ==========================================
+
 function App() {
   const [session, setSession] = useState(null)
   const [role, setRole] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+
+  // ==========================================
+  // FIREBASE AUTH STATE
+  // ==========================================
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -54,6 +77,10 @@ function App() {
         setSession(user)
         const idToken = await user.getIdToken(true)
 
+        // ========================================
+        // GET ROLE FROM BACKEND
+        // ========================================
+
         const response = await fetch('http://localhost:5000/api/users/role', {
           method: 'GET',
           headers: {
@@ -61,8 +88,19 @@ function App() {
           },
         })
 
+        // ✅ NEW: handle banned users
+        if (response.status === 403) {
+          await auth.signOut()
+          setSession(null)
+          setRole(null)
+          alert('Your account has been banned.')
+          setAuthLoading(false)
+          return
+        }
+
         if (!response.ok) {
           setRole('user')
+          setAuthLoading(false)
           return
         }
 
@@ -85,10 +123,12 @@ function App() {
 
   return (
     <Routes>
+      {/* PUBLIC ROUTES */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
+      {/* USER DASHBOARD */}
       <Route path="/dashboard" element={<Dashboard />}>
         <Route index element={<Index />} />
         <Route path="transaction" element={<Transaction />} />
@@ -102,6 +142,7 @@ function App() {
         <Route path="barchart" element={<BarChartComponent />} />
       </Route>
 
+      {/* ADMIN LOGIN */}
       <Route
         path="/admin-login"
         element={
@@ -113,6 +154,7 @@ function App() {
         }
       />
 
+      {/* ADMIN DASHBOARD */}
       <Route
         path="/admin/admindashboard"
         element={
@@ -131,11 +173,13 @@ function App() {
         <Route path="manage" element={<Manage />} />
       </Route>
 
+      {/* ADMIN REDIRECT */}
       <Route
         path="/admin"
         element={<Navigate to="/admin/admindashboard" replace />}
       />
 
+      {/* FALLBACK ROUTE */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
