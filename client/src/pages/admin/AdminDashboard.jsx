@@ -10,7 +10,7 @@ export const AdminDashboard = () => {
       <Bottombar />
       
       {/* Container with clean top-padding and left-margin for fixed sidebar offset */}
-     <div className="pt-20  h-screen px-4 sm:px-8 md:px-12 lg:px-20 border border-2">
+     <div className="pt-20  h-screen px-4 sm:px-8 md:px-12 lg:px-20">
         <Outlet />
       </div>
     </div>
