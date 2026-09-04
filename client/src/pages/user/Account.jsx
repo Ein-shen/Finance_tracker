@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { Salary } from './Salary'
 import { auth } from '../../firebase'
 
 export const Account = () => {
@@ -146,6 +146,17 @@ export const Account = () => {
           {loadingProfile ? '...' : email}
         </h1>
       </div>
+      
+
+      <div className=' pt-15'/>
+
+
+        <div className='flex flex-row pt-10 items-center justify-center '>
+           <Salary />
+        </div>
+       
+      
+      
     </div>
   )
 }
