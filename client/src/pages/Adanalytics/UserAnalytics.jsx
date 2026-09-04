@@ -105,7 +105,7 @@ export const UserAnalytics = () => {
       ====================================== */}
 
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 pt-10">
         <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
           <p className="theme-text font-mono text-sm opacity-70 text-center">Total Users</p>
           <p className="theme-text font-mono text-2xl font-bold text-center">
