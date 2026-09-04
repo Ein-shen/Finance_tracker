@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { auth } from '../../firebase'
 
-export const AdminAnalytics = () => {
+export const AdminAnalytics = ({data}) => {
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
   const [analytics, setAnalytics] = useState(null)
@@ -113,7 +113,7 @@ export const AdminAnalytics = () => {
       )}
 
       {!loadingAnalytics && analytics && (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-10 pt-10">
 
           {/* ======================================
               TRANSACTIONS (ALL USERS)

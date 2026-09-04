@@ -2,6 +2,9 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { Upperbar } from './Upperbar'
 import { Bottombar } from './Bottombar'
+ 
+
+
 
 export const AdminDashboard = () => {
   return (
