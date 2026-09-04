@@ -327,34 +327,38 @@ app.post('/api/users/salary', async (req, res) => {
   }
 })
 
+
 // ==========================================
 // GET SALARY
 // ==========================================
-app.get('/api/users/salary', authenticateFirebase, async (req, res) => {
-  try{
-    const firebaseUid = res.firebaseUid 
+app.get('/api/users/salary', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization
+    const token = authHeader?.split('Bearer ')[1]
+
+    if (!token) {
+      return res.status(401).json({ message: 'Firebase token is required' })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+    const firebaseUid = decodedToken.uid
 
     const result = await pool.query(
-      `
-      SELECT salary FROM users WHERE firebase_uid = $1
-      `,
+      `SELECT salary FROM users WHERE firebase_uid = $1`,
       [firebaseUid]
     )
 
-    if (result.rows.length === 0 ) {
-      return res.status(200).json({ role: 'user'})
-    } 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' })
+    }
 
-    res.status(200).json({
-      role: result.rows[0].role || 'user',
-
+    res.json({
+      success: true,
+      salary: result.rows[0].salary
     })
-
   } catch (error) {
-    console.error('Get role error:', error)
-    res.status(500).json({
-      message: 'Failed to get salary',
-    })
+    console.error('Get salary error:', error)
+    res.status(500).json({ message: 'Failed to get salary' })
   }
 })
 

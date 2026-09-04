@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { auth } from '../../firebase'
 
@@ -7,6 +7,83 @@ export const Salary = () => {
   const [showAdd, setShowAdd] = useState(false)
   const [loading, setLoading] = useState(false)
   const [salary, setSalary] = useState('')
+  const [authLoading, setAuthLoading] = useState(true)
+  const [loadingSalary, setLoadingSalary] = useState(true)
+  const [getSalary, setGetSalary] = useState(null)
+
+
+  // ==========================================
+  // WAIT FOR FIREBASE AUTH
+  // ==========================================
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log('Firebase user:', user)
+      setAuthLoading(false)
+    })
+
+    return unsubscribe
+  }, [])
+
+  // ==========================================
+  // GET SALARY
+  // ==========================================
+  const fetchSalary = async () => {
+    try {
+      setLoadingSalary(true)
+
+      const user = auth.currentUser
+
+      console.log('Current Firebase user: ', user)
+
+      if (!user) {
+        console.log('No Firebase user Logged in')
+        setGetSalary(null)
+        return
+      }
+
+      const token = await user.getIdToken()
+
+      const response = await fetch('http://localhost:5000/api/users/salary', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const contentType = response.headers.get('content-type')
+
+      let data = {}
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        console.error('Server returned non-JSON:', text)
+        throw new Error(`Server returned ${response.status} instead of JSON`)
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to get Salary')
+      }
+
+      setGetSalary(data.salary ?? null)
+    } catch (error) {
+      console.error('Get salary error:', error)
+      alert(error.message || 'Failed to get salary')
+    } finally {
+      setLoadingSalary(false)
+    }
+  }
+
+  // ==========================================
+  // LOAD SALARY (only after auth resolves)
+  // ==========================================
+  useEffect(() => {
+    if (!authLoading) {
+      fetchSalary()
+    }
+  }, [authLoading])
+
 
   // ==========================================
   // ADD SALARY
@@ -55,6 +132,7 @@ export const Salary = () => {
 
       setSalary('')
       setShowAdd(false)
+      fetchSalary() // refresh the displayed salary after saving
 
     } catch (error) {
       console.error('Salary Error:', error)
@@ -68,18 +146,32 @@ export const Salary = () => {
     <div className='w-full flex justify-center'>
       <div className='flex flex-row gap-20'>
 
-        <div className='space-y-4'>
-          <h1 className='font-mono text-lg'>
-            Monthly Salary
-          </h1>
+        {/* SALARY DISPLAY */}
+        <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+          {loadingSalary && (
+            <p className="theme-text font-mono">Loading salary...</p>
+          )}
 
-          <button
-            type='button'
-            onClick={() => setShowAdd(true)}
-            className=' theme-bg theme-hover border-2 w-full theme-border border-2 rounded-md flex flex-col justify-center items-center h-20'
-          >
-            <Plus size={25} />
-          </button>
+          {!loadingSalary && (getSalary === null || getSalary === undefined) && (
+            <>
+              <p className="theme-text font-mono">No Salary yet.</p>
+              <button
+                type='button'
+                onClick={() => setShowAdd(true)}
+                className='theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20'
+              >
+                <Plus size={25} />
+              </button>
+            </>
+          )}
+          {!loadingSalary && getSalary !== null && getSalary !== undefined && (
+            <div className="theme-card theme-border border-2 rounded-md p-4">
+              <p className="theme-text font-mono text-sm opacity-70 text-center">Monthly Salary</p>
+              <p className="theme-text font-mono text-2xl font-bold text-center">
+                ₱{getSalary}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ADD SALARY POPUP */}
@@ -122,7 +214,7 @@ export const Salary = () => {
                   type="button"
                   disabled={loading}
                   onClick={handleAddSalary}
-                 className="theme-bg theme-hover border-2 w-full rounded-md py-2 font-mono disabled:opacity-50"
+                  className="theme-bg theme-hover theme-border border-2 w-full rounded-md py-2 font-mono disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save'}
                 </button>
