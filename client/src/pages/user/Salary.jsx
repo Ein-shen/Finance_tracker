@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { auth } from '../../firebase'
+import { SummaryCards } from '../../data_analytics/SummaryCards'
+import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
 
 export const Salary = () => {
 
@@ -10,6 +12,8 @@ export const Salary = () => {
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingSalary, setLoadingSalary] = useState(true)
   const [getSalary, setGetSalary] = useState(null)
+  const [analytics, setAnalytics] = useState(null)
+  const [loadingAnalytics, setLoadingAnalytics] = useState(true)
 
 
   // ==========================================
@@ -76,11 +80,37 @@ export const Salary = () => {
   }
 
   // ==========================================
-  // LOAD SALARY (only after auth resolves)
+  // GET ANALYTICS
+  // ==========================================
+  const getAnalytics = async () => {
+    try {
+      setLoadingAnalytics(true)
+
+      const user = auth.currentUser
+
+      if (!user) {
+        setAnalytics(null)
+        return
+      }
+
+      const data = await fetchAnalytics()
+
+      setAnalytics(data)
+    } catch (error) {
+      console.error('Get analytics error:', error)
+      alert(error.message || 'Failed to get analytics')
+    } finally {
+      setLoadingAnalytics(false)
+    }
+  }
+
+  // ==========================================
+  // LOAD SALARY + ANALYTICS (only after auth resolves)
   // ==========================================
   useEffect(() => {
     if (!authLoading) {
       fetchSalary()
+      getAnalytics()
     }
   }, [authLoading])
 
@@ -145,9 +175,14 @@ export const Salary = () => {
   return (
     <div className='w-full flex justify-center'>
       <div className='flex flex-row gap-20'>
+        
 
         {/* SALARY DISPLAY */}
-        <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+        <div className="space-y-4 px-4 sm:px-8 md:px-12 lg:px-20">
+
+          <h1 className='font-mono text-lg'>
+            Monthly Spending
+          </h1>
           {loadingSalary && (
             <p className="theme-text font-mono">Loading salary...</p>
           )}
@@ -223,22 +258,60 @@ export const Salary = () => {
           </div>
         )}
 
-        <div>
+        <div className='space-y-4'>
           <h1 className='font-mono text-lg'>
             Monthly Transaction
           </h1>
+
+          {loadingAnalytics && (
+            <p className="theme-text font-mono">Loading...</p>
+          )}
+
+          {!loadingAnalytics && analytics && (
+            <SummaryCards
+              cards={[
+                { label: 'Upcoming bills', value: `₱${analytics.totalUpcoming}` },
+                
+              ]}
+            />
+          )}
         </div>
 
-        <div>
+        <div className='space-y-4'>
           <h1 className='font-mono text-lg'>
             Monthly Schedule
           </h1>
+
+
+          {loadingAnalytics && (
+            <p className="theme-text font-mono">Loading...</p>
+          )}
+
+          {!loadingAnalytics && analytics && (
+            <SummaryCards
+                cards={[
+                  { label: 'Scheduled bills', value: `₱${analytics.totalSpent}` },
+                 ]}
+            />
+          )}
         </div>
 
-        <div>
+        <div className='space-y-4'>
           <h1 className='font-mono text-lg'>
             Monthly Spending
           </h1>
+
+          {loadingAnalytics && (
+            <p className="theme-text font-mono">Loading...</p>
+          )}
+
+          {!loadingAnalytics && analytics && (
+            <SummaryCards
+                cards={[
+                  { label: 'Total bills', value: `₱${analytics.totalUpcoming + analytics.totalSpent}` }
+                 ]}
+            />
+          )}
         </div>
 
       </div>
