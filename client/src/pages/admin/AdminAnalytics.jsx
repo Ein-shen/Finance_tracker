@@ -225,7 +225,7 @@ export const AdminAnalytics = () => {
                     <XAxis dataKey="role" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="total" fill="#e0ab2e" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="total" fill="#72f7cd" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
