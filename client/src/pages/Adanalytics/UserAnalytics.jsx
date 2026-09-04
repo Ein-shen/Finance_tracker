@@ -86,8 +86,9 @@ export const UserAnalytics = () => {
     )
   }
 
-
-
+  // ======================================
+  // USERS (ALL)
+  // ======================================
   return (
     <div>
       <h2 className="font-mono text-xl theme-text mb-4">
@@ -98,39 +99,41 @@ export const UserAnalytics = () => {
         <p className="theme-text font-mono">Loading Users...</p>
       )}
 
+      {!loadingUsers && !users && (
+        <p className="theme-text font-mono">No user data yet.</p>
+      )}
 
+      {!loadingUsers && users && (
+        <div className="flex flex-col gap-10 pt-10">
 
-      {/* ======================================
-          ALL USERS
-      ====================================== */}
-
-
-      <div className="flex flex-col sm:flex-row gap-4 pt-10">
-        <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
-          <p className="theme-text font-mono text-sm opacity-70 text-center">Total Users</p>
-          <p className="theme-text font-mono text-2xl font-bold text-center">
-            {users?.totalUsers ?? 0}
-          </p>
-        </div>
-      </div>
-
-      {/* Inline Chart: Users by Role */}
-      <div className="mt-6">
-        {!users?.byRole || users.byRole.length === 0 ? (
-          <div className="theme-text font-mono">No role data yet.</div>
-        ) : (
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={users.byRole}>
-                <XAxis dataKey="role" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="total" fill="#72f7cd" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
+              <p className="theme-text font-mono text-sm opacity-70 text-center">Total Users</p>
+              <p className="theme-text font-mono text-2xl font-bold text-center">
+                {users?.totalUsers ?? 0}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="mt-6">
+            {!users?.byRole || users.byRole.length === 0 ? (
+              <div className="theme-text font-mono">No role data yet.</div>
+            ) : (
+              <div className="w-full h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={users.byRole}>
+                    <XAxis dataKey="role" interval={0} />
+                    <YAxis domain={[0, 'dataMax']} allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="total" fill="#72f7cd" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+
+        </div>
+      )}
     </div>
   )
 }
