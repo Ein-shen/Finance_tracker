@@ -275,6 +275,58 @@ app.post(
   }
 )
 
+/// ==========================================
+// SAVE SALARY
+// ==========================================
+
+app.post('/api/users/salary', async (req, res) => {
+  try {
+    const { token, salary } = req.body
+
+    if (!token) {
+      return res.status(401).json({
+        message: 'Firebase token is required'
+      })
+    }
+
+    if (salary === undefined || isNaN(salary)) {
+      return res.status(400).json({
+        message: 'Valid salary is required'
+      })
+    }
+
+    const decodedToken = await firebaseAuth.verifyIdToken(token)
+    const firebaseUid = decodedToken.uid
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET salary = $1
+      WHERE firebase_uid = $2
+      RETURNING salary
+      `,
+      [salary, firebaseUid]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: 'User not found'
+      })
+    }
+
+    res.status(200).json({
+      message: 'Salary saved',
+      user: result.rows[0],
+    })
+  } catch (error) {
+    console.error('Salary save error:', error)
+
+    res.status(500).json({
+      message: 'Failed to save salary',
+    })
+  }
+})
+
 
 // ==========================================
 // GET USER ROLE
