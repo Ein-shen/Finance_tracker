@@ -2,24 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { auth } from '../../firebase'
 import { UserAnalytics } from '../Adanalytics/UserAnalytics'
-
+import { ScheduleAnalytics } from '../Adanalytics/ScheduleAnalytics'
 export const AdminAnalytics = () => {
-  
-  //User
-  
 
   //Analytics
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
   const [analytics, setAnalytics] = useState(null)
-  
+
   //Auth
   const [authLoading, setAuthLoading] = useState(true)
 
-
-
-  
-
-  
   // ------------------------------------------
   // Direct API Fetcher Method
   // ------------------------------------------
@@ -116,31 +108,25 @@ export const AdminAnalytics = () => {
         Admin Analytics
       </h1>
 
-
       {loadingAnalytics && (
         <p className="theme-text font-mono">Loading analytics...</p>
       )}
-
-      
 
       {!loadingAnalytics && !analytics && (
         <p className="theme-text font-mono">No analytics data yet.</p>
       )}
 
-      
       {!loadingAnalytics && analytics && (
         <div className="flex flex-col gap-10 pt-10">
-      
-      
-      
-          
-      <UserAnalytics/>
+
+          <UserAnalytics />
+
           {/* ======================================
               TRANSACTIONS (ALL USERS)
           ====================================== */}
           <div>
             <h2 className="font-mono text-xl theme-text mb-4">
-              All Transactions 
+              All Transactions
             </h2>
 
             {/* Inline Summary Card: Transactions */}
@@ -170,43 +156,10 @@ export const AdminAnalytics = () => {
             </div>
           </div>
 
-          {/* ======================================
-              SCHEDULE (ALL USERS)
-          ====================================== */}
-          <div>
-            <h2 className="font-mono text-xl theme-text mb-4">
-              All Schedule 
-            </h2>
-
-            {/* Inline Summary Cards: Schedule */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
-                <p className="theme-text font-mono text-sm opacity-70 text-center">Upcoming Bills</p>
-                <p className="theme-text font-mono text-2xl font-bold text-center">₱{analytics.totalUpcoming}</p>
-              </div>
-            </div>
-
-            {/* Inline Chart: Schedule */}
-            <div className="mt-6">
-              {!analytics.upcomingByCategory || analytics.upcomingByCategory.length === 0 ? (
-                <div className="theme-text font-mono">No category data yet.</div>
-              ) : (
-                <div className="w-full h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analytics.upcomingByCategory}>
-                      <XAxis dataKey="category" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="total" fill="#b666f7" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </div>
-          </div>
-
         </div>
       )}
+
+      <ScheduleAnalytics />
     </div>
   )
 }
