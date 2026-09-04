@@ -13,8 +13,8 @@ import { useNavigate } from 'react-router-dom'
 
 const navItems = [
   { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
-  { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
+  { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
   { label: 'Account', icon: User, path: '/dashboard/account' },
 ]
 
