@@ -115,12 +115,48 @@ export const AdminAnalytics = ({data}) => {
       {!loadingAnalytics && analytics && (
         <div className="flex flex-col gap-10 pt-10">
 
+
+          {/* ======================================
+              ALL USERS
+          ====================================== */}
+          <div>
+            <h2 className="font-mono text-xl theme-text mb-4">
+              All Users
+            </h2>
+
+            {/* Inline Summary Card: Transactions */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="theme-card theme-border border-2 rounded-md p-4 flex-1">
+                <p className="theme-text font-mono text-sm opacity-70 text-center">Total Users</p>
+                <p className="theme-text font-mono text-2xl font-bold text-center">₱{analytics.totalSpent}</p>
+              </div>
+            </div>
+
+            {/* Inline Chart: Transactions */}
+            <div className="mt-6">
+              {!analytics.spendingByCategory || analytics.spendingByCategory.length === 0 ? (
+                <div className="theme-text font-mono">No category data yet.</div>
+              ) : (
+                <div className="w-full h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analytics.spendingByCategory}>
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="total" fill="#e0ab2e" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* ======================================
               TRANSACTIONS (ALL USERS)
           ====================================== */}
           <div>
             <h2 className="font-mono text-xl theme-text mb-4">
-              Transactions (All Users)
+              All Transactions 
             </h2>
 
             {/* Inline Summary Card: Transactions */}
@@ -155,7 +191,7 @@ export const AdminAnalytics = ({data}) => {
           ====================================== */}
           <div>
             <h2 className="font-mono text-xl theme-text mb-4">
-              Schedule (All Users)
+              All Schedule 
             </h2>
 
             {/* Inline Summary Cards: Schedule */}
@@ -177,7 +213,7 @@ export const AdminAnalytics = ({data}) => {
                       <XAxis dataKey="category" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="total" fill="#2f6fed" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="total" fill="#b666f7" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
