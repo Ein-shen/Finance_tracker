@@ -327,6 +327,36 @@ app.post('/api/users/salary', async (req, res) => {
   }
 })
 
+// ==========================================
+// GET SALARY
+// ==========================================
+app.get('/api/users/salary', authenticateFirebase, async (req, res) => {
+  try{
+    const firebaseUid = res.firebaseUid 
+
+    const result = await pool.query(
+      `
+      SELECT salary FROM users WHERE firebase_uid = $1
+      `,
+      [firebaseUid]
+    )
+
+    if (result.rows.length === 0 ) {
+      return res.status(200).json({ role: 'user'})
+    } 
+
+    res.status(200).json({
+      role: result.rows[0].role || 'user',
+
+    })
+
+  } catch (error) {
+    console.error('Get role error:', error)
+    res.status(500).json({
+      message: 'Failed to get salary',
+    })
+  }
+})
 
 // ==========================================
 // GET USER ROLE
