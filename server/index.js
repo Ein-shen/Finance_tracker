@@ -1242,6 +1242,34 @@ app.get(
   }
 )
 
+// ==========================================
+// GET ALL USER ACCOUNTS (ADMIN)
+// ==========================================
+
+app.get('/api/admin/users/analytics', authenticateFirebase, async (req, res) => {
+  try {
+    const totalResult = await pool.query(
+      `SELECT COUNT(id) AS total_users FROM users`
+    );
+
+    const byRoleResult = await pool.query(
+      `SELECT role, COUNT(id)::int AS total FROM users GROUP BY role`
+    );
+
+    res.json({
+      success: true,
+      totalUsers: totalResult.rows[0].total_users,
+      byRole: byRoleResult.rows
+    });
+  } catch (err) {
+    console.error('Analytics query failed:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch analytics' });
+  }
+});
+
+
+
+
 
 // ==========================================
 // BAN / UNBAN USER (toggle status)
