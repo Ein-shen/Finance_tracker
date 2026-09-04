@@ -1337,6 +1337,32 @@ app.patch(
   }
 )
 // ==========================================
+// GET USER STATUS BREAKDOWN (ACTIVE / BANNED)
+// ==========================================
+app.get('/api/admin/users/banned/count', authenticateFirebase, async (req, res) => {
+  try {
+    const statusResult = await pool.query(
+      `SELECT status, COUNT(id)::int AS total
+       FROM users
+       GROUP BY status`
+    );
+
+    const bannedRow = statusResult.rows.find(r => r.status === 'banned');
+    const activeRow = statusResult.rows.find(r => r.status === 'active');
+
+    res.json({
+      success: true,
+      bannedCount: bannedRow ? bannedRow.total : 0,
+      activeCount: activeRow ? activeRow.total : 0,
+      byStatus: statusResult.rows
+    });
+  } catch (err) {
+    console.error('Fetch status breakdown failed:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch status breakdown' });
+  }
+});
+
+// ==========================================
 // 404 HANDLER
 // ==========================================
 
