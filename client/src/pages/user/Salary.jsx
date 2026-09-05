@@ -180,7 +180,7 @@ export const Salary = () => {
         <div className="space-y-4">
 
           <h1 className='font-mono text-lg'>
-            Monthly Spending
+            Monthly Salary
           </h1>
           {loadingSalary && (
             <p className="theme-text font-mono">Loading salary...</p>

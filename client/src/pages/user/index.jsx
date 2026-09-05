@@ -1,14 +1,13 @@
-import React from 'react'
+import { Salary } from "./Salary"
 
 export const Index = () => {
   return (
     <div className="text-white">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
-      <p className="mt-2 text-gray-400">
-        Here's your financial overview.
-      </p>
+      <h1 className="text-2xl font-semibold">Here's your financial overview.</h1>
 
-      <div className="grid grid-cols-4 gap-4 mt-6">
+      <div className="flex flex-col gap-4 mt-6">
+
+      <Salary />
 
        
        
