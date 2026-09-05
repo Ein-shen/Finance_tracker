@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Toogle, useTheme } from "./Toogle"
 import { Sun, Moon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+
 export const Settings = () => {
 
   const navigate = useNavigate()
@@ -25,10 +26,10 @@ export const Settings = () => {
         </h1>
       </div>
 
-      <div className="pt-10 flex flex-col items-center md:items-start gap-4 px-4 sm:px-8 md:px-12 lg:px-20">
+      <div className="gap-5 w-[70%] mx-auto pt-10 flex flex-col justify-center items-center md:items-start gap-4 px-4 sm:px-8 md:px-12 lg:px-20">
 
-        <div className="border-2 rounded-md w-48 flex flex-row p-2 gap-3">
-          <span className="flex gap-2 font-mono justify-center md:justify-start">
+        <div className="items-center border-2 w-full rounded-md flex flex-row justify-center p-2 gap-3">
+          <span className="flex gap-2 font-mono items-center">
             {isLight ? (
               <>
                 <Sun className="w-5 h-5" />
@@ -44,10 +45,8 @@ export const Settings = () => {
 
           <Toogle />
         </div>
-
-
           <button 
-            className="font-mono text-md text-center border-2 rounded-md p-2 w-48"
+            className="w-full font-mono text-md text-center border-2 rounded-md p-2 w-48"
             onClick={() => {
               setShowOpen(false)
               handleNavigate('/dashboard/about')
@@ -57,7 +56,7 @@ export const Settings = () => {
         
 
         <button
-         className="font-mono text-md text-center border-2 rounded-md p-2 w-48"
+         className="w-full font-mono text-md text-center border-2 rounded-md p-2 w-48"
             onClick={() => {
               setShowOpen(false)
               handleNavigate('/dashboard/support')
@@ -70,7 +69,7 @@ export const Settings = () => {
         
 
         <button
-          className="font-mono text-md text-center border-2 rounded-md p-2 w-48"
+          className="w-full  font-mono text-md text-center border-2 rounded-md p-2 w-48"
               onClick={() => {
                 setShowOpen(false)
                 handleNavigate('/dashboard/help')
@@ -79,6 +78,9 @@ export const Settings = () => {
         >
           Ask for help
         </button>
+        
+        
+        
 
       </div>
     </div>

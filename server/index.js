@@ -14,7 +14,14 @@ const app = express()
 // MIDDLEWARE
 // ==========================================
 
-app.use(cors())
+// ⚠️ CORS is now locked to your real frontend URL instead of allowing
+// any origin. Set CLIENT_URL as an env var on your host once you know
+// your deployed frontend's URL (e.g. https://finance-tracker.netlify.app).
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+}))
+
 app.use(express.json())
 
 // ==========================================
@@ -28,6 +35,15 @@ const __dirname = path.dirname(__filename)
 // MULTER CONFIG FOR PHOTO UPLOADS
 // ==========================================
 
+// ⚠️ DEPLOYMENT WARNING: most hosts (Render, Railway, Fly.io, Heroku)
+// use an EPHEMERAL filesystem — anything written here to /uploads
+// will be wiped on every redeploy or restart, and won't be shared
+// across multiple server instances. This works fine locally and will
+// still technically work in production, but uploaded photos will
+// eventually disappear. The proper fix is to swap this for a cloud
+// storage upload (Firebase Storage, S3, Cloudinary) and store the
+// returned URL in `photo_url` instead of a local path. Happy to do
+// that rewrite next if you share firebaseAdmin.js.
 const fileStorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'uploads'))
@@ -1482,8 +1498,10 @@ app.use(
 // START SERVER
 // ==========================================
 
-app.listen(5000, () => {
-  console.log(
-    'Server running on http://localhost:5000'
-  )
+// ⚠️ Hosts assign a port dynamically via process.env.PORT — binding
+// hardcoded to 5000 will fail on Render/Railway/Fly.io/Heroku etc.
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
