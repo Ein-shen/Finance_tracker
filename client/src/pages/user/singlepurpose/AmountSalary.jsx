@@ -93,42 +93,37 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   // RENDER
   // ==========================================
   if (loadingSalary) {
-    return <p className="theme-text font-mono">Loading salary...</p>
+    return <p className="theme-text font-mono text-sm sm:text-base">Loading salary...</p>
   }
 
   if (getSalary === null || getSalary === undefined) {
     return (
-      <>
-      
-        <p className="theme-text font-mono">No Salary yet.</p>
+      <div className='space-y-3 sm:space-y-4 w-full'>
+        <p className="theme-text font-mono text-sm sm:text-base">No Salary yet.</p>
         <button
           type='button'
           onClick={onAddClick}
-          className='theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20'
+          className='theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-16 sm:h-20'
         >
-          <Plus size={25} />
+          <Plus size={20} className='sm:hidden' />
+          <Plus size={25} className='hidden sm:block' />
         </button>
-      </>
+      </div>
     )
   }
 
   return (
+    <div className='space-y-2 sm:space-y-4 w-full'>
+      <h1 className='text-base sm:text-lg'>
+        Monthly salary
+      </h1>
 
-    <div className='space-y-4 w-full'>
-        <h1 className='text-lg'>
-            Monthly salary
-        </h1>
-   
-    
-    <div className="theme-card theme-border border-2 rounded-md p-4">
-
-        
-      <p className="theme-text font-mono text-sm opacity-70 text-center">Monthly Salary</p>
-      <p className="theme-text font-mono text-2xl font-bold text-center">
-        ₱{getSalary}
-      </p>
-
-       </div>
+      <div className="theme-card theme-border border-2 rounded-md p-3 sm:p-4">
+        <p className="theme-text font-mono text-xs sm:text-sm opacity-70 text-center">Monthly Salary</p>
+        <p className="theme-text font-mono text-xl sm:text-2xl font-bold text-center break-words">
+          ₱{getSalary}
+        </p>
+      </div>
     </div>
   )
 }

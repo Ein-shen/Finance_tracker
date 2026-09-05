@@ -10,7 +10,6 @@ import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 //                useful right after salary or a bill is added/updated elsewhere
 //=============================================================================
 export const MInusSalary = ({ refreshKey }) => {
-
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingSalary, setLoadingSalary] = useState(true)
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
@@ -25,7 +24,6 @@ export const MInusSalary = ({ refreshKey }) => {
       console.log('Firebase user:', user)
       setAuthLoading(false)
     })
-
     return unsubscribe
   }, [])
 
@@ -35,28 +33,21 @@ export const MInusSalary = ({ refreshKey }) => {
   const fetchSalary = async () => {
     try {
       setLoadingSalary(true)
-
       const user = auth.currentUser
-
       if (!user) {
         console.log('No Firebase user Logged in')
         setGetSalary(null)
         return
       }
-
       const token = await user.getIdToken()
-
       const response = await fetch('http://localhost:5000/api/users/salary', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-
       const contentType = response.headers.get('content-type')
-
       let data = {}
-
       if (contentType && contentType.includes('application/json')) {
         data = await response.json()
       } else {
@@ -64,11 +55,9 @@ export const MInusSalary = ({ refreshKey }) => {
         console.error('Server returned non-JSON:', text)
         throw new Error(`Server returned ${response.status} instead of JSON`)
       }
-
       if (!response.ok) {
         throw new Error(data.message || 'Failed to get Salary')
       }
-
       setGetSalary(data.salary ?? null)
     } catch (error) {
       console.error('Get salary error:', error)
@@ -84,16 +73,12 @@ export const MInusSalary = ({ refreshKey }) => {
   const getAnalytics = async () => {
     try {
       setLoadingAnalytics(true)
-
       const user = auth.currentUser
-
       if (!user) {
         setAnalytics(null)
         return
       }
-
       const data = await fetchAnalytics()
-
       setAnalytics(data)
     } catch (error) {
       console.error('Get analytics error:', error)
@@ -123,23 +108,23 @@ export const MInusSalary = ({ refreshKey }) => {
   const remaining = hasSalary ? getSalary - totalExpenses : null
 
   return (
-    <div className='space-y-4 w-full'>
-      <h1 className='font-mono text-lg'>
+    <div className='space-y-2 sm:space-y-4 w-full'>
+      <h1 className='font-mono text-base sm:text-lg'>
         Remaining Salary
       </h1>
 
       {isLoading && (
-        <p className="theme-text font-mono">Loading...</p>
+        <p className="theme-text font-mono text-sm sm:text-base">Loading...</p>
       )}
 
       {!isLoading && !hasSalary && (
-        <p className="theme-text font-mono">No salary set yet.</p>
+        <p className="theme-text font-mono text-sm sm:text-base">No salary set yet.</p>
       )}
 
       {!isLoading && hasSalary && analytics && (
-        <div className="theme-card theme-border border-2 rounded-md p-4">
-          <p className="theme-text font-mono text-sm opacity-70 text-center">Salary minus expenses</p>
-          <p className="theme-text font-mono text-2xl font-bold text-center">
+        <div className="theme-card theme-border border-2 rounded-md p-3 sm:p-4">
+          <p className="theme-text font-mono text-xs sm:text-sm opacity-70 text-center">Salary minus expenses</p>
+          <p className="theme-text font-mono text-xl sm:text-2xl font-bold text-center break-words">
             ₱{remaining}
           </p>
         </div>

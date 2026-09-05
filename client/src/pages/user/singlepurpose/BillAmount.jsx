@@ -66,29 +66,22 @@ export const BillAmount = ({ refreshKey }) => {
   // RENDER
   // ==========================================
   return (
-    <>
-      
-        
+    <div className='space-y-2 sm:space-y-4 w-full'>
+      <h1 className='font-mono text-base sm:text-lg'>
+        Monthly Expenses
+      </h1>
 
-        
+      {loadingAnalytics && (
+        <p className="theme-text font-mono text-sm sm:text-base">Loading...</p>
+      )}
 
-      <div className='space-y-4 w-full'>
-        <h1 className='font-mono text-lg'>
-          Monthly Expenses 
-        </h1>
-
-        {loadingAnalytics && (
-          <p className="theme-text font-mono">Loading...</p>
-        )}
-
-        {!loadingAnalytics && analytics && (
-          <SummaryCards
-            cards={[
-              { label: 'Total expenses', value: `₱${analytics.totalSpent + analytics.totalUpcoming}` },
-            ]}
-          />
-        )}
-      </div>
-    </>
+      {!loadingAnalytics && analytics && (
+        <SummaryCards
+          cards={[
+            { label: 'Total expenses', value: `₱${analytics.totalSpent + analytics.totalUpcoming}` },
+          ]}
+        />
+      )}
+    </div>
   )
 }
