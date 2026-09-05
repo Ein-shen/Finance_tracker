@@ -67,9 +67,14 @@ export const BillAmount = ({ refreshKey }) => {
   // ==========================================
   return (
     <>
-      <div className='space-y-4'>
+      
+        
+
+        
+
+      <div className='space-y-4 w-full'>
         <h1 className='font-mono text-lg'>
-          Monthly Transaction
+          Monthly Expenses 
         </h1>
 
         {loadingAnalytics && (
@@ -79,25 +84,7 @@ export const BillAmount = ({ refreshKey }) => {
         {!loadingAnalytics && analytics && (
           <SummaryCards
             cards={[
-              { label: 'Upcoming bills', value: `₱${analytics.totalUpcoming}` },
-            ]}
-          />
-        )}
-      </div>
-
-      <div className='space-y-4'>
-        <h1 className='font-mono text-lg'>
-          Monthly Schedule
-        </h1>
-
-        {loadingAnalytics && (
-          <p className="theme-text font-mono">Loading...</p>
-        )}
-
-        {!loadingAnalytics && analytics && (
-          <SummaryCards
-            cards={[
-              { label: 'Scheduled bills', value: `₱${analytics.totalSpent}` },
+              { label: 'Total expenses', value: `₱${analytics.totalSpent + analytics.totalUpcoming}` },
             ]}
           />
         )}

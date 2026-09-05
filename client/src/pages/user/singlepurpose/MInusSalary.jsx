@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react'
-import { Plus } from 'lucide-react'
 import { auth } from '../../../firebase'
+import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 
 //=============================================================================
-// PURPOSE OF THIS FILE: FETCH THE SALARY AMOUNT TO IMPORT INTO OTHER FILES FREELY
+// PURPOSE OF THIS FILE: SHOW REMAINING BALANCE = SALARY - (SCHEDULE + TRANSACTIONS)
 //
 // Props:
-//   onAddClick  - called when the user clicks "Add" while there's no salary yet
-//   refreshKey  - change this value (e.g. bump a counter) to force a refetch,
-//                 useful right after a parent successfully saves a new salary
+//   refreshKey - change this value (e.g. bump a counter) to force a refetch,
+//                useful right after salary or a bill is added/updated elsewhere
 //=============================================================================
-export const AmountSalary = ({ onAddClick, refreshKey }) => {
+export const MInusSalary = ({ refreshKey }) => {
 
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingSalary, setLoadingSalary] = useState(true)
+  const [loadingAnalytics, setLoadingAnalytics] = useState(true)
   const [getSalary, setGetSalary] = useState(null)
+  const [analytics, setAnalytics] = useState(null)
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -36,8 +37,6 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
       setLoadingSalary(true)
 
       const user = auth.currentUser
-
-      console.log('Current Firebase user: ', user)
 
       if (!user) {
         console.log('No Firebase user Logged in')
@@ -80,11 +79,37 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   }
 
   // ==========================================
-  // LOAD SALARY (after auth resolves, and whenever refreshKey changes)
+  // GET ANALYTICS
+  // ==========================================
+  const getAnalytics = async () => {
+    try {
+      setLoadingAnalytics(true)
+
+      const user = auth.currentUser
+
+      if (!user) {
+        setAnalytics(null)
+        return
+      }
+
+      const data = await fetchAnalytics()
+
+      setAnalytics(data)
+    } catch (error) {
+      console.error('Get analytics error:', error)
+      alert(error.message || 'Failed to get analytics')
+    } finally {
+      setLoadingAnalytics(false)
+    }
+  }
+
+  // ==========================================
+  // LOAD SALARY + ANALYTICS (after auth resolves, and whenever refreshKey changes)
   // ==========================================
   useEffect(() => {
     if (!authLoading) {
       fetchSalary()
+      getAnalytics()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, refreshKey])
@@ -92,43 +117,33 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   // ==========================================
   // RENDER
   // ==========================================
-  if (loadingSalary) {
-    return <p className="theme-text font-mono">Loading salary...</p>
-  }
-
-  if (getSalary === null || getSalary === undefined) {
-    return (
-      <>
-      
-        <p className="theme-text font-mono">No Salary yet.</p>
-        <button
-          type='button'
-          onClick={onAddClick}
-          className='theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20'
-        >
-          <Plus size={25} />
-        </button>
-      </>
-    )
-  }
+  const isLoading = loadingSalary || loadingAnalytics
+  const hasSalary = getSalary !== null && getSalary !== undefined
+  const totalExpenses = analytics ? analytics.totalSpent + analytics.totalUpcoming : 0
+  const remaining = hasSalary ? getSalary - totalExpenses : null
 
   return (
-
     <div className='space-y-4 w-full'>
-        <h1 className='text-lg'>
-            Monthly salary
-        </h1>
-   
-    
-    <div className="theme-card theme-border border-2 rounded-md p-4">
+      <h1 className='font-mono text-lg'>
+        Remaining Salary
+      </h1>
 
-        
-      <p className="theme-text font-mono text-sm opacity-70 text-center">Monthly Salary</p>
-      <p className="theme-text font-mono text-2xl font-bold text-center">
-        ₱{getSalary}
-      </p>
+      {isLoading && (
+        <p className="theme-text font-mono">Loading...</p>
+      )}
 
-       </div>
+      {!isLoading && !hasSalary && (
+        <p className="theme-text font-mono">No salary set yet.</p>
+      )}
+
+      {!isLoading && hasSalary && analytics && (
+        <div className="theme-card theme-border border-2 rounded-md p-4">
+          <p className="theme-text font-mono text-sm opacity-70 text-center">Salary minus expenses</p>
+          <p className="theme-text font-mono text-2xl font-bold text-center">
+            ₱{remaining}
+          </p>
+        </div>
+      )}
     </div>
   )
 }
