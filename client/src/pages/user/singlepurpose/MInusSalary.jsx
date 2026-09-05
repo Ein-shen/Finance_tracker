@@ -122,7 +122,7 @@ export const MInusSalary = ({ refreshKey }) => {
       )}
 
       {!isLoading && hasSalary && analytics && (
-        <div className="theme-card theme-border border-2 rounded-md p-3 sm:p-4">
+        <div className="bg-indigo theme-card theme-border border-2 rounded-md p-3 sm:p-4">
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70 text-center">Salary minus expenses</p>
           <p className="theme-text font-mono text-xl sm:text-2xl font-bold text-center break-words">
             ₱{remaining}
