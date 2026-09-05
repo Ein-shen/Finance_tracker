@@ -1,4 +1,6 @@
-import { Salary } from "./Salary"
+
+import { AmountSalary } from "./singlepurpose/AmountSalary"
+import { BillAmount } from "./singlepurpose/BillAmount"
 
 export const Index = () => {
   return (
@@ -7,8 +9,10 @@ export const Index = () => {
 
       <div className="flex flex-col gap-4 mt-6">
 
-      <Salary />
-
+    
+      <AmountSalary />
+      <BillAmount />
+      
        
        
 
