@@ -118,7 +118,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
         Monthly salary
       </h1>
 
-      <div className="theme-card theme-border border-2 rounded-md p-3 sm:p-4">
+      <div className="theme-card bg-green theme-border border-2 rounded-md p-3 sm:p-4">
         <p className="theme-text font-mono text-xs sm:text-sm opacity-70 text-center">Monthly Salary</p>
         <p className="theme-text font-mono text-xl sm:text-2xl font-bold text-center break-words">
           ₱{getSalary}
