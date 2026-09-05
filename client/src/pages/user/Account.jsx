@@ -148,7 +148,7 @@ export const Account = () => {
       </div>
       
 
-      <div className=' pt-15'/>
+      <div className='theme-bg border-b theme-border pt-15'/>
 
 
         <div className='flex flex-row pt-10 items-center justify-center '>

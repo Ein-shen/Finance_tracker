@@ -174,11 +174,10 @@ export const Salary = () => {
 
   return (
     <div className='w-full flex justify-center'>
-      <div className='flex flex-row gap-20'>
-        
+      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full'>
 
         {/* SALARY DISPLAY */}
-        <div className="space-y-4 px-4 sm:px-8 md:px-12 lg:px-20">
+        <div className="space-y-4">
 
           <h1 className='font-mono text-lg'>
             Monthly Spending
@@ -271,7 +270,7 @@ export const Salary = () => {
             <SummaryCards
               cards={[
                 { label: 'Upcoming bills', value: `₱${analytics.totalUpcoming}` },
-                
+
               ]}
             />
           )}
