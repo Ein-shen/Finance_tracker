@@ -1,16 +1,15 @@
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAgmmmHsNjkeTgvBq807SXszbW4c6eGWrE",
-  authDomain: "finanace-tracker-6ca95.firebaseapp.com",
-  projectId: "finanace-tracker-6ca95",
-  storageBucket: "finanace-tracker-6ca95.firebasestorage.app",
-  messagingSenderId: "286388438785",
-  appId: "1:286388438785:web:15b0d32cb29c22b801fd00",
-  measurementId: "G-3EVYYL22X1"
-}
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
 
-const app = initializeApp(firebaseConfig)
-
-export const auth = getAuth(app)
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export default app;
