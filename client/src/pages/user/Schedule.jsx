@@ -709,7 +709,7 @@ export const Schedule = () => {
 
                           setShowDelete(true)
                         }}
-                        className="p-2 rounded-md theme-text theme-hover"
+                        className="p-2  rounded-md theme-text theme-hover"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -1033,7 +1033,7 @@ export const Schedule = () => {
                   handleDeleteSchedule
                 }
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className=" bg-red-500 w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading
                   ? 'Deleting...'
