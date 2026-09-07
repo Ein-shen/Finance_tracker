@@ -355,7 +355,7 @@ export const Transaction = () => {
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
+          className=" flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
         >
           <Plus size={25} />
         </button>
@@ -413,7 +413,7 @@ export const Transaction = () => {
                         setSelectedTransaction(transaction)
                         setShowDelete(true)
                       }}
-                      className="p-2  rounded-md theme-text theme-hover"
+                      className="p-2   rounded-md theme-text theme-hover"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -572,7 +572,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className=" w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -581,7 +581,7 @@ export const Transaction = () => {
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full bg-red-600  border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
