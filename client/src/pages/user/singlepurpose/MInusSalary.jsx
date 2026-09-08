@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { auth } from '../../../firebase'
 import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 import { API_URL } from '../../../api'
+
 //=============================================================================
 // PURPOSE OF THIS FILE: SHOW REMAINING BALANCE = SALARY - (SCHEDULE + TRANSACTIONS)
 //

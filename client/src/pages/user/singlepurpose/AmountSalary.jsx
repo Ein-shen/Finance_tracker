@@ -115,7 +115,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
 
   return (
     <div className='space-y-2 sm:space-y-4 w-full'>
-      <h1 className='text-base sm:text-lg'>
+      <h1 className='font-mono text-base sm:text-lg'>
         Monthly salary
       </h1>
 
