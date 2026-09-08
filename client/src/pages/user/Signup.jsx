@@ -9,12 +9,16 @@ import { API_URL } from '../../api'
 
 const googleProvider = new GoogleAuthProvider()
 
+// Helper to prevent double slashes in API endpoints
+const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
+
 // Sends the Firebase user's ID token to Express,
 // which verifies it and inserts/updates the row in PostgreSQL
 const syncUserToBackend = async (firebaseUser) => {
   const token = await firebaseUser.getIdToken()
 
-  const response = await fetch(`${API_URL}/api/users`, {
+  // Fixed: Safe path joining with baseUrl
+  const response = await fetch(`${baseUrl}/api/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
