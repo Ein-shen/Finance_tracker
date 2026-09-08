@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { auth } from '../../firebase'
-
+import { API_URL } from '../../api'
 
 export const Banned = () => {
 
@@ -17,7 +17,7 @@ export const Banned = () => {
     }
     const token = await user.getIdToken()
 
-    const response = await fetch('http://localhost:5000/api/admin/users/banned/count', {
+    const response = await fetch(`${API_URL}/api/admin/users/banned/count`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
