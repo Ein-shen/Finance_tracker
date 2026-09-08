@@ -1,5 +1,6 @@
 import { auth } from '../firebase'
 import { API_URL } from '../api'
+
 export const fetchAnalytics = async () => {
   const user = auth.currentUser
 
