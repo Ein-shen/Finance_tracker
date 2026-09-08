@@ -14,13 +14,28 @@ const app = express()
 // MIDDLEWARE
 // ==========================================
 
-// ⚠️ CORS is now locked to your real frontend URL instead of allowing
-// any origin. Set CLIENT_URL as an env var on your host once you know
-// your deployed frontend's URL (e.g. https://finance-tracker.netlify.app).
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true,
-}))
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://expensekontrol.netlify.app',
+  process.env.CLIENT_URL,
+].filter(Boolean)
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, server-to-server)
+      if (!origin) return callback(null, true)
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error(`CORS policy blocked access from origin: ${origin}`))
+      }
+    },
+    credentials: true,
+  })
+)
 
 app.use(express.json())
 
@@ -35,15 +50,6 @@ const __dirname = path.dirname(__filename)
 // MULTER CONFIG FOR PHOTO UPLOADS
 // ==========================================
 
-// ⚠️ DEPLOYMENT WARNING: most hosts (Render, Railway, Fly.io, Heroku)
-// use an EPHEMERAL filesystem — anything written here to /uploads
-// will be wiped on every redeploy or restart, and won't be shared
-// across multiple server instances. This works fine locally and will
-// still technically work in production, but uploaded photos will
-// eventually disappear. The proper fix is to swap this for a cloud
-// storage upload (Firebase Storage, S3, Cloudinary) and store the
-// returned URL in `photo_url` instead of a local path. Happy to do
-// that rewrite next if you share firebaseAdmin.js.
 const fileStorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'uploads'))
@@ -125,8 +131,6 @@ const authenticateFirebase = async (req, res, next) => {
     req.firebaseUid = decodedToken.uid
     req.firebaseEmail = decodedToken.email
 
-    // ✅ NEW: block banned users at the middleware level,
-    // before any protected route logic runs
     const statusCheck = await pool.query(
       `SELECT status FROM users WHERE firebase_uid = $1`,
       [req.firebaseUid]
@@ -291,7 +295,7 @@ app.post(
   }
 )
 
-/// ==========================================
+// ==========================================
 // SAVE SALARY
 // ==========================================
 
@@ -343,10 +347,10 @@ app.post('/api/users/salary', async (req, res) => {
   }
 })
 
-
 // ==========================================
 // GET SALARY
 // ==========================================
+
 app.get('/api/users/salary', async (req, res) => {
   try {
     const authHeader = req.headers.authorization
@@ -682,8 +686,6 @@ app.post(
       const firebaseUid =
         req.firebaseUid
 
-      // Validate fields
-
       if (
         !description ||
         amount === undefined ||
@@ -699,8 +701,6 @@ app.post(
         })
       }
 
-      // Validate amount
-
       const numericAmount =
         Number(amount)
 
@@ -714,8 +714,6 @@ app.post(
             'Amount must be a valid number',
         })
       }
-
-      // Insert schedule
 
       const result =
         await pool.query(
@@ -837,8 +835,6 @@ app.put(
       const firebaseUid =
         req.firebaseUid
 
-      // Validate ID
-
       if (
         !Number.isInteger(
           scheduleId
@@ -849,8 +845,6 @@ app.put(
             'Invalid schedule ID',
         })
       }
-
-      // Validate fields
 
       if (
         !description ||
@@ -867,8 +861,6 @@ app.put(
         })
       }
 
-      // Validate amount
-
       const numericAmount =
         Number(amount)
 
@@ -882,8 +874,6 @@ app.put(
             'Amount must be a valid number',
         })
       }
-
-      // Update schedule
 
       const result =
         await pool.query(
@@ -940,9 +930,6 @@ app.put(
   }
 )
 
-
-
-
 // ==========================================
 // DELETE SCHEDULE
 // ==========================================
@@ -960,8 +947,6 @@ app.delete(
       const firebaseUid =
         req.firebaseUid
 
-      // Validate ID
-
       if (
         !Number.isInteger(
           scheduleId
@@ -972,8 +957,6 @@ app.delete(
             'Invalid schedule ID',
         })
       }
-
-      // Delete schedule
 
       const result =
         await pool.query(
@@ -1160,8 +1143,6 @@ app.get(
     try {
       const firebaseUid = req.firebaseUid
 
-      // Spending (from transactions)
-
       const transactionsResult = await pool.query(
         `
         SELECT category, SUM(amount) AS total
@@ -1176,8 +1157,6 @@ app.get(
         (sum, r) => sum + Number(r.total),
         0
       )
-
-      // Upcoming bills (from schedule)
 
       const scheduleResult = await pool.query(
         `
@@ -1238,7 +1217,6 @@ app.get(
   authenticateFirebase,
   async (req, res) => {
     try {
-      // 1. Spending across ALL users (from transactions)
       const transactionsResult = await pool.query(
         `
         SELECT category, SUM(amount) AS total
@@ -1252,7 +1230,6 @@ app.get(
         0
       )
 
-      // 2. Upcoming bills across ALL users (from schedule)
       const scheduleResult = await pool.query(
         `
         SELECT category, SUM(amount) AS total
@@ -1266,7 +1243,6 @@ app.get(
         0
       )
 
-      // 3. Unpaid schedules across ALL users
       const unpaidCountResult = await pool.query(
         `
         SELECT COUNT(*) AS count
@@ -1299,7 +1275,6 @@ app.get(
     }
   }
 )
-
 
 // ==========================================
 // GET USERS IN USER DATABASE ADMINUSER
@@ -1369,10 +1344,6 @@ app.get('/api/admin/users/analytics', authenticateFirebase, async (req, res) => 
   }
 });
 
-
-
-
-
 // ==========================================
 // BAN / UNBAN USER (toggle status)
 // ==========================================
@@ -1389,7 +1360,6 @@ app.patch(
         return res.status(400).json({ message: 'Invalid user ID' })
       }
 
-      // Verify requester is admin
       const roleCheck = await pool.query(
         `SELECT role FROM users WHERE firebase_uid = $1`,
         [firebaseUid]
@@ -1399,7 +1369,6 @@ app.patch(
         return res.status(403).json({ message: 'Admin access required' })
       }
 
-      // Get target user
       const targetResult = await pool.query(
         `SELECT id, firebase_uid, status FROM users WHERE id = $1`,
         [targetId]
@@ -1411,7 +1380,6 @@ app.patch(
 
       const target = targetResult.rows[0]
 
-      // Prevent self-ban
       if (target.firebase_uid === firebaseUid) {
         return res.status(400).json({ message: "You can't ban yourself" })
       }
@@ -1438,9 +1406,11 @@ app.patch(
     }
   }
 )
+
 // ==========================================
 // GET USER STATUS BREAKDOWN (ACTIVE / BANNED)
 // ==========================================
+
 app.get('/api/admin/users/banned/count', authenticateFirebase, async (req, res) => {
   try {
     const statusResult = await pool.query(
@@ -1498,8 +1468,6 @@ app.use(
 // START SERVER
 // ==========================================
 
-// ⚠️ Hosts assign a port dynamically via process.env.PORT — binding
-// hardcoded to 5000 will fail on Render/Railway/Fly.io/Heroku etc.
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {

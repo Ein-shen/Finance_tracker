@@ -522,7 +522,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={handleEditTransaction}
                   disabled={loading}
-                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full bg-green-500 border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
