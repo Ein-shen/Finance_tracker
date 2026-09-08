@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { auth } from '../../firebase'
-import {   signInWithPopup, GoogleAuthProvider } from 'firebase/auth' 
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth' 
+import { API_URL } from '../../api'
 
 const googleProvider = new GoogleAuthProvider()
 
@@ -18,7 +19,7 @@ export const Adminlogin = () => {
     const idToken = await user.getIdToken()
 
     // 1. Save / Update User in PostgreSQL
-    const saveRes = await fetch('http://localhost:5000/api/users', {
+    const saveRes = await fetch(`${API_URL}/api/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -33,7 +34,7 @@ export const Adminlogin = () => {
     }
 
     // 2. Check User Role
-    const roleRes = await fetch('http://localhost:5000/api/users/role', {
+    const roleRes = await fetch(`${API_URL}/api/users/role`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${idToken}` },
     })
@@ -129,8 +130,6 @@ export const Adminlogin = () => {
           </h2>
         </div>
 
-       
-
         {/* Google Login */}
         <button
           type="button"
@@ -145,8 +144,6 @@ export const Adminlogin = () => {
           />
           {loading ? 'Authenticating...' : 'Continue with Google'}
         </button>
-
-        
 
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { auth } from '../../firebase'
 import { Ban, CheckCircle2 } from 'lucide-react'
+import { API_URL } from '../../api'
 
 export const AdminUser = () => {
   const [loadingUser, setLoadingUser] = useState(true)
@@ -19,7 +20,7 @@ export const AdminUser = () => {
       try {
         setLoadingUser(true)
         const token = await currentUser.getIdToken()
-        const response = await fetch('http://localhost:5000/api/users', {
+        const response = await fetch(`${API_URL}/api/users`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -68,7 +69,7 @@ export const AdminUser = () => {
       const token = await user.getIdToken()
 
       const response = await fetch(
-        `http://localhost:5000/api/users/${targetUser.id}/status`,
+        `${API_URL}/api/users/${targetUser.id}/status`,
         {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${token}` },
