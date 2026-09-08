@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth'
+import { API_URL } from '../../api'
 
 const googleProvider = new GoogleAuthProvider()
 
@@ -13,7 +14,7 @@ const googleProvider = new GoogleAuthProvider()
 const syncUserToBackend = async (firebaseUser) => {
   const token = await firebaseUser.getIdToken()
 
-  const response = await fetch('http://localhost:5000/api/users', {
+  const response = await fetch(`${API_URL}/api/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
