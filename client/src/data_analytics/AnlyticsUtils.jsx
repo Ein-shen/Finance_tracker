@@ -1,5 +1,5 @@
 import { auth } from '../firebase'
-
+import { API_URL } from '../api'
 export const fetchAnalytics = async () => {
   const user = auth.currentUser
 
@@ -10,7 +10,7 @@ export const fetchAnalytics = async () => {
   const token = await user.getIdToken()
 
   const response = await fetch(
-    'http://localhost:5000/api/analytics',
+    `${API_URL}/api/analytics`,
     {
       method: 'GET',
       headers: {
