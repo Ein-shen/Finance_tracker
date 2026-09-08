@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Salary } from './Salary'
 import { auth } from '../../firebase'
-
+import { API_URL } from '../../api'
 export const Account = () => {
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [name, setName] = useState('')
@@ -31,7 +31,7 @@ export const Account = () => {
       if (!user) return
 
       const token = await user.getIdToken()
-      const response = await fetch('http://localhost:5000/api/user', {
+      const response = await fetch(`${API_URL}api/user`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
