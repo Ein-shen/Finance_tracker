@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
+import { API_URL } from '../../api'
 
 export const Transaction = () => {
   // POPUPS DELETE, EDIT, ADD
@@ -189,7 +190,7 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch('http://localhost:5000/api/transactions', {
+      const response = await fetch(`${API_URL}/api/transactions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
