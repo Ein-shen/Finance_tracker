@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { auth } from '../../../firebase'
 import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
-
+import { API_URL } from '../../../api'
 //=============================================================================
 // PURPOSE OF THIS FILE: SHOW REMAINING BALANCE = SALARY - (SCHEDULE + TRANSACTIONS)
 //
@@ -40,7 +40,7 @@ export const MInusSalary = ({ refreshKey }) => {
         return
       }
       const token = await user.getIdToken()
-      const response = await fetch('http://localhost:5000/api/users/salary', {
+      const response = await fetch(`${API_URL}/api/users/salary`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import { auth } from '../../../firebase'
+import { API_URL } from '../../../api'
 
 //=============================================================================
 // PURPOSE OF THIS FILE: FETCH THE SALARY AMOUNT TO IMPORT INTO OTHER FILES FREELY
@@ -47,7 +48,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch('http://localhost:5000/api/users/salary', {
+      const response = await fetch(`${API_URL}/api/users/salary`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

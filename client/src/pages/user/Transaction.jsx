@@ -32,6 +32,9 @@ export const Transaction = () => {
   const [editCategory, setEditCategory] = useState('')
   const [editTransactionDate, setEditTransactionDate] = useState('')
 
+  // Helper to ensure proper path joining with API_URL
+  const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
+
   // ==========================================
   // WAIT FOR FIREBASE AUTH
   // ==========================================
@@ -65,7 +68,8 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch('http://localhost:5000/api/transactions', {
+      // Fixed: Replaced http://localhost:5000 with baseUrl
+      const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -111,7 +115,6 @@ export const Transaction = () => {
   // ==========================================
 
   const handleDeleteTransaction = async () => {
-    // Check if selectedTransaction exists and has a valid ID
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('Selected transaction is missing an ID.')
       return
@@ -125,12 +128,11 @@ export const Transaction = () => {
         throw new Error('You must be logged in first')
       }
 
-      // Get the Firebase ID token
       const token = await user.getIdToken()
 
-      // Send DELETE request with token in Authorization header
+      // Fixed: Replaced http://localhost:5000 with baseUrl
       const response = await fetch(
-        `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
+        `${baseUrl}/api/transactions/${selectedTransaction.id}`,
         {
           method: 'DELETE',
           headers: {
@@ -155,7 +157,6 @@ export const Transaction = () => {
         throw new Error(data.message || 'Failed to delete transaction')
       }
 
-      // Remove item from state without page reload
       setTransactions((prevTransactions) =>
         prevTransactions.filter((item) => item.id !== selectedTransaction.id)
       )
@@ -190,7 +191,7 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch(`${API_URL}/api/transactions`, {
+      const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -277,8 +278,9 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
+      // Fixed: Replaced http://localhost:5000 with baseUrl
       const response = await fetch(
-        `http://localhost:5000/api/transactions/${selectedTransaction.id}`,
+        `${baseUrl}/api/transactions/${selectedTransaction.id}`,
         {
           method: 'PUT',
           headers: {
@@ -348,7 +350,7 @@ export const Transaction = () => {
   return (
     <div className="w-full md:pt-0">
       {/* HEADER */}
-      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transactions
         </h1>
@@ -356,7 +358,7 @@ export const Transaction = () => {
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className=" flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
+          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
         >
           <Plus size={25} />
         </button>
@@ -373,7 +375,7 @@ export const Transaction = () => {
         )}
 
         {!loadingTransactions && transactions.length > 0 && (
-          <div className="flex flex-col grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
             {transactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
               return (
@@ -381,21 +383,20 @@ export const Transaction = () => {
                   {/* CARD */}
                   <div className="flex justify-between items-center">
                     <div className="space-y-1">
-                      <h2 >
-                         <span className="font-bold text-md">Type: </span>{transaction.category}
+                      <h2>
+                        <span className="font-bold text-md">Type: </span>{transaction.category}
                       </h2>
-                      <h2 >
+                      <h2>
                         <span className="font-bold text-md shrink-0"> Amount: </span> ₱{Number(transaction.amount).toFixed(2)}
                       </h2>
 
-                      <h2 >
+                      <h2>
                         <span className="font-bold text-md">Description: </span>{transaction.description}
                       </h2>
-                      <h2 >
+                      <h2>
                         <span className="font-bold text-md">Date: </span> {formatDate(transaction.transaction_date)}
                       </h2>
                     </div>
-                   
                   </div>
 
                   {/* EDIT / DELETE */}
@@ -414,7 +415,7 @@ export const Transaction = () => {
                         setSelectedTransaction(transaction)
                         setShowDelete(true)
                       }}
-                      className="p-2   rounded-md theme-text theme-hover"
+                      className="p-2 rounded-md theme-text theme-hover"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -573,7 +574,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className=" w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -582,7 +583,7 @@ export const Transaction = () => {
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full bg-red-600  border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full bg-red-600 border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
@@ -603,7 +604,7 @@ export const Transaction = () => {
 
           <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="  font-mono text-xl">Add Transaction</h2>
+              <h2 className="font-mono text-xl">Add Transaction</h2>
 
               <button
                 type="button"

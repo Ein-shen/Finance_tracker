@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
-import { API_URL } from '../api.js'
+import { API_URL } from "../../api.js";
 
 
 export const Schedule = () => {
