@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { auth } from '../../firebase'
+import { API_URL } from '../../api'
 
 export const TransactionAnalytics = () => {
 
@@ -23,7 +24,7 @@ export const TransactionAnalytics = () => {
 
     const token = await user.getIdToken()
 
-    const response = await fetch('http://localhost:5000/api/admin/analytics', {
+    const response = await fetch(`${API_URL}/api/admin/analytics`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
