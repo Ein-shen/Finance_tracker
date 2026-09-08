@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Salary } from './Salary'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
+
 export const Account = () => {
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [name, setName] = useState('')
@@ -10,9 +11,6 @@ export const Account = () => {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
 
-
-
- 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -31,7 +29,7 @@ export const Account = () => {
       if (!user) return
 
       const token = await user.getIdToken()
-      const response = await fetch(`${API_URL}api/user`, {
+      const response = await fetch(`${API_URL}/api/user`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,8 +56,9 @@ export const Account = () => {
     const file = e.target.files[0]
     if (!file) return
 
-    // instant local preview while uploading
-    setPhotoUrl(URL.createObjectURL(file))
+    // Create local object URL preview and track it
+    const objectUrl = URL.createObjectURL(file)
+    setPhotoUrl(objectUrl)
     setUploading(true)
     setUploadError(null)
 
@@ -72,7 +71,7 @@ export const Account = () => {
       const formData = new FormData()
       formData.append('photo', file)
 
-      const response = await fetch('http://localhost:5000/api/user/photo', {
+      const response = await fetch(`${API_URL}/api/user/photo`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,6 +85,8 @@ export const Account = () => {
         throw new Error(data.message || 'Failed to upload photo')
       }
 
+      // Cleanup local object preview memory allocation
+      URL.revokeObjectURL(objectUrl)
       setPhotoUrl(data.user.photo_url)
     } catch (error) {
       console.error('Photo upload error:', error)
@@ -95,15 +96,14 @@ export const Account = () => {
     }
   }
 
-  // DB paths look like /uploads/123.png and need the server prefix.
-  // A freshly picked file preview is already a blob: URL and needs no prefix.
+  // Handle absolute and relative paths cleanly using dynamic API_URL
   const resolvedPhotoUrl =
     photoUrl && photoUrl.startsWith('/uploads')
-      ? `http://localhost:5000${photoUrl}`
+      ? `${API_URL}${photoUrl}`
       : photoUrl
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 gap-4">
         <h1 className="font-mono text-lg sm:text-2xl theme-text">Account</h1>
       </div>
@@ -135,28 +135,22 @@ export const Account = () => {
           <p className="font-mono text-sm text-red-500 mt-2">{uploadError}</p>
         )}
 
-        <div className='flex flex-row items-center gap-4 pt-5'>
+        <div className="flex flex-row items-center gap-4 pt-5">
           <h1 className="font-mono text-lg">
             {loadingProfile ? '...' : name || 'No name set'}
           </h1>
-        
         </div>
 
         <h1 className="font-mono text-lg text-center mt-2">
           {loadingProfile ? '...' : email}
         </h1>
       </div>
-      
 
-      <div className='theme-bg border-b theme-border pt-15'/>
+      <div className="theme-bg border-b theme-border pt-15" />
 
-
-        <div className='flex flex-row pt-10 items-center justify-center '>
-           <Salary />
-        </div>
-       
-      
-      
+      <div className="flex flex-row pt-10 items-center justify-center">
+        <Salary />
+      </div>
     </div>
   )
 }
