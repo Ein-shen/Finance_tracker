@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
+import { API_URL } from '../api.js'
+
 
 export const Schedule = () => {
   // ==========================================
@@ -90,7 +92,7 @@ export const Schedule = () => {
       console.log('Firebase token received')
 
       const response = await fetch(
-        'http://localhost:5000/api/schedule',
+        `${API_URL}/api/schedule`,
         {
           method: 'GET',
 

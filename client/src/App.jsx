@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './firebase'
-
+import { API_URL } from './api.js'
 // ==========================================
 // USER IMPORTS
 // ==========================================
@@ -81,7 +81,7 @@ function App() {
         // GET ROLE FROM BACKEND
         // ========================================
 
-        const response = await fetch('http://localhost:5000/api/users/role', {
+        const response = await fetch(`${API_URL}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${idToken}`,
