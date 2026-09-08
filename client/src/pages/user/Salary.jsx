@@ -3,9 +3,9 @@ import { Plus, X } from 'lucide-react'
 import { auth } from '../../firebase'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
+import { API_URL } from '../../api.js'
 
 export const Salary = () => {
-
   const [showAdd, setShowAdd] = useState(false)
   const [loading, setLoading] = useState(false)
   const [salary, setSalary] = useState('')
@@ -14,7 +14,6 @@ export const Salary = () => {
   const [getSalary, setGetSalary] = useState(null)
   const [analytics, setAnalytics] = useState(null)
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
-
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -47,7 +46,7 @@ export const Salary = () => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch('http://localhost:5000/api/users/salary', {
+      const response = await fetch(`${API_URL}/api/users/salary`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -114,7 +113,6 @@ export const Salary = () => {
     }
   }, [authLoading])
 
-
   // ==========================================
   // ADD SALARY
   // ==========================================
@@ -134,13 +132,13 @@ export const Salary = () => {
 
       const token = await user.getIdToken()
 
-      const response = await fetch('http://localhost:5000/api/users/salary', {
+      const response = await fetch(`${API_URL}/api/users/salary`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          token,
           salary: Number(salary),
         }),
       })
@@ -162,8 +160,8 @@ export const Salary = () => {
 
       setSalary('')
       setShowAdd(false)
-      fetchSalary() // refresh the displayed salary after saving
-
+      fetchSalary()
+      getAnalytics()
     } catch (error) {
       console.error('Salary Error:', error)
       alert(error.message || 'Failed to add salary')
@@ -173,39 +171,40 @@ export const Salary = () => {
   }
 
   return (
-    <div className='w-full flex justify-center'>
-      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full'>
-
+    <div className="w-full flex justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full">
         {/* SALARY DISPLAY */}
         <div className="space-y-4">
-
-          <h1 className='font-mono text-lg'>
-            Monthly Salary
-          </h1>
+          <h1 className="font-mono text-lg">Monthly Salary</h1>
           {loadingSalary && (
             <p className="theme-text font-mono">Loading salary...</p>
           )}
 
-          {!loadingSalary && (getSalary === null || getSalary === undefined) && (
-            <>
-              <p className="theme-text font-mono">No Salary yet.</p>
-              <button
-                type='button'
-                onClick={() => setShowAdd(true)}
-                className='theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20'
-              >
-                <Plus size={25} />
-              </button>
-            </>
-          )}
-          {!loadingSalary && getSalary !== null && getSalary !== undefined && (
-            <div className="theme-card theme-border border-2 rounded-md p-4">
-              <p className="theme-text font-mono text-sm opacity-70 text-center">Monthly Salary</p>
-              <p className="theme-text font-mono text-2xl font-bold text-center">
-                ₱{getSalary}
-              </p>
-            </div>
-          )}
+          {!loadingSalary &&
+            (getSalary === null || getSalary === undefined) && (
+              <>
+                <p className="theme-text font-mono">No Salary yet.</p>
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(true)}
+                  className="theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20"
+                >
+                  <Plus size={25} />
+                </button>
+              </>
+            )}
+          {!loadingSalary &&
+            getSalary !== null &&
+            getSalary !== undefined && (
+              <div className="theme-card theme-border border-2 rounded-md p-4">
+                <p className="theme-text font-mono text-sm opacity-70 text-center">
+                  Monthly Salary
+                </p>
+                <p className="theme-text font-mono text-2xl font-bold text-center">
+                  ₱{getSalary}
+                </p>
+              </div>
+            )}
         </div>
 
         {/* ADD SALARY POPUP */}
@@ -239,7 +238,7 @@ export const Salary = () => {
                     type="number"
                     value={salary}
                     onChange={(e) => setSalary(e.target.value)}
-                    placeholder="Ex. 15,000"
+                    placeholder="Ex. 15000"
                     className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
                   />
                 </div>
@@ -257,10 +256,8 @@ export const Salary = () => {
           </div>
         )}
 
-        <div className='space-y-4'>
-          <h1 className='font-mono text-lg'>
-            Monthly Transaction
-          </h1>
+        <div className="space-y-4">
+          <h1 className="font-mono text-lg">Monthly Transaction</h1>
 
           {loadingAnalytics && (
             <p className="theme-text font-mono">Loading...</p>
@@ -269,18 +266,17 @@ export const Salary = () => {
           {!loadingAnalytics && analytics && (
             <SummaryCards
               cards={[
-                { label: 'Upcoming bills', value: `₱${analytics.totalUpcoming}` },
-
+                {
+                  label: 'Upcoming bills',
+                  value: `₱${analytics.totalUpcoming}`,
+                },
               ]}
             />
           )}
         </div>
 
-        <div className='space-y-4'>
-          <h1 className='font-mono text-lg'>
-            Monthly Schedule
-          </h1>
-
+        <div className="space-y-4">
+          <h1 className="font-mono text-lg">Monthly Schedule</h1>
 
           {loadingAnalytics && (
             <p className="theme-text font-mono">Loading...</p>
@@ -288,17 +284,18 @@ export const Salary = () => {
 
           {!loadingAnalytics && analytics && (
             <SummaryCards
-                cards={[
-                  { label: 'Scheduled bills', value: `₱${analytics.totalSpent}` },
-                 ]}
+              cards={[
+                {
+                  label: 'Scheduled bills',
+                  value: `₱${analytics.totalSpent}`,
+                },
+              ]}
             />
           )}
         </div>
 
-        <div className='space-y-4'>
-          <h1 className='font-mono text-lg'>
-            Monthly Spending
-          </h1>
+        <div className="space-y-4">
+          <h1 className="font-mono text-lg">Monthly Spending</h1>
 
           {loadingAnalytics && (
             <p className="theme-text font-mono">Loading...</p>
@@ -306,13 +303,17 @@ export const Salary = () => {
 
           {!loadingAnalytics && analytics && (
             <SummaryCards
-                cards={[
-                  { label: 'Total bills', value: `₱${analytics.totalUpcoming + analytics.totalSpent}` }
-                 ]}
+              cards={[
+                {
+                  label: 'Total bills',
+                  value: `₱${
+                    analytics.totalUpcoming + analytics.totalSpent
+                  }`,
+                },
+              ]}
             />
           )}
         </div>
-
       </div>
     </div>
   )
