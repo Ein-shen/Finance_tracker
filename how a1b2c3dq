@@ -1,0 +1,239 @@
+* [33m746bd5a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m changes in the api.js
+* [33mdb3c54f[m change the db.js to be compatible
+* [33m8b22937[m fix the db.js
+* [33m67e1cfa[m remove netlify origin, no longer used
+* [33m9cf8959[m fix api url in the data analytics folder analytics.jsx
+* [33md0c4b61[m fix api rul in the adanalytics folder useranalytics
+* [33m143f7be[m fix api rul in the adanalytics folder transactionanalytics
+* [33m666ae14[m fix api rul in the adanalytics folder scheduleanalytics
+* [33m4c4a616[m fix api rul in the adanalytics folder banned jsx
+* [33mef44b36[m added admin folder api call fix api
+* [33md15e5d4[m added single purpose file fix api
+* [33meede3a8[m added fix api url in account
+* [33m8c77a73[m added fix api url in salary
+* [33m2808d5c[m fix api url schedule
+* [33mdf4c024[m fix api url signup
+* [33mf05face[m fix api url transaction
+* [33m06dcd81[m Update firebaseAdmin to use environment variables
+* [33m42fe8c5[m preperation for deployment
+* [33md2c84a4[m added api url in the analyticsUTILS
+* [33m2e30cb3[m added url api in the account
+* [33m60cb408[m added changes in the transaction URL API
+* [33ma3a0ccd[m added API URL in the signup
+* [33m88322d9[m added changes in the schedule added the api_url in the js
+* [33m0c1861d[m added api.js file
+* [33m05214ec[m change the edit save green
+* [33mb734814[m added color red in the schedule delte confirmation
+* [33m2527779[m added green bg in the add transaction form
+* [33mffe34b2[m added red in the delete transaction delete button confirmation
+* [33mad22acc[m added new db host
+* [33m6d8bf4a[m add firebase.js for client build
+* [33m52e883e[m add netlify redirects and fix build config
+* [33mac016ab[m remove the docker file
+* [33m6c739c4[m added dockerfile
+* [33me729bc7[m added docker
+* [33mb1242e6[m starting to create the landing page
+* [33m964145f[m added bg green in the minus salry
+* [33m5a7345b[m added green bg in the amountsalry
+* [33m6f6a12d[m added new updated index backend
+* [33m749b2cf[m added the right responsiveness in the overview
+* [33m9ea8cec[m added all the minus salary from expense and now working
+* [33m17fd8f8[m added bill amoun and amount salary
+* [33m36d53dd[m created ad folder calledd single purpose and file called amount salary
+* [33m87e71ce[m added new changes in the account where it is responsive aligned and its look nice
+* [33mae2ef61[m added features whre account can view total spending and the salary
+* [33mf7f4b77[m added salary function and working
+* [33m8e59f18[m added a backend get salary
+* [33m36e41ae[m the add salary now confirm working ans stored in the database
+* [33m1089b42[m added monthly salry monthlly transaction and monthly schedule and monthly spending in just  in title design
+* [33m377b359[m added sum file in the user
+* [33mbb73c04[m swap the schedule and the analytics file
+* [33m6619b30[m adde the banned and active count in the admin
+* [33m9a8108e[m added Active file in the adanalytics
+* [33mc8ed4b7[m added new file in the admin adanlytics called banned
+* [33m777fff7[m added the responsivenes
+* [33m740b262[m cleaned the analytics and now it works as i wanned to be
+* [33m164e53b[m separate the Schedule analytics in the new file i jsut created
+* [33m8e03e8b[m developed the user analytics for admin in  diff file and now its working
+* [33md5304d8[m added the import to the 3 files inside the Adanalytics
+* [33ma9d6699[m added file in the Adanalytics called transaction analytics
+* [33m91cc309[m added new file in the adanalytics folder in the admin called ScheduleAnalytics
+* [33m1593309[m Add a file in the AdAnlytics folder and its called UserAnlytics
+* [33mc15327e[m added new color in the user barchart
+* [33ma2c510a[m added the count all user account
+* [33m7cacaf6[m added the users barchart
+* [33mf5715fd[m add padding top in the admin dashboard between the scedule and the title itself
+* [33m8039a5f[m have design changes here in the adminanalytics
+* [33m81be171[m added new changes in the analytics i did it make it show some of the barchart
+* [33m6a61ad7[m added get analytics admin the schedule and the transactions
+* [33m45a3e6e[m added new fix in the admin user not flick anymore
+* [33md260bcb[m added the cache control in the index back end
+* [33mc95431c[m adjust the server added status in the pool and in the app jsx added something
+* [33mffe8257[m added centeered text in the admin user
+* [33m810cd53[m successfully added the banned status
+* [33me823c5e[m added a ban patch in the index backend
+* [33m26044d8[m remove the unecessary header in the admin user
+* [33m478c1ef[m added the fuunction and debug it in the fet users adminuser
+* [33m15dc600[m added a get function in the backend index.js where it gets all the user
+* [33m9902f03[m remove the settings and the anlytics
+* [33m3987ac1[m added the same font and style in the admin home papge
+* [33m76ab737[m change the admin size 2xl and in the admin user put title
+* [33m524fe04[m remove the border in the admin dashbaord and the in the settings added the right padding pleasentable in the eyes
+* [33m2e38fc3[m added the right outlet division padding
+* [33m4228a39[m added the darmode toggle in the admin settings
+* [33m5f48f61[m admin analytics jsx in the admin and the component lucide react barchart and put route to it in the app jsx
+* [33m9eb48f7[m added the index as the hadmin home page
+* [33md6a71cd[m added change in the admin panel about the icons remove the logout in the upperbar and put it in the bottom bar
+* [33m907b453[m added more easiest way using the navlink
+* [33mf47e378[m added new changes in the admin icons'
+* [33m4e00b72[m added changes in the app alllowing to give them function of routes
+* [33m18e3cc7[m added the default rafce
+* [33m32f94da[m added new file in the admin called settings
+* [33m17438b1[m added new file called Home jsx
+* [33me2dfb91[m added new changes in the bootombar space in the icons
+* [33ma94b0b3[m added house react lucide and the bottom fix slight bug
+* [33m8b3fa16[m added new route in the app jsx the route in the bottom bar
+* [33mcbfa699[m added new file called bottom bar jsx
+* [33m2d13288[m added new changes int app for admin route then signout hover and the upper bar as import
+* [33ma218acf[m added manage jsx in the admin
+* [33m7bed5d8[m added new change the same in the login
+* [33m204660c[m added the same style in the signup
+* [33mf484352[m added changes in the design in the login where i did the same design in the admin login
+* [33m888c053[m added the lucide react signout icons to be more
+* [33mb04658c[m added the hover button in the signout and the pointer to it
+* [33m9455487[m added the signout function inside the admin signout and now working
+* [33mbeb5a14[m remove the signup in the admin login because there should only 1 admin duh
+* [33m842bfdb[m added the colors more nice
+* [33m2b3a097[m remove theadmin login form
+* [33m4b704c5[m added the signout admin in the upper bar
+* [33m6740c18[m added the uppbar which i will put the signout and the changes in the route since its a admi
+* [33m452579d[m fix the minor bug ib the app.jsx
+* [33m988b2a3[m remove the route sales bar
+* [33m1cbda00[m remove the import salebar in the app jsx and making the division in the upperbar
+* [33m248ad41[m remove the salesbar in the component folder
+* [33m4933f29[m added upperbar  file in the admin folder
+* [33m45aeb4d[m fix the minor issue in the login admin and totally working
+* [33m4869ea4[m succesfully making the admin auth of what ive changes did in the admin login
+* [33m642c925[m added new changes in the dashboard to perform auth
+* [33me08d874[m commit remove the import link rounte making cleaner
+* [33m639b1da[m added changes in the Admin login
+* [33mef93229[m added route in the dash board
+* [33maa70e3d[m clean the dashboard
+* [33me8fb4cc[m added new text lg
+* [33m13fcd9b[m added hay nako
+* [33m1ad1a4f[m added new button called user
+* [33m1746654[m added border in the dashboard
+* [33mf30e13c[m center the division title
+* [33m999893d[m added new changes in the admin dashboard
+* [33m5510cf8[m remove the route linechart and its import
+* [33m0ee394e[m remove the barline
+* [33m50fa7d5[m deleted the spending chart
+* [33meae8bb5[m change the summary cards that suits
+* [33m3bb70ce[m added changes in the analytice more visualize data
+* [33mcade0b3[m added changes in the  summary cards for visual designs
+* [33m5668b94[m simplified the analytics.jsx
+* [33m46bccce[m simplified the categorychart
+* [33m3ba56ee[m change the anyticsutils simplified
+* [33mea32ced[m removing the 3 components file inside the analytics file
+* [33m400fa67[m added new changes in the categorychart where we can see the the bills
+* [33m36b0475[m added summary card changes where i can view the total spent the upcomming bill and the unpaid bills
+* [33m86078a9[m adde new changes in the analytics to render the data inisde the databse
+* [33m83a377b[m added changes to the new files and in the index node js
+* [33m60f6f22[m added new changes in the server side where i created a app get data in the analytics database
+* [33m525d093[m change my mind putting th files of data analytics inisde
+* [33mce930f2[m adde SummaryCards file inisde the data analytics
+* [33m69065c4[m added Categoryvhart in the data analytics folder
+* [33m4626014[m added spendingchart file inside the data analytics
+* [33m1d54184[m added AnalyticsUtils inisde the dataanalytics folder
+* [33m9833b1b[m added the analytics examples as my blueprint so yeah
+* [33m4140c47[m added the linechart successfully working
+* [33ma608ebf[m added changes in the linechart still debugging
+* [33mcc0389b[m added route path in the jsx file app
+* [33mc4a5250[m added code inisde the line chart
+* [33m2b8ea26[m added new file called Linechartcomponents
+* [33m5c27776[m added changes int the bartchart and now its working
+* [33mf54714e[m rename the file BarchartComponents
+* [33m57be765[m addede change fix to the sales chart and the barchart
+* [33m75b0fb7[m creating the barchart code inside
+* [33mee56441[m added new file in the component named barchart
+* [33m9f47adb[m added totot custom
+* [33m77d091e[m added areachart design for visual
+* [33m54d54a0[m learnign the analytics form prac
+* [33md4dbaa2[m debugging
+* [33mddf3fd6[m added changes to app.jsx and in the sales chart
+* [33mac235af[m added folder named components and a jsx file
+* [33m31d90d5[m remove unnecessary tag
+* [33m8e5b99b[m added changes in the analtics
+* [33mf169e89[m changes the title of the transaction with transactions
+* [33mb141a80[m added the path to app.jsx file both of the router dom i added
+* [33mf0f2e73[m added path routher dom in the support jsx file
+* [33mab839bb[m added router dom support jsx file
+* [33md80bd7e[m asking for help is my new title in the setting button
+* [33mcdcefe8[m added changes to the title in montly and it work
+* [33mf71b4f4[m added changes in the server side regarding what ive building the edit button and its function
+* [33m9a2fd29[m added changes to the front end in edit schedule and now works
+* [33m8f0f0f2[m added the edit function of the schedule client side next i will make is in the server side
+* [33mcfcf772[m added transaction modal for re input
+* [33m57f5f0b[m added const edit form as usestate
+* [33m0468c0c[m added padding top the button inside the transaction
+* [33m959c8d2[m added the function in the server side where i can edit the transation data
+* [33ma103466[m added ful function of the edit button inside the transaction section
+* [33m5f6aeeb[m added openeditmodal function in the transaction edit
+* [33m839e96a[m added edit form usestate in the transaction section
+* [33mbc3312b[m added navigation to about section
+* [33m50931de[m created a support.jsx
+* [33m220b948[m created a help.jsx file
+* [33m64909f6[m created a file called about.jsx
+* [33mf4bd023[m added the full button i want in the confirmatipn edit button
+* [33m1db29bf[m change the text title to 'Are you sure to edit this schedule?'
+* [33me9f35d5[m added popup in the schedule edit and has title and stuff and exit button
+* [33m36f4ba6[m change the repeat data as center title to the schedule file HAHAH
+* [33m09c1ab8[m added black effect when the pencil edit is click inside the schedule file
+* [33m55a6ed9[m added same the design to the button in the transactions the delete and edit
+* [33m96cb47b[m added the design of the delete button in the schedule file
+* [33m535b4fa[m added function of the delete confirmation in the schedule file where it work but needs improvement to its design
+* [33m1f74e63[m added the popoup itself and fix center
+* [33mb0839e9[m added the text inside the popup as indicaor purpose
+* [33m29b8b7d[m added the delete popup confirmation starting with blacking the screen
+* [33ma05a29b[m added function the cancel button of the edit popup where it is cancelable
+* [33mca7c4f2[m change the style of the button edit
+* [33mb8e8495[m added edit transaction button in the edit popup
+* [33m4c14bac[m added centered button the cancel in side the popup edit
+* [33m1196810[m added cancel button inside the edit popup
+* [33m16f675a[m started to construct the popup of the edit button in the file transaction
+* [33md76e1b1[m added feature whre i can upload profile in the account first is in the client and second in the server where i did create the folder uploads and fix the db.js and altereed the database of the user putting photo_url and downloading multer in the server and client side :>
+* [33m3cb1abf[m remove the margin top in the button in schedule
+* [33m1c4269c[m remove the pencil lucide react in the account
+* [33meccd0d3[m added padding to the hover and making the button nice
+* [33m4fa7c5e[m added the same bold font in the transaction
+* [33md998f0d[m added same grid from schedule in the transaction to be same and consistent design
+* [33m259435a[m making the title to 2xl 'settings'
+* [33m4ffe1a1[m added margin top in the schedule between the title and the division of grid
+* [33m45d64c1[m added pencil lucide react in the schedule later ill add some function
+* [33mac16eab[m added responsiveness in the schedule mobile destop and tablet
+* [33m5d9b93e[m added changes in the responsiveness of the schedule
+* [33mcf9727e[m added new changes to schedule fix the front end to be understandable
+* [33m4b1765b[m added changes in the account rendering the name and the email
+* [33m5b11060[m centered the pencil lucide react componenet
+* [33m9360028[m added changes to the index removing the balance
+* [33m0d87bac[m remove the total expenses
+* [33m5a3f4f0[m added changes to index reove the bugest
+* [33mec4f0ba[m added edit pencil in the account
+* [33ma382759[m added support and hhelp
+* [33m4425115[m added working schedeule fetching data
+* [33ma88a3df[m added schedule contents in the front end
+* [33m71503c4[m added delte button where i can delete transaction and its working. changes at back end and front end
+* [33me3606b6[m added new changes to the client side where i adjusted the mobile and web sizes and yes to responsiveness
+* [33mf63f690[m added presenatable ui in the transactio file
+* [33m829ed97[m added changes in the settings transaction and Account
+* [33m0fa3ac3[m added changes in the settinf where i added ui changes of what my preferences
+* [33m10d85f0[m added changes to the transaction file where i added a edit and delete button to manipulate crud in the transaction file :>
+* [33m49b505e[m added example button in the transaction file delete and edit
+* [33mfbbd351[m added the email here in the account as reference what im doing todo
+* [33m05b3c26[m added changes in the adminlogin and the account section
+* [33m36ba455[m change the account section
+* [33m48292b3[m added adminsignout file
+* [33mfbeb48d[m added adminlogin
+* [33mdc1ffa1[m Change the ui in the client side
+* [33m6b28ad6[m added new changes to transactions fetch the data in sa the postresql
+* [33m6d55309[m added the server storing the data in postresql and next im doing is feching it
