@@ -56,7 +56,7 @@ export const Analytics = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20">
+    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-5 ">
 
       <h1 className="font-mono text-lg sm:text-2xl theme-text mb-6">
         Analytics
@@ -71,13 +71,13 @@ export const Analytics = () => {
       )}
 
       {!loadingAnalytics && analytics && (
-        <div className="flex flex-col gap-10">
+        <div className="h-screen w-full  flex flex-row gap-5 pt-10 items-center justify-center ">
 
           {/* ======================================
               TRANSACTIONS
           ====================================== */}
 
-          <div>
+          <div className='theme-card rounded-md w-full py-5 px-5'>
             <h2 className="font-mono text-xl theme-text mb-4">
               Transactions
             </h2>
@@ -97,7 +97,7 @@ export const Analytics = () => {
               SCHEDULE
           ====================================== */}
 
-          <div>
+          <div className='theme-card rounded-md w-full py-5 px-5'>
             <h2 className="font-mono text-xl theme-text mb-4">
               Schedule
             </h2>
@@ -105,7 +105,7 @@ export const Analytics = () => {
             <SummaryCards
               cards={[
                 { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
-                { label: 'Unpaid Bills', value: analytics.unpaidCount },
+                
               ]}
             />
 

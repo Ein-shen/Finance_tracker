@@ -350,7 +350,7 @@ export const Transaction = () => {
   return (
     <div className="w-full md:pt-0">
       {/* HEADER */}
-      <div className="w-full theme-div rounded-md px-5 py-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
+      <div className="w-full theme-div rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transactions
         </h1>
