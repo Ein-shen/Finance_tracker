@@ -7,7 +7,7 @@
   --border-color: #CED4DA;
 
   /* Dark mode hover */
-  --hover-color: #3a3a3a;
+  --hover-color: #404040;
   --hover-text-color: #ffffff;
 
 
@@ -17,11 +17,11 @@
 :root.light {
   --bg-color: #ffffff;
   --text-color: #222222;
-  --card-color: #f3f3f3;
+  --card-color: #e5e5e5;
   --border-color: #222222;
 
   /* Light mode hover = gray-100 */
-  --hover-color: #f3f4f6;
+  --hover-color: #f9f9f9;
   --hover-text-color: #222222;
 }
 

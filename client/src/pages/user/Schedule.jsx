@@ -349,7 +349,7 @@ export const Schedule = () => {
               return (
                 <div
                   key={currentId}
-                  className="theme-card theme-text theme-border border-2 rounded-md p-4"
+                  className="theme-card theme-text  rounded-md p-4"
                 >
                   <div className="flex justify-between items-center">
                     <div className="space-y-1 w-full">

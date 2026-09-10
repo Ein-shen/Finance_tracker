@@ -52,7 +52,7 @@ export const Leftsidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`h-screen w-64 fixed left-0 top-0 flex flex-col items-center text-center theme-div theme-text theme-border border-r-[0.5px] z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`h-screen theme-card w-64 fixed left-0 top-0 flex flex-col items-center text-center  theme-text theme-border border-r-[0.5px] z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         {/* Close button - only visible on mobile */}
         <button
