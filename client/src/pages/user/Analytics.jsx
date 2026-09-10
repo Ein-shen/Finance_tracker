@@ -56,7 +56,7 @@ export const Analytics = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-5 ">
+    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-5 pb-10">
 
       <h1 className="font-mono text-lg sm:text-2xl theme-text mb-6">
         Analytics
@@ -71,13 +71,13 @@ export const Analytics = () => {
       )}
 
       {!loadingAnalytics && analytics && (
-        <div className="h-screen w-full  flex flex-row gap-5 pt-10 items-center justify-center ">
+        /* Dynamic Layout: Stacked vertically on mobile (flex-col), side-by-side on desktop (md:flex-row) */
+        <div className="w-full h-auto min-h-screen flex flex-col md:flex-row gap-5 pt-4 items-start justify-center">
 
           {/* ======================================
               TRANSACTIONS
           ====================================== */}
-
-          <div className='theme-card rounded-md w-full py-5 px-5'>
+          <div className="theme-card rounded-md w-full py-5 px-5">
             <h2 className="font-mono text-xl theme-text mb-4">
               Transactions
             </h2>
@@ -96,8 +96,7 @@ export const Analytics = () => {
           {/* ======================================
               SCHEDULE
           ====================================== */}
-
-          <div className='theme-card rounded-md w-full py-5 px-5'>
+          <div className="theme-card rounded-md w-full py-5 px-5">
             <h2 className="font-mono text-xl theme-text mb-4">
               Schedule
             </h2>
@@ -105,7 +104,6 @@ export const Analytics = () => {
             <SummaryCards
               cards={[
                 { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
-                
               ]}
             />
 
