@@ -350,7 +350,7 @@ export const Transaction = () => {
   return (
     <div className="w-full md:pt-0">
       {/* HEADER */}
-      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
+      <div className="w-full theme-div rounded-md px-5 py-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transactions
         </h1>
@@ -375,11 +375,11 @@ export const Transaction = () => {
         )}
 
         {!loadingTransactions && transactions.length > 0 && (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+          <div className="theme-div grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
             {transactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
               return (
-                <div key={currentId} className="theme-card theme-text theme-border border-2 rounded-md p-4">
+                <div key={currentId} className="theme-card theme-text rounded-md p-4">
                   {/* CARD */}
                   <div className="flex justify-between items-center">
                     <div className="space-y-1">

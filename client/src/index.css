@@ -4,11 +4,14 @@
   --bg-color: #242424;
   --text-color: #ffffff;
   --card-color: #2b2b2b;
-  --border-color: #ffffff;
+  --border-color: #CED4DA;
 
   /* Dark mode hover */
   --hover-color: #3a3a3a;
   --hover-text-color: #ffffff;
+
+
+  /* div bg */
 }
 
 :root.light {
@@ -50,4 +53,8 @@ body {
 .theme-hover:hover {
   background-color: var(--hover-color);
   color: var(--hover-text-color);
+}
+
+.theme-div {
+  background-color: var(--bg);
 }

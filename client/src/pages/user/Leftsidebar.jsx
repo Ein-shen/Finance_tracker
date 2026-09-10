@@ -52,7 +52,7 @@ export const Leftsidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`h-screen w-64 fixed left-0 top-0 flex flex-col items-center text-center theme-bg theme-text theme-border border-r-2 z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`h-screen w-64 fixed left-0 top-0 flex flex-col items-center text-center theme-div theme-text theme-border border-r-2 z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         {/* Close button - only visible on mobile */}
         <button
@@ -77,7 +77,7 @@ export const Leftsidebar = () => {
             <button
               key={label}
               onClick={() => handleNavigate(path)}
-              className="w-full flex items-center gap-2 font-mono text-md rounded-md p-2 border-2 theme-border theme-hover"
+              className="w-full flex items-center gap-2 font-mono text-md rounded-md p-2  theme-hover"
             >
               <Icon className="w-4 h-4" />
               {label}
