@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Toogle, useTheme } from "./Toogle"
 import { Sun, Moon, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
+import { Signout } from './Signout'
 export const Settings = () => {
 
   const navigate = useNavigate()
@@ -85,7 +85,7 @@ export const Settings = () => {
 
         {/* Language Button */}
         <button
-          className="w-full  px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
+          className="w-full border-b pb-4  px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
           onClick={() => {
             setShowOpen(false)
             handleNavigate('')
@@ -95,6 +95,11 @@ export const Settings = () => {
           <ChevronRight size={25} />
         </button>
 
+        <span className=" font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
+            <Signout />
+            
+        </span>
+        
       </div>
     </div>
   )

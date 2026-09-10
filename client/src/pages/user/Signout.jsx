@@ -1,7 +1,7 @@
 import React from 'react'
 import { signOut, getAuth } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
-
+import { ChevronRight } from 'lucide-react'
 export const Signout = () => {
   const navigate = useNavigate()
   const auth = getAuth()
@@ -18,9 +18,11 @@ export const Signout = () => {
   return (
     <button
       onClick={handleSignOut}
-      className='block w-full text-left px-3 py-2 hover:bg-gray-100 hover:text-black font-mono text-sm rounded-b-md'
+      className='w-full  sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between'
     >
       Sign out
+      <ChevronRight size={25} />
+      
     </button>
   )
 }

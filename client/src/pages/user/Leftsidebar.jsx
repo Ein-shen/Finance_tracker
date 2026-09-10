@@ -16,12 +16,10 @@ const navItems = [
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
   { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
   { label: 'Account', icon: User, path: '/dashboard/account' },
+  { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
 ]
 
-const navItemsUnder = [
-  { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
-  { label: 'Signout', icon: LogOut, path: '/dashboard/signout' },
-]
+
 
 export const Leftsidebar = () => {
   const navigate = useNavigate()
@@ -85,19 +83,7 @@ export const Leftsidebar = () => {
           ))}
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="w-full space-y-4 px-6 mt-auto pb-6">
-          {navItemsUnder.map(({ label, icon: Icon, path }) => (
-            <button
-              key={label}
-              onClick={() => handleNavigate(path)}
-              className="w-full flex items-center gap-2 font-mono text-md rounded-md p-2  theme-hover"
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
-        </div>
+       
       </div>
     </>
   )
