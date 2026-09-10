@@ -103,48 +103,53 @@ export const Account = () => {
       : photoUrl
 
   return (
-    <div className="w-full">
+    <div className="h-screen w-full">
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 gap-4">
         <h1 className="font-mono text-lg sm:text-2xl theme-text">Account</h1>
       </div>
 
-      <div className="flex flex-col items-center pt-15">
-        <label className="relative flex items-center justify-center border-2 rounded-md h-32 w-32 cursor-pointer overflow-hidden">
-          {resolvedPhotoUrl ? (
-            <img
-              src={resolvedPhotoUrl}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <span className="font-mono text-sm text-center px-2">
-              {uploading ? 'Uploading...' : 'Add photo'}
-            </span>
-          )}
+      <div className="w-full flex flex-col items-center pt-15 px-20">
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoChange}
-            disabled={uploading}
-            className="hidden"
-          />
-        </label>
+        <div className='w-full theme-card flex flex-col items rounded-md flex  items-center py-10'>
 
-        {uploadError && (
-          <p className="font-mono text-sm text-red-500 mt-2">{uploadError}</p>
-        )}
+        
+            <label className="relative flex items-center justify-center border-2 rounded-md h-32 w-32 cursor-pointer overflow-hidden">
+              {resolvedPhotoUrl ? (
+                <img
+                  src={resolvedPhotoUrl}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="font-mono text-sm text-center px-2">
+                  {uploading ? 'Uploading...' : 'Add photo'}
+                </span>
+              )}
 
-        <div className="flex flex-row items-center gap-4 pt-5">
-          <h1 className="font-mono text-lg">
-            {loadingProfile ? '...' : name || 'No name set'}
-          </h1>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+
+            {uploadError && (
+              <p className="font-mono text-sm text-red-500 mt-2">{uploadError}</p>
+            )}
+
+            <div className="flex flex-row items-center gap-4 pt-5">
+              <h1 className="font-mono text-lg">
+                {loadingProfile ? '...' : name || 'No name set'}
+              </h1>
+            </div>
+
+            <h1 className="font-mono text-lg text-center mt-2">
+              {loadingProfile ? '...' : email}
+            </h1>
+          </div>
         </div>
-
-        <h1 className="font-mono text-lg text-center mt-2">
-          {loadingProfile ? '...' : email}
-        </h1>
-      </div>
 
       <div className="theme-bg border-b theme-border pt-15" />
 
