@@ -26,61 +26,72 @@ export const Settings = () => {
         </h1>
       </div>
 
-      <div className="gap-5 w-[70%] mx-auto pt-10 flex flex-col justify-center items-center md:items-start gap-4 px-4 sm:px-8 md:px-12 lg:px-20">
-
-        <div className="items-center border-2 w-full rounded-md flex flex-row justify-center p-2 gap-3">
-          <span className="flex gap-2 font-mono items-center">
+      <div className="theme-card py-4 space-y-4 theme-border border px-3 rounded-md w-[70%] mx-auto flex flex-col justify-center items-stretch">
+  
+        {/* Theme Toggle Item */}
+        <div className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-20 flex flex-row justify-between items-center">
+          <span className="flex items-center gap-3 font-mono">
             {isLight ? (
               <>
-                <Sun className="w-5 h-5" />
+                
                 Light Mode
+                <Sun className="w-5 h-5" />
               </>
             ) : (
               <>
-                <Moon className="w-5 h-5" />
+                
                 Dark Mode
+                <Moon className="w-5 h-5" />
               </>
             )}
+            <Toogle />
           </span>
-
-          <Toogle />
+          
         </div>
-          <button 
-            className="w-full font-mono text-md text-center border-2 rounded-md p-2 w-48"
-            onClick={() => {
-              setShowOpen(false)
-              handleNavigate('/dashboard/about')
-            }}>
-            About
-          </button>
-        
 
+        {/* About Button */}
+        <button 
+          className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-20 font-mono text-md text-left transition-colors hover:opacity-80"
+          onClick={() => {
+            setShowOpen(false)
+            handleNavigate('/dashboard/about')
+          }}
+        >
+          About
+        </button>
+
+        {/* Support Button */}
         <button
-         className="w-full font-mono text-md text-center border-2 rounded-md p-2 w-48"
-            onClick={() => {
-              setShowOpen(false)
-              handleNavigate('/dashboard/support')
-            }}
-           
+          className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-20 font-mono text-md text-left transition-colors hover:opacity-80"
+          onClick={() => {
+            setShowOpen(false)
+            handleNavigate('/dashboard/support')
+          }}
         >
           Support
         </button>
-          
-        
 
+        {/* Help Button */}
         <button
-          className="w-full  font-mono text-md text-center border-2 rounded-md p-2 w-48"
-              onClick={() => {
-                setShowOpen(false)
-                handleNavigate('/dashboard/help')
-              }}
-         
+          className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-20 font-mono text-md text-left transition-colors hover:opacity-80"
+          onClick={() => {
+            setShowOpen(false)
+            handleNavigate('/dashboard/help')
+          }}
         >
           Ask for help
         </button>
-        
-        
-        
+
+        {/* Language Button */}
+        <button
+          className="w-full pb-2 px-6 sm:px-8 md:px-12 lg:px-20 font-mono text-md text-left transition-colors hover:opacity-80"
+          onClick={() => {
+            setShowOpen(false)
+            handleNavigate('')
+          }}
+        >
+          Language
+        </button>
 
       </div>
     </div>
