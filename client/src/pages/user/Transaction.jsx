@@ -440,7 +440,7 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl  p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-mono text-xl">Edit Transaction</h2>
 
@@ -464,7 +464,7 @@ export const Transaction = () => {
                   type="text"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -476,7 +476,7 @@ export const Transaction = () => {
                   onChange={(e) => setEditAmount(e.target.value)}
                   min="0"
                   step="0.01"
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -485,7 +485,7 @@ export const Transaction = () => {
                 <select
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
                   <option value="">Select category</option>
                   <option value="food">Food</option>
@@ -503,7 +503,7 @@ export const Transaction = () => {
                   type="date"
                   value={editTransactionDate}
                   onChange={(e) => setEditTransactionDate(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -515,7 +515,7 @@ export const Transaction = () => {
                     setSelectedTransaction(null)
                   }}
                   disabled={loading}
-                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -524,7 +524,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={handleEditTransaction}
                   disabled={loading}
-                  className="w-full bg-blue-500 border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full bg-blue-500  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
