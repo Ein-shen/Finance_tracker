@@ -77,22 +77,7 @@ export const Home = () => {
           <div className="relative">
             <div className="rounded-3xl border border-white/10 bg-white/30 p-4 shadow-2xl shadow-black/40 backdrop-blur">
               <div className="overflow-hidden rounded-2xl border border-white/10 theme-card">
-                {/* Top */}
-                <div className="flex items-center justify-between border-b border-white/10 p-6">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">
-                      Spending Overview
-                    </p>
-
-                    <p className="mt-2 text-3xl font-black">
-                      ₱24,680
-                    </p>
-                  </div>
-
-                  <span className="rounded-full bg-gray-300/10 px-3 py-1.5 text-xs font-bold text-blue-300">
-                    This month
-                  </span>
-                </div>
+               
 
                 {/* Chart */}
                 <div className="m-5 h-48 rounded-2xl border border-white/10 bg-gradient-to-b from-blue-500/[0.07] to-transparent p-4">
@@ -111,20 +96,23 @@ export const Home = () => {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-3 p-5 pt-0">
+
                   <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                    <p className="text-xs text-slate-500">Expenses</p>
-                    <p className="mt-1 font-bold">₱18,420</p>
+                    <p className="text-xs text-slate-500"> Total Transactions</p>
+                    <p className="mt-1 font-bold">₱5,000</p>
                   </div>
 
                   <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                    <p className="text-xs text-slate-500">Saved</p>
-                    <p className="mt-1 font-bold">₱6,260</p>
+                    <p className="text-xs text-slate-500">Total Schedule</p>
+                    <p className="mt-1 font-bold">₱3,000</p>
                   </div>
 
                   <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                    <p className="text-xs text-slate-500">Transactions</p>
-                    <p className="mt-1 font-bold">42</p>
+                    <p className="text-xs text-slate-500">Total Expenses</p>
+                    <p className="mt-1 font-bold">₱8,000</p>
                   </div>
+
+                  
                 </div>
               </div>
             </div>
