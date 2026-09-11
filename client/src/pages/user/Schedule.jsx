@@ -537,7 +537,7 @@ export const Schedule = () => {
               }
             }}
           />
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="relative flex items-center justify-between mb-6">
               <h2 className="font-mono text-md">
                 Are you sure to delete this schedule?
@@ -563,7 +563,7 @@ export const Schedule = () => {
                   setSelectedSchedule(null)
                 }}
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -571,7 +571,7 @@ export const Schedule = () => {
                 type="button"
                 onClick={handleDeleteSchedule}
                 disabled={loading}
-                className="bg-red-500 w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="bg-red-500 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
