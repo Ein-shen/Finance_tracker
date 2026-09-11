@@ -602,7 +602,7 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl  p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-mono text-xl">Add Transaction</h2>
 
@@ -624,7 +624,7 @@ export const Transaction = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Grocery"
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -637,7 +637,7 @@ export const Transaction = () => {
                   placeholder="₱0.00"
                   min="0"
                   step="0.01"
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -646,7 +646,7 @@ export const Transaction = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
                   <option value="">Select category</option>
                   <option value="food">Food</option>
@@ -664,7 +664,7 @@ export const Transaction = () => {
                   type="date"
                   value={transactionDate}
                   onChange={(e) => setTransactionDate(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -673,7 +673,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={() => setShowAdd(false)}
                   disabled={loading}
-                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -682,7 +682,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={handleAddTransaction}
                   disabled={loading}
-                  className="bg-green-500 w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="bg-green-500 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Adding...' : 'Add Transaction'}
                 </button>
