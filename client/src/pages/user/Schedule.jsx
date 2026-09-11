@@ -507,7 +507,7 @@ export const Schedule = () => {
                     setSelectedSchedule(null)
                   }}
                   disabled={loading}
-                  className="w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -515,7 +515,7 @@ export const Schedule = () => {
                   type="button"
                   onClick={handleEditSchedule}
                   disabled={loading}
-                  className="w-full bg-blue-500 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full border border-white/10 bg-blue-500 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
