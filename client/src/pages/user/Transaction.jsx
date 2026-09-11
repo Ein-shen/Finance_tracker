@@ -673,7 +673,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={() => setShowAdd(false)}
                   disabled={loading}
-                  className="w-full  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full  border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -682,7 +682,7 @@ export const Transaction = () => {
                   type="button"
                   onClick={handleAddTransaction}
                   disabled={loading}
-                  className="bg-green-500 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="bg-green-500 border border-white/10 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Adding...' : 'Add Transaction'}
                 </button>
