@@ -52,7 +52,7 @@ export const Home = () => {
               </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 ">
+            <p className="mt-7 max-w-xl text-lg  font-mono leading-8 ">
               Expensekontrol helps you organize your expenses, understand your
               spending, and build better financial habits through a clean,
               modern web experience.
@@ -75,8 +75,8 @@ export const Home = () => {
 
           {/* Dashboard Preview */}
           <div className="relative">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-4 shadow-2xl shadow-black/40 backdrop-blur">
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900">
+            <div className="rounded-3xl border border-white/10 bg-white/30 p-4 shadow-2xl shadow-black/40 backdrop-blur">
+              <div className="overflow-hidden rounded-2xl border border-white/10 theme-card">
                 {/* Top */}
                 <div className="flex items-center justify-between border-b border-white/10 p-6">
                   <div>
@@ -101,7 +101,7 @@ export const Home = () => {
                       (height, index) => (
                         <div
                           key={index}
-                          className="flex-1 rounded-t-md bg-gray-300/70 transition hover:bg-blue-400"
+                          className="flex-1 rounded-t-md bg-blue-300/70 transition hover:bg-blue-400"
                           style={{ height: `${height}%` }}
                         />
                       )
@@ -144,13 +144,13 @@ export const Home = () => {
               Built for financial clarity.
             </h2>
 
-            <p className="mt-5 text-lg leading-8 text-slate-400">
+            <p className="mt-5 text-lg leading-8 text-gray/10">
               Keep your spending organized and get a clearer picture of where
               your money goes.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
+          <div className="mt-14 font-mono grid gap-5 md:grid-cols-3">
             <FeatureCard
               number="01"
               title="Track spending"
@@ -210,7 +210,7 @@ export const Home = () => {
 
 const FeatureCard = ({ number, title, description }) => {
   return (
-    <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-7 transition hover:-translate-y-1 hover:border-blue-400/30 hover:bg-white/[0.05]">
+    <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-7 transition hover:-translate-y-1 hover:border-white/30 hover:bg-white/[0.05]">
       <div className="grid h-11 w-11 place-items-center rounded-xl bg-gray-300/10 text-sm font-black text-blue-400">
         {number}
       </div>
