@@ -417,7 +417,7 @@ export const Schedule = () => {
               }
             }}
           />
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-mono text-xl">Edit Schedule</h2>
               <button
@@ -440,7 +440,7 @@ export const Schedule = () => {
                   type="text"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -452,7 +452,7 @@ export const Schedule = () => {
                   onChange={(e) => setEditAmount(e.target.value)}
                   min="0"
                   step="0.01"
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -461,7 +461,7 @@ export const Schedule = () => {
                 <select
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
                   <option value="">Select category</option>
                   <option value="food">Food</option>
@@ -479,7 +479,7 @@ export const Schedule = () => {
                   type="date"
                   value={editDueDate}
                   onChange={(e) => setEditDueDate(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
@@ -488,7 +488,7 @@ export const Schedule = () => {
                 <select
                   value={editRepeatType}
                   onChange={(e) => setEditRepeatType(e.target.value)}
-                  className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
                 >
                   <option value="">Select repeat</option>
                   <option value="Once">Once</option>
@@ -507,7 +507,7 @@ export const Schedule = () => {
                     setSelectedSchedule(null)
                   }}
                   disabled={loading}
-                  className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -515,7 +515,7 @@ export const Schedule = () => {
                   type="button"
                   onClick={handleEditSchedule}
                   disabled={loading}
-                  className="w-full bg-blue-500 border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full bg-blue-500 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
