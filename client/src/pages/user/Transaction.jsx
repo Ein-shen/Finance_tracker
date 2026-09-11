@@ -547,7 +547,7 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-4 sm:p-6 theme-card theme-text theme-border">
             <div className="relative flex items-center justify-between mb-6">
               <h2 className="font-mono text-md">
                 Are you sure to delete this transaction?
@@ -574,7 +574,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-full border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -583,7 +583,7 @@ export const Transaction = () => {
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full bg-red-600 border-2 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full bg-red-600  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
