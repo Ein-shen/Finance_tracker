@@ -574,7 +574,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-fullborder border-white/10  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -583,7 +583,7 @@ export const Transaction = () => {
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full bg-red-600  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full bg-red-600  border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
