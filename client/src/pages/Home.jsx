@@ -4,9 +4,9 @@ export const Home = () => {
 
   
   return (
-    <main className="min-h-screen w-full bg-slate-950 text-white">
+    <main className="min-h-screen w-full  text-white">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10  backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
           <a href="#" className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-xl ">
@@ -22,21 +22,11 @@ export const Home = () => {
             </span>
           </a>
 
-          <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
-            <a href="#features" className="transition hover:text-white">
-              Features
-            </a>
-            <a href="#technology" className="transition hover:text-white">
-              Technology
-            </a>
-            <a href="#about" className="transition hover:text-white">
-              About
-            </a>
-          </nav>
+          
 
            <Link
             to="/login"
-            className="rounded-xl bg-gray-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-blue-400"
+            className="rounded-xl bg-white/5 px-4 py-2.5 text-sm font-bold  transition hover:bg-white/10"
           >
             Login
           </Link>
@@ -51,7 +41,7 @@ export const Home = () => {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-6 py-24 lg:grid-cols-2 lg:px-8 lg:py-32">
           <div>
-            <div className="mb-6 inline-flex rounded-full border border-gray-400/20 bg-gray-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-300">
+            <div className="mb-6 inline-flex rounded-full border border-gray-400/20 bg-gray-300/10 px-4 py-2 text-xs font-mono uppercase tracking-[0.18em] text-blue-300">
               Personal Finance Platform
             </div>
 
@@ -62,21 +52,13 @@ export const Home = () => {
               </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-slate-400">
+            <p className="mt-7 max-w-xl text-lg leading-8 ">
               Expensekontrol helps you organize your expenses, understand your
               spending, and build better financial habits through a clean,
               modern web experience.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4">
-              <a
-                href="signup"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-xl bg-gray-300 text-black px-6 py-3.5 font-bold hover:bg-blue-400"
-              >
-                Try Expensekontrol ↗
-              </a>
 
 
               <Link
@@ -190,62 +172,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Technology */}
-      <section
-        id="technology"
-        className="border-t border-white/10 bg-white/[0.02]"
-      >
-        <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-400">
-                Technology
-              </p>
-
-              <h2 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
-                Built with a modern stack.
-              </h2>
-
-              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-400">
-                Expensekontrol uses modern full-stack technologies and a
-                production-oriented deployment workflow.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                {[
-                  'React',
-                  'Next.js',
-                  'Express',
-                  'PostgreSQL',
-                  'Docker',
-                  'NeonDB',
-                  'Render',
-                  'CI/CD',
-                  'Tailwind CSS',
-                ].map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-slate-900 p-8">
-              <div className="grid grid-cols-2 gap-4">
-                <TechBox title="Frontend" value="React + Next.js" />
-                <TechBox title="Backend" value="Express" />
-                <TechBox title="Database" value="PostgreSQL" />
-                <TechBox title="Infrastructure" value="Docker" />
-                <TechBox title="Database Hosting" value="NeonDB" />
-                <TechBox title="Deployment" value="Render + CI/CD" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* CTA */}
       <section id="about" className="border-t border-white/10">
