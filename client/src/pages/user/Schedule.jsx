@@ -563,7 +563,7 @@ export const Schedule = () => {
                   setSelectedSchedule(null)
                 }}
                 disabled={loading}
-                className="w-full  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full  rounded-md border border-white/10 py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -571,7 +571,7 @@ export const Schedule = () => {
                 type="button"
                 onClick={handleDeleteSchedule}
                 disabled={loading}
-                className="bg-red-500 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="bg-red-500 w-full border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>

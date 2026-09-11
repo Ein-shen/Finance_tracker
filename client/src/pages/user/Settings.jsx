@@ -95,7 +95,7 @@ export const Settings = () => {
           <ChevronRight size={25} />
         </button>
 
-        <span className=" font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
+        <span className=" px-6 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
             <Signout />
             
         </span>
