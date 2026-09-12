@@ -574,7 +574,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-fullborder border-white/10  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full border border-white/10  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
