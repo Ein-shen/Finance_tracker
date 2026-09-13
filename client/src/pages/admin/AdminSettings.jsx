@@ -10,7 +10,7 @@ export const AdminSettings = () => {
   const isLight = theme === 'light'
 
   return (
-   <div className="flex flex-col gap-15">
+   <div className="flex flex-col gap-15 h-screen">
 
       <div className="flex flex-row px-4 sm:px-8 md:px-12 lg:px-20">
         <h1 className="font-mono text-2xl">
@@ -88,9 +88,9 @@ export const AdminSettings = () => {
         </button>
 
 
-         <span className=" px-6 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
-            <Adminsignout />       
-        </span>
+         
+          <Adminsignout />       
+       
 
         
         
