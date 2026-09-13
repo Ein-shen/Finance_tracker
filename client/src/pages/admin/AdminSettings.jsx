@@ -3,7 +3,7 @@ import { Toogle, useTheme } from "../user/Toogle" // adjust path to where Toogle
 import { Sun, Moon } from 'lucide-react'
 
 import { ChevronRight } from 'lucide-react'
-
+import { Adminsignout } from './Adminsignout'
 
 export const AdminSettings = () => {
   const { theme } = useTheme()
@@ -77,7 +77,7 @@ export const AdminSettings = () => {
 
         {/* Language Button */}
         <button
-          className="w-full pb-4  px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
+          className="w-full pb-4 border-b px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
           onClick={() => {
             setShowOpen(false)
             handleNavigate('')
@@ -86,6 +86,11 @@ export const AdminSettings = () => {
           <span>Language</span>
           <ChevronRight size={25} />
         </button>
+
+
+         <span className=" px-6 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
+            <Adminsignout />       
+        </span>
 
         
         

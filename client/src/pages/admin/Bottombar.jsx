@@ -1,7 +1,7 @@
 import React from 'react'
 import { House, User, Settings, BarChart3 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-import { Adminsignout } from './Adminsignout'
+
 
 export const Bottombar = () => {
   return (
@@ -23,10 +23,6 @@ export const Bottombar = () => {
           <Settings />
         </NavLink>
 
-        <span  className='theme-bg theme-hover p-4 rounded-md'>
-          <Adminsignout />
-        </span>
-        
       </div>
     </div>
   )
