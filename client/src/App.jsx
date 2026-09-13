@@ -81,7 +81,7 @@ function App() {
         // GET ROLE FROM BACKEND
         // ========================================
 
-        const response = await fetch(`${API_URL}`, {
+        const response = await fetch(`${API_URL}/api/users/role`, { 
           method: 'GET',
           headers: {
             Authorization: `Bearer ${idToken}`,
