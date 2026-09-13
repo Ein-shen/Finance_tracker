@@ -259,7 +259,7 @@ export const Adminlogin = () => {
           type="button"
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 disabled:opacity-50 mt-4"
+          className="w-full border border-1 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 disabled:opacity-50 mt-4"
         >
           <img
             src="https://www.google.com/favicon.ico"
