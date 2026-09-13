@@ -98,7 +98,7 @@ export const Login = () => {
           type="button"
           onClick={handleGoogle}
           disabled={loading}
-          className="hover:bg-white/10 w-full border border-black py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
+          className="hover:bg-white/10 w-full border border-white/20 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 disabled:opacity-50 mt-4"
         >
           <img
             src="https://www.google.com/favicon.ico"
