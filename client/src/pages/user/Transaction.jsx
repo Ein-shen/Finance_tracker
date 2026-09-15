@@ -382,10 +382,13 @@ export const Transaction = () => {
                 <div key={currentId} className="theme-card theme-text rounded-md p-4">
                   {/* CARD */}
                   <div className="flex justify-between items-center">
+
+                    
                     <div className="space-y-1">
-                      <h2>
-                        <span className="font-bold text-md">Type: </span>{transaction.category}
+                      <h2 className="w-full flex justify-center items-center font-bold">
+                        <span className="font-bold text-md py-5"> </span>{transaction.category}
                       </h2>
+                     
                       <h2>
                         <span className="font-bold text-md shrink-0"> Amount: </span> ₱{Number(transaction.amount).toFixed(2)}
                       </h2>
