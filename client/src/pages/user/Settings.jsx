@@ -18,7 +18,7 @@ export const Settings = () => {
   const isLight = theme === 'light'
 
   return (
-    <div className="flex flex-col gap-15">
+    <div className="flex flex-col gap-20">
 
       <div className="flex flex-row px-4 sm:px-8 md:px-12 lg:px-20">
         <h1 className="font-mono text-2xl">
@@ -26,7 +26,7 @@ export const Settings = () => {
         </h1>
       </div>
 
-      <div className="theme-card py-4 space-y-4 theme-border border px-3 rounded-md w-[70%] mx-auto flex flex-col justify-center items-stretch">
+      <div className=" theme-card py-4 space-y-4 theme-border border px-3 rounded-md w-[70%] mx-auto flex flex-col justify-center items-stretch">
   
         {/* Theme Toggle Item */}
         <div className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-5 flex flex-row justify-between items-center">
