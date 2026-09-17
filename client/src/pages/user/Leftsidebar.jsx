@@ -9,7 +9,7 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const navItems = [
   { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
@@ -19,10 +19,9 @@ const navItems = [
   { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
 ]
 
-
-
 export const Leftsidebar = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNavigate = (path) => {
@@ -71,19 +70,23 @@ export const Leftsidebar = () => {
 
         {/* Main Navigation */}
         <div className="w-full space-y-4 px-6">
-          {navItems.map(({ label, icon: Icon, path }) => (
-            <button
-              key={label}
-              onClick={() => handleNavigate(path)}
-              className="w-full flex items-center gap-2 font-mono text-md rounded-md p-2  theme-hover"
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
-        </div>
+          {navItems.map(({ label, icon: Icon, path }) => {
+            const isActive = location.pathname.startsWith(path)
 
-       
+            return (
+              <button
+                key={label}
+                onClick={() => handleNavigate(path)}
+                className={`w-full flex items-center gap-2 font-mono text-md rounded-md p-2 transition-colors theme-hover ${
+                  isActive ? 'bg-[#606060] text-white' : ''
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </>
   )
