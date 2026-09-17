@@ -56,65 +56,69 @@ export const Analytics = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-5 pb-10">
+    <div className="w-full md:pt-0 h-screen">
+      {/* HEADER */}
+      <div className="w-full   rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
+        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+          Analytics
+        </h1>
+      </div>
 
-      <h1 className="font-mono text-lg sm:text-2xl theme-text mb-6">
-        Analytics
-      </h1>
+      {/* ANALYTICS CONTENT */}
+      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
+        {loadingAnalytics && (
+          <p className="theme-text font-mono">Analytics loading...</p>
+        )}
 
-      {loadingAnalytics && (
-        <p className="theme-text font-mono">Loading analytics...</p>
-      )}
+        {!loadingAnalytics && !analytics && (
+          <p className="theme-text font-mono">No analytics data yet.</p>
+        )}
 
-      {!loadingAnalytics && !analytics && (
-        <p className="theme-text font-mono">No analytics data yet.</p>
-      )}
+        {!loadingAnalytics && analytics && (
+          /* Dynamic Layout: Stacked vertically on mobile (flex-col), side-by-side on desktop (md:flex-row) */
+          <div className="w-full h-auto flex flex-col md:flex-row gap-5 pt-10 items-start justify-center">
 
-      {!loadingAnalytics && analytics && (
-        /* Dynamic Layout: Stacked vertically on mobile (flex-col), side-by-side on desktop (md:flex-row) */
-        <div className="w-full h-auto min-h-screen flex flex-col md:flex-row gap-5 pt-4 items-start justify-center">
+            {/* ======================================
+                TRANSACTIONS
+            ====================================== */}
+            <div className="theme-card rounded-md w-full py-5 px-5">
+              <h2 className="font-mono text-xl theme-text mb-4">
+                Transactions
+              </h2>
 
-          {/* ======================================
-              TRANSACTIONS
-          ====================================== */}
-          <div className="theme-card rounded-md w-full py-5 px-5">
-            <h2 className="font-mono text-xl theme-text mb-4">
-              Transactions
-            </h2>
+              <SummaryCards
+                cards={[
+                  { label: 'Total Spent', value: `₱${analytics.totalSpent}` },
+                ]}
+              />
 
-            <SummaryCards
-              cards={[
-                { label: 'Total Spent', value: `₱${analytics.totalSpent}` },
-              ]}
-            />
-
-            <div className="mt-6">
-              <CategoryChart data={analytics.spendingByCategory} />
+              <div className="mt-6">
+                <CategoryChart data={analytics.spendingByCategory} />
+              </div>
             </div>
-          </div>
 
-          {/* ======================================
-              SCHEDULE
-          ====================================== */}
-          <div className="theme-card rounded-md w-full py-5 px-5">
-            <h2 className="font-mono text-xl theme-text mb-4">
-              Schedule
-            </h2>
+            {/* ======================================
+                SCHEDULE
+            ====================================== */}
+            <div className="theme-card rounded-md w-full py-5 px-5">
+              <h2 className="font-mono text-xl theme-text mb-4">
+                Schedule
+              </h2>
 
-            <SummaryCards
-              cards={[
-                { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
-              ]}
-            />
+              <SummaryCards
+                cards={[
+                  { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
+                ]}
+              />
 
-            <div className="mt-6">
-              <CategoryChart data={analytics.upcomingByCategory} />
+              <div className="mt-6">
+                <CategoryChart data={analytics.upcomingByCategory} />
+              </div>
             </div>
+
           </div>
-
-        </div>
-      )}
-
+        )}
+      </div>
     </div>
   )
 }
