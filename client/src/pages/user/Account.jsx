@@ -110,7 +110,7 @@ export const Account = () => {
 
       <div className="w-full flex flex-col items-center pt-15 px-20">
 
-        <div className='w-full theme-card flex flex-col items rounded-md flex  items-center py-10'>
+        <div className='w-md theme-card flex flex-col items rounded-md flex  items-center py-10'>
 
         
             <label className="relative flex items-center justify-center border-2 rounded-md h-32 w-32 cursor-pointer overflow-hidden">
@@ -122,7 +122,7 @@ export const Account = () => {
                 />
               ) : (
                 <span className="font-mono text-sm text-center px-2">
-                  {uploading ? 'Uploading...' : 'Add photo'}
+                  {uploading ? 'Uploading...' : 'Profile'}
                 </span>
               )}
 
@@ -141,12 +141,12 @@ export const Account = () => {
 
             <div className="flex flex-row items-center gap-4 pt-5">
               <h1 className="font-mono text-lg">
-                {loadingProfile ? '...' : name || 'No name set'}
+                {loadingProfile ? 'Name' : name || 'No name set'}
               </h1>
             </div>
 
             <h1 className="font-mono text-lg text-center mt-2">
-              {loadingProfile ? '...' : email}
+              {loadingProfile ? 'Email' : email}
             </h1>
           </div>
         </div>
