@@ -348,7 +348,7 @@ export const Transaction = () => {
   }
 
   return (
-    <div className="w-full md:pt-0">
+    <div className="w-full md:pt-0 h-screen">
       {/* HEADER */}
       <div className="w-full theme-div rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
@@ -382,47 +382,64 @@ export const Transaction = () => {
                 <div key={currentId} className="theme-card theme-text rounded-md p-4">
                   {/* CARD */}
                   <div className="flex justify-between items-center">
-
                     
-                    <div className="space-y-1">
-                      <h2 className="w-full flex justify-center items-center font-bold">
-                        <span className="font-bold text-md py-5"> </span>{transaction.category}
-                      </h2>
-                     
-                      <h2>
-                        <span className="font-bold text-md shrink-0"> Amount: </span> ₱{Number(transaction.amount).toFixed(2)}
-                      </h2>
+                          <div className="space-y-1 w-full">
 
-                      <h2>
-                        <span className="font-bold text-md">Description: </span>{transaction.description}
-                      </h2>
-                      <h2>
-                        <span className="font-bold text-md">Date: </span> {formatDate(transaction.transaction_date)}
-                      </h2>
-                    </div>
-                  </div>
+                            {/* CATEGORY */}
+                            <h2 className="w-full flex justify-center items-center">
+                              <span className="font-bold text-md">
+                                {transaction.category}
+                              </span>
+                            </h2>
 
-                  {/* EDIT / DELETE */}
-                  <div className="flex justify-end flex-row pt-3">
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(transaction)}
-                      className="p-2 rounded-md theme-text theme-hover"
-                    >
-                      <Pencil size={18} />
-                    </button>
+                            {/* TRANSACTION DETAILS */}
+                            <div className="flex justify-center">
+                              <div className="text-left">
+                                <h2>
+                                  <span className="font-bold text-md">Amount: </span>
+                                  ₱{Number(transaction.amount).toFixed(2)}
+                                </h2>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedTransaction(transaction)
-                        setShowDelete(true)
-                      }}
-                      className="p-2 rounded-md theme-text theme-hover"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                                <h2>
+                                  <span className="font-bold text-md">Description: </span>
+                                  {transaction.description}
+                                </h2>
+
+                                <h2>
+                                  <span className="font-bold text-md">Date: </span>
+                                  {formatDate(transaction.transaction_date)}
+                                </h2>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+
+                        {/* EDIT / DELETE */}
+                        <div className="flex justify-end flex-row pt-3">
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(transaction)}
+                            className="p-2 rounded-md theme-text theme-hover"
+                          >
+                            <Pencil size={18} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedTransaction(transaction)
+                              setShowDelete(true)
+                            }}
+                            className="p-2 rounded-md theme-text theme-hover"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+
+
+
+
                 </div>
               )
             })}
