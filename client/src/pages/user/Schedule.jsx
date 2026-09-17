@@ -352,52 +352,69 @@ export const Schedule = () => {
                   className="theme-card theme-text  rounded-md p-4"
                 >
                   <div className="flex justify-between items-center">
-                    <div className="space-y-1 w-full">
-                      <h2 className="w-full flex justify-center items-center">
-                        <span className="font-bold text-md">
-                          {schedule.repeat_type}
-                        </span>
-                      </h2>
-                      <h2>
-                        <span className="font-bold text-md">Type: </span>
-                        {schedule.category}
-                      </h2>
-                      <h2>
-                        <span className="font-bold text-md">Amount: </span>
-                        ₱{Number(schedule.amount).toFixed(2)}
-                      </h2>
-                      <h2>
-                        <span className="font-bold text-md">
-                          Description:{' '}
-                        </span>
-                        {schedule.description}
-                      </h2>
-                      <h2>
-                        <span className="font-bold text-md">Due: </span>
-                        {formatDate(schedule.due_date)}
-                      </h2>
-                    </div>
-                  </div>
+                   
+                      <div className="space-y-5 w-full">
 
-                  <div className="flex justify-end flex-row pt-3">
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(schedule)}
-                      className="p-2 rounded-md theme-text theme-hover"
-                    >
-                      <Pencil size={18} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedSchedule(schedule)
-                        setShowDelete(true)
-                      }}
-                      className="p-2 rounded-md theme-text theme-hover"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                        {/* REPEAT TYPE */}
+                        <h2 className="w-full flex justify-center items-center">
+                          <span className="font-bold text-md">
+                            {schedule.repeat_type}
+                          </span>
+                        </h2>
+
+                        {/* SCHEDULE DETAILS */}
+                        <div className="flex justify-center">
+                          <div className="text-left">
+                            <h2>
+                              <span className="font-bold text-md">Type: </span>
+                              {schedule.category}
+                            </h2>
+
+                            <h2>
+                              <span className="font-bold text-md">Amount: </span>
+                              ₱{Number(schedule.amount).toFixed(2)}
+                            </h2>
+
+                            <h2>
+                              <span className="font-bold text-md">
+                                Description:{' '}
+                              </span>
+                              {schedule.description}
+                            </h2>
+
+                            <h2>
+                              <span className="font-bold text-md">Due: </span>
+                              {formatDate(schedule.due_date)}
+                            </h2>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* EDIT / DELETE */}
+                    <div className="flex justify-end flex-row pt-3">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(schedule)}
+                        className="p-1.5 rounded-md theme-text theme-hover"
+                      >
+                        <Pencil size={18} />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedSchedule(schedule)
+                          setShowDelete(true)
+                        }}
+                        className="p-1.5 rounded-md theme-text theme-hover"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+
+
                 </div>
               )
             })}
