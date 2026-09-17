@@ -367,7 +367,7 @@ export const Transaction = () => {
       {/* TRANSACTION LIST */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {loadingTransactions && (
-          <p className="theme-text font-mono">Loading transactions...</p>
+          <p className="theme-text font-mono">Transaction loading...</p>
         )}
 
         {!loadingTransactions && transactions.length === 0 && (
