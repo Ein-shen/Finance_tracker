@@ -383,7 +383,7 @@ export const Transaction = () => {
                   {/* CARD */}
                   <div className="flex justify-between items-center">
                     
-                          <div className="space-y-1 w-full">
+                          <div className="space-y-5 w-full ">
 
                             {/* CATEGORY */}
                             <h2 className="w-full flex justify-center items-center">
@@ -393,7 +393,7 @@ export const Transaction = () => {
                             </h2>
 
                             {/* TRANSACTION DETAILS */}
-                            <div className="flex justify-center">
+                            <div className="flex justify-center ">
                               <div className="text-left">
                                 <h2>
                                   <span className="font-bold text-md">Amount: </span>
