@@ -350,7 +350,7 @@ export const Transaction = () => {
   return (
     <div className="w-full md:pt-0 h-screen">
       {/* HEADER */}
-      <div className="w-full theme-div rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
+      <div className="w-full   rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transactions
         </h1>
@@ -420,7 +420,7 @@ export const Transaction = () => {
                           <button
                             type="button"
                             onClick={() => openEditModal(transaction)}
-                            className="p-2 rounded-md theme-text theme-hover"
+                            className="p-1.5 rounded-md theme-text theme-hover"
                           >
                             <Pencil size={18} />
                           </button>
@@ -431,7 +431,7 @@ export const Transaction = () => {
                               setSelectedTransaction(transaction)
                               setShowDelete(true)
                             }}
-                            className="p-2 rounded-md theme-text theme-hover"
+                            className="p-1.5 rounded-md theme-text theme-hover"
                           >
                             <Trash2 size={18} />
                           </button>
