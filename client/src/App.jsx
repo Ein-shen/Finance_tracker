@@ -42,7 +42,7 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 // ==========================================
 // LOADING SCREEN
 // ==========================================
-import SyncLoader from "react-spinners/SyncLoader.js"
+import { SyncLoader } from "react-spinners"
 
 
 
