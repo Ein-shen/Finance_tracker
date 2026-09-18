@@ -45,8 +45,8 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-300">
-      <p className="text-lg text-gray-500">Loading...</p>
+    <div className="min-h-screen theme-bg  flex items-center justify-center bg-gray-300">
+      <p className="text-lg text-gray-500">Welcome to ExpenseKontrol...</p>
     </div>
   )
 }
