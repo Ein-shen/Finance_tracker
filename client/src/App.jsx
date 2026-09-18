@@ -42,13 +42,20 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 // ==========================================
 // LOADING SCREEN
 // ==========================================
-import { SyncLoader } from "react-spinners"
+import { HashLoader } from "react-spinners"
 
 
 
 function LoadingScreen({ loading }) {
   return (
-    <div className="min-h-screen  theme-bg flex flex-row items-center justify-center gap-4">
+    <div className="min-h-screen  theme-bg flex flex-row items-center justify-center gap-2">
+
+      <HashLoader
+        loading={loading}
+        size={20}
+        color="#dddfe9"
+      />
+      
       <p className="text-lg theme-text font-mono">
         Welcome to ExpenseKontrol
       </p>
@@ -58,11 +65,7 @@ function LoadingScreen({ loading }) {
               className="w-10 h-10"
         />
 
-      <SyncLoader
-        loading={loading}
-        size={12}
-        color="#1a648f"
-      />
+      
     </div>
   )
 }
