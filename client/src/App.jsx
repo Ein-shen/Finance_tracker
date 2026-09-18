@@ -48,15 +48,20 @@ import { SyncLoader } from "react-spinners"
 
 function LoadingScreen({ loading }) {
   return (
-    <div className="min-h-screen theme-bg flex flex-col items-center justify-center gap-4">
+    <div className="min-h-screen  theme-bg flex flex-row items-center justify-center gap-4">
       <p className="text-lg theme-text font-mono">
         Welcome to ExpenseKontrol
       </p>
+      <img
+              src="/suitcase.png"
+              alt="Suitcase"
+              className="w-10 h-10"
+        />
 
       <SyncLoader
         loading={loading}
         size={12}
-        color="#20b2a6"
+        color="#1a648f"
       />
     </div>
   )
