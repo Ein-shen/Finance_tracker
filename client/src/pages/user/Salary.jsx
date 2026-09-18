@@ -194,7 +194,7 @@ export const Salary = () => {
                 <button
                   type="button"
                   onClick={() => setShowAdd(true)}
-                  className="theme-bg theme-hover theme-border border-2 w-full rounded-md flex flex-col justify-center items-center h-20"
+                  className="theme-bg theme-hover w-full rounded-md flex flex-col justify-center items-center h-20"
                 >
                   <Plus size={25} />
                 </button>
@@ -203,7 +203,7 @@ export const Salary = () => {
           {!loadingSalary &&
             getSalary !== null &&
             getSalary !== undefined && (
-              <div className="theme-card theme-border border-2 rounded-md p-4">
+              <div className="theme-card rounded-md p-4">
                 <p className="theme-text font-mono text-sm opacity-70 text-center">
                   Monthly Salary
                 </p>
@@ -224,7 +224,7 @@ export const Salary = () => {
               }}
             />
 
-            <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text theme-border">
+            <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl border-2 p-4 sm:p-6 theme-card theme-text">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-mono text-xl">Add Monthly Salary</h2>
 
@@ -246,7 +246,7 @@ export const Salary = () => {
                     value={salary}
                     onChange={(e) => setSalary(e.target.value)}
                     placeholder="Ex. 15000"
-                    className="w-full rounded-md border-2 px-3 py-2 outline-none theme-bg theme-text theme-border"
+                    className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text "
                   />
                 </div>
 
@@ -254,7 +254,7 @@ export const Salary = () => {
                   type="button"
                   disabled={loading}
                   onClick={handleAddSalary}
-                  className="theme-bg theme-hover theme-border border-2 w-full rounded-md py-2 font-mono disabled:opacity-50"
+                  className="theme-bg theme-hover w-full rounded-md py-2 font-mono disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save'}
                 </button>
