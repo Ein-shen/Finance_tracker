@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Wallet } from 'lucide-react'
 import { auth } from '../../../firebase'
 import { API_URL } from '../../../api'
+import { HashLoader } from 'react-spinners'
 
 //=============================================================================
 // PURPOSE OF THIS FILE: FETCH THE SALARY AMOUNT TO IMPORT INTO OTHER FILES FREELY
@@ -12,7 +13,10 @@ import { API_URL } from '../../../api'
 //                 useful right after a parent successfully saves a new salary
 //=============================================================================
 
-const peso = (n) => `₱${Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`
+const peso = (n) =>
+  `₱${Number(n).toLocaleString('en-PH', {
+    minimumFractionDigits: 0,
+  })}`
 
 export const AmountSalary = ({ onAddClick, refreshKey }) => {
 
@@ -41,10 +45,10 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
 
       const user = auth.currentUser
 
-      console.log('Current Firebase user: ', user)
+      console.log('Current Firebase user:', user)
 
       if (!user) {
-        console.log('No Firebase user Logged in')
+        console.log('No Firebase user logged in')
         setGetSalary(null)
         return
       }
@@ -67,7 +71,10 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
       } else {
         const text = await response.text()
         console.error('Server returned non-JSON:', text)
-        throw new Error(`Server returned ${response.status} instead of JSON`)
+
+        throw new Error(
+          `Server returned ${response.status} instead of JSON`
+        )
       }
 
       if (!response.ok) {
@@ -75,63 +82,95 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
       }
 
       setGetSalary(data.salary ?? null)
+
     } catch (error) {
       console.error('Get salary error:', error)
       alert(error.message || 'Failed to get salary')
+
     } finally {
       setLoadingSalary(false)
     }
   }
 
   // ==========================================
-  // LOAD SALARY (after auth resolves, and whenever refreshKey changes)
+  // LOAD SALARY
   // ==========================================
   useEffect(() => {
     if (!authLoading) {
       fetchSalary()
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, refreshKey])
 
   // ==========================================
   // RENDER
   // ==========================================
-  if (loadingSalary) {
-    return <p className="theme-text font-mono text-sm sm:text-base opacity-60">Loading salary...</p>
-  }
-
-  if (getSalary === null || getSalary === undefined) {
-    return (
-      <div className='space-y-3 sm:space-y-4 w-full'>
-        <div className='flex items-center gap-2'>
-          <Wallet size={16} className='opacity-60' />
-          <h1 className='font-mono text-base sm:text-lg'>Monthly salary</h1>
-        </div>
-        <button
-          type='button'
-          onClick={onAddClick}
-          className='theme-hover theme-border border-2 border-dashed w-full rounded-md flex flex-col justify-center items-center h-16 sm:h-20 opacity-70 hover:opacity-100 transition-opacity'
-        >
-          <Plus size={20} className='sm:hidden' />
-          <Plus size={25} className='hidden sm:block' />
-        </button>
-      </div>
-    )
-  }
-
   return (
-    <div className='space-y-2 sm:space-y-4 w-full'>
-      <div className='flex items-center gap-2'>
-        <Wallet size={16} className='opacity-60' />
-        <h1 className='font-mono text-base sm:text-lg'>Monthly salary</h1>
+    <div className="space-y-3 sm:space-y-4 w-full">
+
+      {/* ==========================================
+          HEADER
+          This ALWAYS stays visible
+      ========================================== */}
+      <div className="flex items-center gap-2">
+        <Wallet size={16} className="opacity-60" />
+
+        <h1 className="font-mono text-base sm:text-lg">
+          Monthly salary
+        </h1>
       </div>
 
-      <div className="theme-card theme-border border-2 border-l-4 border-l-emerald-500 rounded-md p-3 sm:p-4">
-        <p className="theme-text font-mono text-xs sm:text-sm opacity-70">Monthly salary</p>
-        <p className="theme-text font-mono text-2xl sm:text-3xl font-bold tabular-nums break-words">
-          {peso(getSalary)}
-        </p>
-      </div>
+
+      {/* ==========================================
+          LOADING
+          Only the content UNDER the header loads
+      ========================================== */}
+      {loadingSalary ? (
+
+        <div className="flex justify-center items-center h-16 sm:h-20">
+          <HashLoader
+            loading={loadingSalary}
+            size={19}
+            color="#dddfe9"
+          />
+        </div>
+
+      ) : getSalary === null || getSalary === undefined ? (
+
+        /* ==========================================
+           NO SALARY
+           Show the + button
+        ========================================== */
+        <button
+          type="button"
+          onClick={onAddClick}
+          className="theme-hover theme-border border-2 border-dashed w-full rounded-md flex flex-col justify-center items-center h-16 sm:h-20 opacity-70 hover:opacity-100 transition-opacity"
+        >
+          <Plus size={20} className="sm:hidden" />
+
+          <Plus size={25} className="hidden sm:block" />
+        </button>
+
+      ) : (
+
+        /* ==========================================
+           SALARY EXISTS
+           Show the salary card
+        ========================================== */
+        <div className="theme-card theme-border border-2 border-l-4 border-l-emerald-500 rounded-md p-3 sm:p-4">
+
+          <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
+            Monthly salary
+          </p>
+
+          <p className="theme-text font-mono text-2xl sm:text-3xl font-bold tabular-nums break-words">
+            {peso(getSalary)}
+          </p>
+
+        </div>
+      )}
+
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Receipt } from 'lucide-react'
 import { auth } from '../../../firebase'
 import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
-
+import { HashLoader } from 'react-spinners'
 //=============================================================================
 // PURPOSE OF THIS FILE: FETCH TRANSACTION + SCHEDULE ANALYTICS TO IMPORT FREELY
 //
@@ -78,7 +78,13 @@ export const BillAmount = ({ refreshKey }) => {
       </div>
 
       {loadingAnalytics && (
-        <p className="theme-text font-mono text-sm sm:text-base opacity-60">Loading...</p>
+        <p className="theme-text font-mono text-sm sm:text-base opacity-60">
+          <HashLoader
+          loading={loadingAnalytics}
+          size={19}
+          color="#dddfe9"
+        />
+        </p>
       )}
 
       {!loadingAnalytics && analytics && (

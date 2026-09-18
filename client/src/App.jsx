@@ -55,16 +55,9 @@ function LoadingScreen({ loading }) {
         size={20}
         color="#dddfe9"
       />
-      
-      <p className="text-lg theme-text font-mono">
-        Welcome to ExpenseKontrol
-      </p>
-      <img
-              src="/suitcase.png"
-              alt="Suitcase"
-              className="w-10 h-10"
-        />
 
+      
+     
       
     </div>
   )

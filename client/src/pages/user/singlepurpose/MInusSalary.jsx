@@ -3,7 +3,7 @@ import { PiggyBank } from 'lucide-react'
 import { auth } from '../../../firebase'
 import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 import { API_URL } from '../../../api'
-
+import { HashLoader } from 'react-spinners'
 //=============================================================================
 // PURPOSE OF THIS FILE: SHOW REMAINING BALANCE = SALARY - (SCHEDULE + TRANSACTIONS)
 //
@@ -121,7 +121,12 @@ export const MInusSalary = ({ refreshKey }) => {
       </div>
 
       {isLoading && (
-        <p className="theme-text font-mono text-sm sm:text-base opacity-60">Loading...</p>
+        <p className="theme-text font-mono text-sm sm:text-base opacity-60"><HashLoader
+          loading={loadingAnalytics}
+          size={19}
+          color="#dddfe9"
+        />
+        </p>
       )}
 
       {!isLoading && !hasSalary && (
