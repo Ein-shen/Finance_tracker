@@ -42,11 +42,22 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 // ==========================================
 // LOADING SCREEN
 // ==========================================
+import SyncLoader from "react-spinners/SyncLoader.js"
 
-function LoadingScreen() {
+
+
+function LoadingScreen({ loading }) {
   return (
-    <div className="min-h-screen theme-bg  flex items-center justify-center bg-gray-300">
-      <p className="text-lg text-gray-500">Welcome to ExpenseKontrol...</p>
+    <div className="min-h-screen theme-bg flex flex-col items-center justify-center gap-4">
+      <p className="text-lg theme-text font-mono">
+        Welcome to ExpenseKontrol
+      </p>
+
+      <SyncLoader
+        loading={loading}
+        size={12}
+        color="#20b2a6"
+      />
     </div>
   )
 }
