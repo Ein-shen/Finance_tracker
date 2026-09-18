@@ -134,7 +134,7 @@ export const MInusSalary = ({ refreshKey }) => {
       )}
 
       {!isLoading && hasSalary && analytics && (
-        <div className={`theme-card theme-border border-2 border-l-4 rounded-md p-3 sm:p-4 ${isOverspent ? 'border-l-rose-500' : 'border-l-indigo-500'}`}>
+        <div className={`theme-card  rounded-md p-3 sm:p-4 ${isOverspent ? 'border-l-rose-500' : 'border-l-indigo-500'}`}>
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70">Salary minus expenses</p>
           <p className={`font-mono text-2xl sm:text-3xl font-bold tabular-nums break-words ${isOverspent ? 'text-rose-400' : 'theme-text'}`}>
             {peso(remaining)}

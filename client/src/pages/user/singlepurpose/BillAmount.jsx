@@ -88,7 +88,7 @@ export const BillAmount = ({ refreshKey }) => {
       )}
 
       {!loadingAnalytics && analytics && (
-        <div className="theme-card theme-border border-2 border-l-4 border-l-amber-500 rounded-md p-3 sm:p-4">
+        <div className="theme-card  rounded-md p-3 sm:p-4">
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70">Total expenses</p>
           <p className="theme-text font-mono text-2xl sm:text-3xl font-bold tabular-nums break-words">
             {peso(totalExpenses)}

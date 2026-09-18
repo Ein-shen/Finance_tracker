@@ -128,7 +128,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
       ========================================== */}
       {loadingSalary ? (
 
-        <div className="flex justify-center items-center h-16 sm:h-20">
+        <div className="theme-text font-mono text-sm sm:text-base opacity-60">
           <HashLoader
             loading={loadingSalary}
             size={19}
@@ -158,7 +158,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
            SALARY EXISTS
            Show the salary card
         ========================================== */
-        <div className="theme-card theme-border border-2 border-l-4 border-l-emerald-500 rounded-md p-3 sm:p-4">
+        <div className="theme-card  rounded-md p-3 sm:p-4">
 
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
             Monthly salary
