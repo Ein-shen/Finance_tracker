@@ -4,6 +4,8 @@ import { auth } from '../../firebase'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { API_URL } from '../../api.js'
+import { HashLoader } from 'react-spinners'
+
 
 export const Salary = () => {
   const [showAdd, setShowAdd] = useState(false)
@@ -177,7 +179,12 @@ export const Salary = () => {
         <div className="space-y-4">
           <h1 className="font-mono text-lg">Monthly Salary</h1>
           {loadingSalary && (
-            <p className="theme-text font-mono">Loading salary...</p>
+            <p className="theme-text font-mono">
+              <HashLoader
+                size={19}
+                color="#dddfe9"
+              />
+            </p>
           )}
 
           {!loadingSalary &&
@@ -260,7 +267,13 @@ export const Salary = () => {
           <h1 className="font-mono text-lg">Monthly Transaction</h1>
 
           {loadingAnalytics && (
-            <p className="theme-text font-mono">Loading...</p>
+            <p className="theme-text font-mono">
+              <HashLoader
+                
+                size={19}
+                color="#dddfe9"
+              />
+          </p>
           )}
 
           {!loadingAnalytics && analytics && (
@@ -279,7 +292,11 @@ export const Salary = () => {
           <h1 className="font-mono text-lg">Monthly Schedule</h1>
 
           {loadingAnalytics && (
-            <p className="theme-text font-mono">Loading...</p>
+            <p className="theme-text font-mono">
+              <HashLoader
+                size={19}
+                color="#dddfe9"
+              /></p>
           )}
 
           {!loadingAnalytics && analytics && (
@@ -298,7 +315,12 @@ export const Salary = () => {
           <h1 className="font-mono text-lg">Monthly Spending</h1>
 
           {loadingAnalytics && (
-            <p className="theme-text font-mono">Loading...</p>
+            <p className="theme-text font-mono">
+              <HashLoader
+                size={19}
+                color="#dddfe9"
+              />
+              </p>
           )}
 
           {!loadingAnalytics && analytics && (
