@@ -3,6 +3,8 @@ import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 
+const CACHE_KEY_PREFIX = 'cachedTransactions_'
+
 export const Transaction = () => {
   // POPUPS DELETE, EDIT, ADD
   const [showAdd, setShowAdd] = useState(false)
@@ -17,11 +19,28 @@ export const Transaction = () => {
 
   // LOADING
   const [loading, setLoading] = useState(false)
-  const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [authLoading, setAuthLoading] = useState(true)
 
-  // TRANSACTIONS
-  const [transactions, setTransactions] = useState([])
+  // TRANSACTIONS - initialize from cache so something shows instantly.
+  // We don't know the user yet at first render, so we peek at any cache
+  // key present; it gets corrected/cleared once auth resolves.
+  const [transactions, setTransactions] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((k) =>
+        k.startsWith(CACHE_KEY_PREFIX)
+      )
+      if (keys.length === 0) return []
+      const cached = localStorage.getItem(keys[0])
+      return cached ? JSON.parse(cached) : []
+    } catch {
+      return []
+    }
+  })
+
+  // Only show a full "loading" state if we truly have nothing cached yet
+  const [loadingTransactions, setLoadingTransactions] = useState(
+    () => transactions.length === 0
+  )
 
   // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
@@ -35,6 +54,19 @@ export const Transaction = () => {
   // Helper to ensure proper path joining with API_URL
   const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
 
+  // Helper to build a per-user cache key
+  const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+  const saveCache = (uid, data) => {
+    try {
+      if (uid) {
+        localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+      }
+    } catch (e) {
+      console.error('Failed to save transaction cache:', e)
+    }
+  }
+
   // ==========================================
   // WAIT FOR FIREBASE AUTH
   // ==========================================
@@ -42,6 +74,24 @@ export const Transaction = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log('Firebase user:', user)
+
+      if (user) {
+        // Load the cache for THIS specific user (in case device is shared)
+        try {
+          const cached = localStorage.getItem(getCacheKey(user.uid))
+          if (cached) {
+            setTransactions(JSON.parse(cached))
+            setLoadingTransactions(false)
+          }
+        } catch (e) {
+          console.error('Failed to read transaction cache:', e)
+        }
+      } else {
+        // Logged out - clear in-memory state (cache stays on disk per-uid,
+        // harmless since it's keyed by uid and never shown to another user)
+        setTransactions([])
+      }
+
       setAuthLoading(false)
     })
 
@@ -54,8 +104,6 @@ export const Transaction = () => {
 
   const fetchTransactions = async () => {
     try {
-      setLoadingTransactions(true)
-
       const user = auth.currentUser
 
       console.log('Current Firebase user:', user)
@@ -63,12 +111,15 @@ export const Transaction = () => {
       if (!user) {
         console.log('No Firebase user logged in')
         setTransactions([])
+        setLoadingTransactions(false)
         return
       }
 
+      // Only show the blocking spinner if we don't already have cached data
+      setLoadingTransactions((prev) => (transactions.length === 0 ? true : prev))
+
       const token = await user.getIdToken()
 
-      // Fixed: Replaced http://localhost:5000 with baseUrl
       const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'GET',
         headers: {
@@ -91,10 +142,16 @@ export const Transaction = () => {
         throw new Error(data.message || 'Failed to get transactions')
       }
 
-      setTransactions(data.transactions || [])
+      const freshTransactions = data.transactions || []
+      setTransactions(freshTransactions)
+      saveCache(user.uid, freshTransactions)
     } catch (error) {
       console.error('Get transactions error:', error)
-      alert(error.message || 'Failed to get transactions')
+      // If we already have cached transactions showing, fail quietly in the
+      // background instead of throwing an alert over the user's data.
+      if (transactions.length === 0) {
+        alert(error.message || 'Failed to get transactions')
+      }
     } finally {
       setLoadingTransactions(false)
     }
@@ -108,6 +165,7 @@ export const Transaction = () => {
     if (!authLoading) {
       fetchTransactions()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading])
 
   // ==========================================
@@ -130,7 +188,6 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
-      // Fixed: Replaced http://localhost:5000 with baseUrl
       const response = await fetch(
         `${baseUrl}/api/transactions/${selectedTransaction.id}`,
         {
@@ -157,9 +214,13 @@ export const Transaction = () => {
         throw new Error(data.message || 'Failed to delete transaction')
       }
 
-      setTransactions((prevTransactions) =>
-        prevTransactions.filter((item) => item.id !== selectedTransaction.id)
-      )
+      setTransactions((prevTransactions) => {
+        const updated = prevTransactions.filter(
+          (item) => item.id !== selectedTransaction.id
+        )
+        saveCache(user.uid, updated)
+        return updated
+      })
 
       setShowDelete(false)
       setSelectedTransaction(null)
@@ -220,10 +281,11 @@ export const Transaction = () => {
         throw new Error(data.message || 'Failed to add transaction')
       }
 
-      setTransactions((previousTransactions) => [
-        data.transaction,
-        ...previousTransactions,
-      ])
+      setTransactions((previousTransactions) => {
+        const updated = [data.transaction, ...previousTransactions]
+        saveCache(user.uid, updated)
+        return updated
+      })
 
       setDescription('')
       setAmount('')
@@ -278,7 +340,6 @@ export const Transaction = () => {
 
       const token = await user.getIdToken()
 
-      // Fixed: Replaced http://localhost:5000 with baseUrl
       const response = await fetch(
         `${baseUrl}/api/transactions/${selectedTransaction.id}`,
         {
@@ -311,11 +372,13 @@ export const Transaction = () => {
         throw new Error(data.message || 'Failed to edit transaction')
       }
 
-      setTransactions((prev) =>
-        prev.map((item) =>
+      setTransactions((prev) => {
+        const updated = prev.map((item) =>
           item.id === selectedTransaction.id ? data.transaction : item
         )
-      )
+        saveCache(user.uid, updated)
+        return updated
+      })
 
       setShowEdit(false)
       setSelectedTransaction(null)
@@ -333,26 +396,17 @@ export const Transaction = () => {
     return new Date(date).toLocaleDateString()
   }
 
-  // ==========================================
-  // AUTH LOADING
-  // ==========================================
-
-  if (authLoading) {
-    return (
-      <div className="w-full md:pt-0">
-        <p className="theme-text font-mono px-4 sm:px-8 md:px-12 lg:px-20">
-          Checking login...
-        </p>
-      </div>
-    )
-  }
-
   return (
     <div className="w-full md:pt-0 h-screen">
       {/* HEADER */}
       <div className="w-full   rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Transactions
+          {authLoading && (
+            <span className="ml-2 text-xs opacity-60 align-middle">
+              (checking login...)
+            </span>
+          )}
         </h1>
 
         <button
@@ -366,7 +420,7 @@ export const Transaction = () => {
 
       {/* TRANSACTION LIST */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
-        {loadingTransactions && (
+        {loadingTransactions && transactions.length === 0 && (
           <p className="theme-text font-mono">Transaction loading...</p>
         )}
 
@@ -374,7 +428,7 @@ export const Transaction = () => {
           <p className="theme-text font-mono">No transactions yet.</p>
         )}
 
-        {!loadingTransactions && transactions.length > 0 && (
+        {transactions.length > 0 && (
           <div className="theme-div grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
             {transactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
