@@ -505,7 +505,7 @@ export const Schedule = () => {
         <select
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
-          className="rounded-md px-3 py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+          className="rounded-md py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
         >
           <option value="">All Schedules</option>
           {availableMonths.map((ym) => (
