@@ -207,7 +207,7 @@ export const Salary = () => {
                 <p className="theme-text font-mono text-sm opacity-70 text-center">
                   Monthly Salary
                 </p>
-                <p className="theme-text font-mono text-2xl font-bold text-center">
+                <p className="theme-text  font-mono text-2xl font-bold text-center">
                   ₱{getSalary}
                 </p>
               </div>
