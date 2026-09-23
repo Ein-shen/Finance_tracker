@@ -107,7 +107,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   // RENDER
   // ==========================================
   return (
-    <div className="space-y-3 sm:space-y-4 w-full">
+    <div className="space-y-3 sm:space-y-4 w-full ">
 
       {/* ==========================================
           HEADER
@@ -158,7 +158,7 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
            SALARY EXISTS
            Show the salary card
         ========================================== */
-        <div className="theme-card  rounded-md p-3 sm:p-4">
+        <div className="  rounded-md p-3 sm:p-4 bg-[#588157] ">
 
           <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
             Monthly salary
