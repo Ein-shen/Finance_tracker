@@ -548,7 +548,7 @@ export const Schedule = () => {
               return (
                 <div
                   key={currentId}
-                  className="card-theme theme-text  rounded-md p-4"
+                  className="theme-card theme-text  rounded-md p-4"
                 >
                   <div className="flex justify-between items-center">
                    
