@@ -4,7 +4,7 @@ import { auth } from '../../firebase'
 import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
-
+import { HashLoader } from "react-spinners"
 // Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
 const getMonthLabel = (ym) => {
   if (!ym) return ''
@@ -125,7 +125,11 @@ export const Analytics = () => {
       {/* ANALYTICS CONTENT */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
         {loadingAnalytics && (
-          <p className="theme-text font-mono">Analytics loading...</p>
+          <HashLoader
+            
+            size={20}
+            color="#dddfe9"
+          />
         )}
 
         {!loadingAnalytics && !analytics && (
