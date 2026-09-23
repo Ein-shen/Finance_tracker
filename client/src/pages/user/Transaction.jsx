@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
+import { HashLoader } from "react-spinners"
 
 const CACHE_KEY_PREFIX = 'cachedTransactions_'
 
@@ -483,7 +484,11 @@ export const Transaction = () => {
       {/* TRANSACTION LIST */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {loadingTransactions && transactions.length === 0 && (
-          <p className="theme-text font-mono">Transaction loading...</p>
+          <HashLoader
+             
+              size={20}
+              color="#dddfe9"
+            />
         )}
 
         {!loadingTransactions && transactions.length === 0 && (
