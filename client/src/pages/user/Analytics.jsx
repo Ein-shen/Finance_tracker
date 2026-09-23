@@ -110,9 +110,9 @@ export const Analytics = () => {
         <select
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
-          className="rounded-md px-3 py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+          className="rounded-md py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
         >
-          <option value="">All Time</option>
+          <option value="">All Analytics</option>
           {availableMonths.map((ym) => (
             <option key={ym} value={ym}>
               {getMonthLabel(ym)}
