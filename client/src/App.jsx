@@ -56,7 +56,7 @@ function LoadingScreen({ loading }) {
         color="#dddfe9"
       />
       <span className='font-mono text-md'>
-          Initializing
+          Initializing ..
       </span>
       
 
