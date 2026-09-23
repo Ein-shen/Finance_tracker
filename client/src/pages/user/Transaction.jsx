@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
@@ -41,6 +41,9 @@ export const Transaction = () => {
   const [loadingTransactions, setLoadingTransactions] = useState(
     () => transactions.length === 0
   )
+
+  // MONTH FILTER - value is either '' (show all) or 'YYYY-MM'
+  const [filterMonth, setFilterMonth] = useState('')
 
   // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
@@ -396,6 +399,47 @@ export const Transaction = () => {
     return new Date(date).toLocaleDateString()
   }
 
+  // ==========================================
+  // MONTH FILTER
+  // ==========================================
+
+  // Builds 'YYYY-MM' from a transaction's date, safely
+  const getYearMonth = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    if (Number.isNaN(d.getTime())) return ''
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    return `${year}-${month}`
+  }
+
+  const filteredTransactions = useMemo(() => {
+    if (!filterMonth) return transactions
+    return transactions.filter(
+      (t) => getYearMonth(t.transaction_date) === filterMonth
+    )
+  }, [transactions, filterMonth])
+
+  // Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
+  const getMonthLabel = (ym) => {
+    if (!ym) return ''
+    const [year, month] = ym.split('-')
+    const d = new Date(Number(year), Number(month) - 1, 1)
+    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  }
+
+  const filterMonthLabel = useMemo(() => getMonthLabel(filterMonth), [filterMonth])
+
+  // Distinct 'YYYY-MM' values actually present in the data, newest first
+  const availableMonths = useMemo(() => {
+    const set = new Set()
+    transactions.forEach((t) => {
+      const ym = getYearMonth(t.transaction_date)
+      if (ym) set.add(ym)
+    })
+    return Array.from(set).sort().reverse()
+  }, [transactions])
+
   return (
     <div className="w-full md:pt-0 h-screen">
       {/* HEADER */}
@@ -418,6 +462,24 @@ export const Transaction = () => {
         </button>
       </div>
 
+      {/* MONTH FILTER BAR */}
+      <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
+      
+        <select
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+          className="rounded-md px-3 py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+        >
+          <option value="">All Transactions</option>
+          {availableMonths.map((ym) => (
+            <option key={ym} value={ym}>
+              {getMonthLabel(ym)}
+            </option>
+          ))}
+        </select>
+        
+      </div>
+
       {/* TRANSACTION LIST */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {loadingTransactions && transactions.length === 0 && (
@@ -428,9 +490,17 @@ export const Transaction = () => {
           <p className="theme-text font-mono">No transactions yet.</p>
         )}
 
-        {transactions.length > 0 && (
+        {!loadingTransactions &&
+          transactions.length > 0 &&
+          filteredTransactions.length === 0 && (
+            <p className="theme-text font-mono">
+              No transactions for {filterMonthLabel || 'this period'}.
+            </p>
+          )}
+
+        {filteredTransactions.length > 0 && (
           <div className="theme-div grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
-            {transactions.map((transaction) => {
+            {filteredTransactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
               return (
                 <div key={currentId} className="theme-card theme-text rounded-md p-4">
