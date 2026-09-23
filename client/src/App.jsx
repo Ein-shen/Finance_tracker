@@ -55,6 +55,10 @@ function LoadingScreen({ loading }) {
         size={20}
         color="#dddfe9"
       />
+      <span className='font-mono text-md'>
+          Initializing
+      </span>
+      
 
       
      
