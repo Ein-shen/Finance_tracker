@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api.js'
@@ -78,6 +78,9 @@ export const Schedule = () => {
   const [loadingSchedules, setLoadingSchedules] = useState(
     () => schedules.length === 0
   )
+
+  // MONTH FILTER - value is either '' (show all) or 'YYYY-MM'
+  const [filterMonth, setFilterMonth] = useState('')
 
   const [selectedSchedule, setSelectedSchedule] = useState(null)
 
@@ -427,6 +430,48 @@ export const Schedule = () => {
     ).toLocaleDateString()
   }
 
+  // ==========================================
+  // MONTH FILTER
+  // ==========================================
+
+  // Builds 'YYYY-MM' from a schedule's due_date, safely.
+  // Applies the same timezone-offset correction as formatDate so the
+  // month bucket a schedule falls into matches what's shown on screen.
+  const getYearMonth = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return ''
+    const local = new Date(date.getTime() + date.getTimezoneOffset() * 60000)
+    const year = local.getFullYear()
+    const month = String(local.getMonth() + 1).padStart(2, '0')
+    return `${year}-${month}`
+  }
+
+  const filteredSchedules = useMemo(() => {
+    if (!filterMonth) return schedules
+    return schedules.filter((s) => getYearMonth(s.due_date) === filterMonth)
+  }, [schedules, filterMonth])
+
+  // Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
+  const getMonthLabel = (ym) => {
+    if (!ym) return ''
+    const [year, month] = ym.split('-')
+    const d = new Date(Number(year), Number(month) - 1, 1)
+    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  }
+
+  const filterMonthLabel = useMemo(() => getMonthLabel(filterMonth), [filterMonth])
+
+  // Distinct 'YYYY-MM' values actually present in the data, newest first
+  const availableMonths = useMemo(() => {
+    const set = new Set()
+    schedules.forEach((s) => {
+      const ym = getYearMonth(s.due_date)
+      if (ym) set.add(ym)
+    })
+    return Array.from(set).sort().reverse()
+  }, [schedules])
+
 
   // with "Checking login..." while authLoading was true. That was the
   // main cause of the visible delay — it hid the cached data we already
@@ -454,6 +499,35 @@ export const Schedule = () => {
         </button>
       </div>
 
+      {/* MONTH FILTER BAR */}
+      <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
+        <label className="font-mono text-sm theme-text opacity-70">
+          Filter by month
+        </label>
+        <select
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+          className="rounded-md px-3 py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+        >
+          <option value="">All Schedules</option>
+          {availableMonths.map((ym) => (
+            <option key={ym} value={ym}>
+              {getMonthLabel(ym)}
+            </option>
+          ))}
+        </select>
+        {filterMonth && (
+          <button
+            type="button"
+            onClick={() => setFilterMonth('')}
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 font-mono text-sm theme-text theme-border theme-hover"
+          >
+            <X size={14} />
+            Clear
+          </button>
+        )}
+      </div>
+
       {/* SCHEDULE LIST */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {/* Only show the loading text if we have NOTHING cached to show */}
@@ -465,9 +539,17 @@ export const Schedule = () => {
           <p className="theme-text font-mono">No schedules yet.</p>
         )}
 
-        {schedules.length > 0 && (
+        {!loadingSchedules &&
+          schedules.length > 0 &&
+          filteredSchedules.length === 0 && (
+            <p className="theme-text font-mono">
+              No schedules for {filterMonthLabel || 'this period'}.
+            </p>
+          )}
+
+        {filteredSchedules.length > 0 && (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
-            {schedules.map((schedule) => {
+            {filteredSchedules.map((schedule) => {
               const currentId = getScheduleId(schedule)
 
               return (
