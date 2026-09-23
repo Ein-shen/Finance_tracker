@@ -106,9 +106,7 @@ export const Analytics = () => {
 
       {/* MONTH FILTER BAR */}
       <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
-        <label className="font-mono text-sm theme-text opacity-70">
-          Filter by month
-        </label>
+        
         <select
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
@@ -121,16 +119,7 @@ export const Analytics = () => {
             </option>
           ))}
         </select>
-        {filterMonth && (
-          <button
-            type="button"
-            onClick={() => setFilterMonth('')}
-            className="flex items-center gap-1 rounded-md px-2 py-1.5 font-mono text-sm theme-text theme-border theme-hover"
-          >
-            <X size={14} />
-            Clear
-          </button>
-        )}
+        
       </div>
 
       {/* ANALYTICS CONTENT */}
