@@ -1,13 +1,44 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { X } from 'lucide-react'
 import { auth } from '../../firebase'
 import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
 
+// Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
+const getMonthLabel = (ym) => {
+  if (!ym) return ''
+  const [year, month] = ym.split('-')
+  const d = new Date(Number(year), Number(month) - 1, 1)
+  return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+}
+
+// Build the last `count` months as 'YYYY-MM' values, newest first.
+// NOTE: analytics is aggregated server-side, so we can't derive "months
+// that actually have data" the way the Transactions/Schedule filters do.
+// This just offers a rolling window instead.
+const buildRecentMonths = (count = 12) => {
+  const months = []
+  const now = new Date()
+  for (let i = 0; i < count; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    months.push(`${year}-${month}`)
+  }
+  return months
+}
+
 export const Analytics = () => {
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
   const [analytics, setAnalytics] = useState(null)
+
+  // MONTH FILTER - value is either '' (all time) or 'YYYY-MM'
+  const [filterMonth, setFilterMonth] = useState('')
+
+  const availableMonths = useMemo(() => buildRecentMonths(12), [])
+  const filterMonthLabel = useMemo(() => getMonthLabel(filterMonth), [filterMonth])
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -17,7 +48,7 @@ export const Analytics = () => {
     return unsubscribe
   }, [])
 
-  const getAnalytics = async () => {
+  const getAnalytics = async (month) => {
     try {
       setLoadingAnalytics(true)
 
@@ -28,7 +59,15 @@ export const Analytics = () => {
         return
       }
 
-      const data = await fetchAnalytics()
+      // ASSUMPTION: fetchAnalytics accepts an optional 'YYYY-MM' month
+      // string and returns data scoped to just that month; pass nothing
+      // (or undefined) for all-time totals. If fetchAnalytics doesn't
+      // support this yet, this param is currently ignored server-side
+      // and the filter won't actually narrow the results - update
+      // AnlyticsUtils.js / the API route to read it (e.g. as a query
+      // param) and filter server-side, the same way transaction_date /
+      // due_date are filtered elsewhere.
+      const data = await fetchAnalytics(month || undefined)
 
       setAnalytics(data)
     } catch (error) {
@@ -41,9 +80,10 @@ export const Analytics = () => {
 
   useEffect(() => {
     if (!authLoading) {
-      getAnalytics()
+      getAnalytics(filterMonth)
     }
-  }, [authLoading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, filterMonth])
 
   if (authLoading) {
     return (
@@ -64,6 +104,35 @@ export const Analytics = () => {
         </h1>
       </div>
 
+      {/* MONTH FILTER BAR */}
+      <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
+        <label className="font-mono text-sm theme-text opacity-70">
+          Filter by month
+        </label>
+        <select
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+          className="rounded-md px-3 py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+        >
+          <option value="">All Time</option>
+          {availableMonths.map((ym) => (
+            <option key={ym} value={ym}>
+              {getMonthLabel(ym)}
+            </option>
+          ))}
+        </select>
+        {filterMonth && (
+          <button
+            type="button"
+            onClick={() => setFilterMonth('')}
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 font-mono text-sm theme-text theme-border theme-hover"
+          >
+            <X size={14} />
+            Clear
+          </button>
+        )}
+      </div>
+
       {/* ANALYTICS CONTENT */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
         {loadingAnalytics && (
@@ -71,7 +140,9 @@ export const Analytics = () => {
         )}
 
         {!loadingAnalytics && !analytics && (
-          <p className="theme-text font-mono">No analytics data yet.</p>
+          <p className="theme-text font-mono">
+            No analytics data {filterMonth ? `for ${filterMonthLabel}` : 'yet'}.
+          </p>
         )}
 
         {!loadingAnalytics && analytics && (
