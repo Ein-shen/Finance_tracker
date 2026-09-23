@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Plus, X, Pencil, Trash2 } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api.js'
-
+import { HashLoader } from "react-spinners"
 // ==========================================
 // LOCAL STORAGE CACHE KEY
 // ==========================================
@@ -521,7 +521,11 @@ export const Schedule = () => {
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
         {/* Only show the loading text if we have NOTHING cached to show */}
         {loadingSchedules && schedules.length === 0 && (
-          <p className="theme-text font-mono">Loading schedules...</p>
+          <HashLoader
+            
+            size={20}
+            color="#dddfe9"
+          />
         )}
 
         {!loadingSchedules && schedules.length === 0 && (
