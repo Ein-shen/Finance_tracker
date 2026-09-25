@@ -10,7 +10,11 @@ export const About = () => {
 
           <span>
             im about to create changes  here to add in the landing page hhah
-            
+
+          </span>
+
+          <span>
+            jkasd
           </span>
         </h1>
       </div>
