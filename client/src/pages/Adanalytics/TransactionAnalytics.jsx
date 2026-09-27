@@ -3,11 +3,35 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 
+const CACHE_KEY_PREFIX = 'transactionAnalytics_'
+
 export const TransactionAnalytics = () => {
 
+  const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+  const saveCache = (uid, data) => {
+    try {
+      if (uid) localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+    } catch (error) {
+      console.error('Failed to save transaction analytics cache:', error)
+    }
+  }
+
+  // Peek at any cached copy so something shows before auth resolves
+  const [cachedAnalytics] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_KEY_PREFIX))
+      if (keys.length === 0) return null
+      const cached = localStorage.getItem(keys[0])
+      return cached ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
   //Analytics
-  const [loadingAnalytics, setLoadingAnalytics] = useState(true)
-  const [analytics, setAnalytics] = useState(null)
+  const [loadingAnalytics, setLoadingAnalytics] = useState(cachedAnalytics === null)
+  const [analytics, setAnalytics] = useState(cachedAnalytics)
 
   //Auth
   const [authLoading, setAuthLoading] = useState(true)
@@ -53,7 +77,20 @@ export const TransactionAnalytics = () => {
   // Firebase Auth Listener & Fetch Trigger
   // ------------------------------------------
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Load this specific user's cache first (in case device is shared)
+      if (user) {
+        try {
+          const cached = localStorage.getItem(getCacheKey(user.uid))
+          if (cached) {
+            setAnalytics(JSON.parse(cached))
+            setLoadingAnalytics(false)
+          }
+        } catch (error) {
+          console.error('Failed to read transaction analytics cache:', error)
+        }
+      }
+
       setAuthLoading(false)
     })
 
@@ -62,19 +99,26 @@ export const TransactionAnalytics = () => {
 
   const getAnalytics = async () => {
     try {
-      setLoadingAnalytics(true)
       const user = auth.currentUser
 
       if (!user) {
         setAnalytics(null)
+        setLoadingAnalytics(false)
         return
       }
 
+      // Only block the UI with a loading state if nothing is on screen yet
+      setLoadingAnalytics((prev) => (analytics ? false : prev))
+
       const data = await fetchAnalyticsData()
       setAnalytics(data)
+      saveCache(user.uid, data)
     } catch (error) {
       console.error('Get analytics error:', error)
-      alert(error.message || 'Failed to get analytics')
+      // If cached data is already showing, fail quietly instead of alerting
+      if (!analytics) {
+        alert(error.message || 'Failed to get analytics')
+      }
     } finally {
       setLoadingAnalytics(false)
     }
