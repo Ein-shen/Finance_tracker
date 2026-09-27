@@ -10,12 +10,10 @@ export const AdminSettings = () => {
   const isLight = theme === 'light'
 
   return (
-   <div className="flex flex-col gap-15 h-screen">
+   <div className="flex flex-col gap-15 h-screen pt-10">
 
       <div className="flex flex-row px-4 sm:px-8 md:px-12 lg:px-20">
-        <h1 className="font-mono text-2xl">
-          Settings
-        </h1>
+        <h1 className="font-mono text-2xl">Admin settings</h1>
       </div>
 
       <div className="theme-card py-4 space-y-4 theme-border border px-3 rounded-md w-[70%] mx-auto flex flex-col justify-center items-stretch">
