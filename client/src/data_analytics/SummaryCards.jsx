@@ -1,11 +1,37 @@
+import React, { useState, useEffect } from 'react'
 
+const CACHE_KEY = 'summaryCardsData'
 
 export const SummaryCards = ({ cards }) => {
-  if (!cards || cards.length === 0) return null
+  // Fall back to whatever was cached last time, so the cards don't
+  // disappear if the parent hasn't passed fresh data down yet.
+  const [cachedCards] = useState(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY)
+      return cached ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
+  // Whenever real cards arrive from the parent, save them for next time
+  useEffect(() => {
+    if (cards && cards.length > 0) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cards))
+      } catch (error) {
+        console.error('Failed to save summary cards cache:', error)
+      }
+    }
+  }, [cards])
+
+  const displayCards = cards && cards.length > 0 ? cards : cachedCards
+
+  if (!displayCards || displayCards.length === 0) return null
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
-      {cards.map((c) => (
+      {displayCards.map((c) => (
         <div
           key={c.label}
           className="text-center theme-card rounded-md p-4 flex-1"
