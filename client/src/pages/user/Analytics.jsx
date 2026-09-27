@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { auth } from '../../firebase'
-import { fetchAnalytics } from '../../data_analytics/AnlyticsUtils'
+import { fetchAnalytics, getCachedAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
 import { HashLoader } from "react-spinners"
@@ -42,21 +42,41 @@ export const Analytics = () => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
+      // As soon as we know who's logged in, show any cached data for the
+      // currently selected month right away, instead of a blank loader.
+      if (user) {
+        const cached = getCachedAnalytics(filterMonth)
+        if (cached) {
+          setAnalytics(cached)
+          setLoadingAnalytics(false)
+        }
+      }
+
       setAuthLoading(false)
     })
 
     return unsubscribe
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getAnalytics = async (month) => {
     try {
-      setLoadingAnalytics(true)
-
       const user = auth.currentUser
 
       if (!user) {
         setAnalytics(null)
+        setLoadingAnalytics(false)
         return
+      }
+
+      // Show cached data for THIS specific month right away (e.g. when
+      // switching the filter), so it doesn't always flash a loading state.
+      const cached = getCachedAnalytics(month)
+      if (cached) {
+        setAnalytics(cached)
+        setLoadingAnalytics(false)
+      } else {
+        setLoadingAnalytics(true)
       }
 
       // ASSUMPTION: fetchAnalytics accepts an optional 'YYYY-MM' month
@@ -72,7 +92,11 @@ export const Analytics = () => {
       setAnalytics(data)
     } catch (error) {
       console.error('Get analytics error:', error)
-      alert(error.message || 'Failed to get analytics')
+      // If cached data is already showing for this month, fail quietly
+      // instead of throwing an alert over data the user can already see.
+      if (!getCachedAnalytics(month)) {
+        alert(error.message || 'Failed to get analytics')
+      }
     } finally {
       setLoadingAnalytics(false)
     }
