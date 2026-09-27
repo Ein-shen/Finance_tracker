@@ -3,10 +3,34 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 
+const CACHE_KEY_PREFIX = 'userAnalytics_'
+
 export const UserAnalytics = () => {
 
-  const [loadingUsers, setLoadingUsers] = useState(true)
-  const [users, setUsers] = useState(null)
+  const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+  const saveCache = (uid, data) => {
+    try {
+      if (uid) localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+    } catch (error) {
+      console.error('Failed to save user analytics cache:', error)
+    }
+  }
+
+  // Peek at any cached copy so something shows before auth resolves
+  const [cachedUsers] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_KEY_PREFIX))
+      if (keys.length === 0) return null
+      const cached = localStorage.getItem(keys[0])
+      return cached ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
+  const [loadingUsers, setLoadingUsers] = useState(cachedUsers === null)
+  const [users, setUsers] = useState(cachedUsers)
 
   const [authLoading, setAuthLoading] = useState(true)
 
@@ -42,7 +66,20 @@ export const UserAnalytics = () => {
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Load this specific user's cache first (in case device is shared)
+      if (user) {
+        try {
+          const cached = localStorage.getItem(getCacheKey(user.uid))
+          if (cached) {
+            setUsers(JSON.parse(cached))
+            setLoadingUsers(false)
+          }
+        } catch (error) {
+          console.error('Failed to read user analytics cache:', error)
+        }
+      }
+
       setAuthLoading(false)
     })
     return unsubscribe
@@ -50,19 +87,26 @@ export const UserAnalytics = () => {
 
   const getUsers = async () => {
     try {
-      setLoadingUsers(true)
       const user = auth.currentUser
 
       if (!user) {
         setUsers(null)
+        setLoadingUsers(false)
         return
       }
 
+      // Only block the UI with a loading state if nothing is on screen yet
+      setLoadingUsers((prev) => (users ? false : prev))
+
       const data = await fetchUsersData()
       setUsers(data)
+      saveCache(user.uid, data)
     } catch (error) {
       console.error('Get analytics error:', error)
-      alert(error.message || 'Failed to get analytics')
+      // If cached data is already showing, fail quietly instead of alerting
+      if (!users) {
+        alert(error.message || 'Failed to get analytics')
+      }
     } finally {
       setLoadingUsers(false)
     }
