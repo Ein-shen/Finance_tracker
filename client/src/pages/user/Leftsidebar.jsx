@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import {
   Calendar,
@@ -5,13 +6,14 @@ import {
   User,
   Receipt,
   Settings,
-  LogOut,
   Menu,
+  LayoutDashboard,
   X,
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const navItems = [
+  { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
   { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
   { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
@@ -26,7 +28,7 @@ export const Leftsidebar = () => {
 
   const handleNavigate = (path) => {
     navigate(path)
-    setIsOpen(false) // close drawer after picking a page on mobile
+    setIsOpen(false) // Close drawer after selecting a page on mobile
   }
 
   return (
@@ -39,7 +41,7 @@ export const Leftsidebar = () => {
         <Menu className="w-6 h-6" />
       </button>
 
-      {/* Overlay - only visible when drawer open on mobile */}
+      {/* Overlay - only visible when drawer is open on mobile */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -49,29 +51,39 @@ export const Leftsidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`h-screen theme-card w-64 fixed left-0 top-0 flex flex-col items-center text-center  theme-text theme-border border-r-[0.5px] z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`h-screen theme-card w-64 fixed left-0 top-0 flex flex-col items-center text-center theme-text theme-border border-r-[0.5px] z-50 transform transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0`}
       >
         {/* Close button - only visible on mobile */}
         <button
           onClick={() => setIsOpen(false)}
-          className="md:hidden absolute top-4 right-4 p-1"
+          className="md:hidden absolute top-4 right-2"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Logo / Dashboard Home */}
         <button
-          onClick={() => handleNavigate('/dashboard')}
+          
           className="flex flex-row items-center gap-2 py-6"
         >
-          <img src="/suitcase.png" alt="Suitcase" className="w-10 h-12" />
+          <img
+            src="/suitcase.png"
+            alt="Suitcase"
+            className="w-10 h-12"
+          />
           <h1 className="font-mono text-lg">Expense Tracker</h1>
         </button>
 
         {/* Main Navigation */}
         <div className="w-full space-y-4 px-6">
           {navItems.map(({ label, icon: Icon, path }) => {
-            const isActive = location.pathname.startsWith(path)
+            const isActive =
+              path === '/dashboard'
+                ? location.pathname === '/dashboard'
+                : location.pathname === path ||
+                  location.pathname.startsWith(path + '/')
 
             return (
               <button
