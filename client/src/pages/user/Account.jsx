@@ -3,18 +3,65 @@ import { Salary } from './Salary'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 
+const CACHE_KEY_PREFIX = 'accountProfile_'
+
 export const Account = () => {
-  const [loadingProfile, setLoadingProfile] = useState(true)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [photoUrl, setPhotoUrl] = useState(null)
+  // Helper to build a per-user cache key
+  const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+  const saveCache = (uid, data) => {
+    try {
+      if (uid) {
+        localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+      }
+    } catch (error) {
+      console.error('Failed to save account cache:', error)
+    }
+  }
+
+  // PROFILE - initialize from cache so something shows instantly.
+  // We don't know the user yet at first render, so we peek at any cache
+  // key present; it gets corrected/cleared once auth resolves.
+  const [{ name: cachedName, email: cachedEmail, photoUrl: cachedPhotoUrl }] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((k) =>
+        k.startsWith(CACHE_KEY_PREFIX)
+      )
+      if (keys.length === 0) return { name: '', email: '', photoUrl: null }
+      const cached = localStorage.getItem(keys[0])
+      return cached
+        ? JSON.parse(cached)
+        : { name: '', email: '', photoUrl: null }
+    } catch {
+      return { name: '', email: '', photoUrl: null }
+    }
+  })
+
+  const [loadingProfile, setLoadingProfile] = useState(!cachedName && !cachedEmail)
+  const [name, setName] = useState(cachedName || '')
+  const [email, setEmail] = useState(cachedEmail || '')
+  const [photoUrl, setPhotoUrl] = useState(cachedPhotoUrl || null)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        fetchProfile()
+        // Load the cache for THIS specific user first (in case device is shared)
+        try {
+          const cached = localStorage.getItem(getCacheKey(user.uid))
+          if (cached) {
+            const parsed = JSON.parse(cached)
+            setName(parsed.name || '')
+            setEmail(parsed.email || '')
+            setPhotoUrl(parsed.photoUrl || null)
+            setLoadingProfile(false)
+          }
+        } catch (error) {
+          console.error('Failed to read account cache:', error)
+        }
+
+        fetchProfile(user)
       } else {
         setLoadingProfile(false)
       }
@@ -22,11 +69,14 @@ export const Account = () => {
     return unsubscribe
   }, [])
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (userArg) => {
     try {
-      setLoadingProfile(true)
-      const user = auth.currentUser
+      const user = userArg || auth.currentUser
       if (!user) return
+
+      // Only show the blocking "loading" state if we don't already have
+      // cached data on screen
+      setLoadingProfile((prev) => (name || email ? false : prev))
 
       const token = await user.getIdToken()
       const response = await fetch(`${API_URL}/api/user`, {
@@ -42,9 +92,19 @@ export const Account = () => {
         throw new Error(data.message || 'Failed to get profile')
       }
 
-      setName(data.name || '')
-      setEmail(data.email || '')
-      setPhotoUrl(data.photo_url || null)
+      const freshName = data.name || ''
+      const freshEmail = data.email || ''
+      const freshPhotoUrl = data.photo_url || null
+
+      setName(freshName)
+      setEmail(freshEmail)
+      setPhotoUrl(freshPhotoUrl)
+
+      saveCache(user.uid, {
+        name: freshName,
+        email: freshEmail,
+        photoUrl: freshPhotoUrl,
+      })
     } catch (error) {
       console.error('Get profile error:', error)
     } finally {
@@ -88,6 +148,12 @@ export const Account = () => {
       // Cleanup local object preview memory allocation
       URL.revokeObjectURL(objectUrl)
       setPhotoUrl(data.user.photo_url)
+
+      saveCache(user.uid, {
+        name,
+        email,
+        photoUrl: data.user.photo_url,
+      })
     } catch (error) {
       console.error('Photo upload error:', error)
       setUploadError('Failed to upload photo. Try again.')
