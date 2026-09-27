@@ -3,10 +3,34 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 
+const CACHE_KEY_PREFIX = 'bannedAnalytics_'
+
 export const Banned = () => {
 
-  const [loadingBanned, setLoadingBanned] = useState(true)
-  const [banned, setBanned] = useState(null)
+  const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+  const saveCache = (uid, data) => {
+    try {
+      if (uid) localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+    } catch (error) {
+      console.error('Failed to save banned cache:', error)
+    }
+  }
+
+  // Peek at any cached copy so something shows before auth resolves
+  const [cachedBanned] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith(CACHE_KEY_PREFIX))
+      if (keys.length === 0) return null
+      const cached = localStorage.getItem(keys[0])
+      return cached ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
+  const [loadingBanned, setLoadingBanned] = useState(cachedBanned === null)
+  const [banned, setBanned] = useState(cachedBanned)
 
   const [authLoading, setAuthLoading] = useState(true)
 
@@ -45,7 +69,20 @@ export const Banned = () => {
   // Firebase Auth Listener & Fetch Trigger
   // ------------------------------------------
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Load this specific user's cache first (in case device is shared)
+      if (user) {
+        try {
+          const cached = localStorage.getItem(getCacheKey(user.uid))
+          if (cached) {
+            setBanned(JSON.parse(cached))
+            setLoadingBanned(false)
+          }
+        } catch (error) {
+          console.error('Failed to read banned cache:', error)
+        }
+      }
+
       setAuthLoading(false)
     })
 
@@ -54,19 +91,26 @@ export const Banned = () => {
 
   const getBanned = async () => {
     try {
-      setLoadingBanned(true)
       const user = auth.currentUser
 
       if (!user) {
         setBanned(null)
+        setLoadingBanned(false)
         return
       }
 
+      // Only block the UI with a loading state if nothing is on screen yet
+      setLoadingBanned((prev) => (banned ? false : prev))
+
       const data = await fetchBannedAcc()
       setBanned(data)
+      saveCache(user.uid, data)
     } catch (error) {
       console.error('Get analytics error:', error)
-      alert(error.message || 'Failed to get analytics')
+      // If cached data is already showing, fail quietly instead of alerting
+      if (!banned) {
+        alert(error.message || 'Failed to get analytics')
+      }
     } finally {
       setLoadingBanned(false)
     }
