@@ -6,6 +6,7 @@ import {
   Receipt,
   Settings,
   LayoutDashboard,
+  Menu,
   X,
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -19,9 +20,10 @@ const navItems = [
   { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
 ]
 
-export const Leftsidebar = ({ isOpen, setIsOpen }) => {
+export const Leftsidebar = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleNavigate = (path) => {
     navigate(path)
@@ -30,7 +32,19 @@ export const Leftsidebar = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* Overlay - mobile only. Starts below the navbar (top-16) */}
+      {/* Menu button - mobile only, small, under the navbar. Hidden while the drawer is open */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          aria-label="Open menu"
+          className="md:hidden fixed left-4 top-[4.75rem] z-30 flex items-center gap-2 rounded-md border border-border bg-background px-2 py-2 font-mono text-sm"
+        >
+          <Menu className="w-5 h-5" />
+          
+        </button>
+      )}
+
+      {/* Overlay - mobile only, starts right below the navbar */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -38,25 +52,23 @@ export const Leftsidebar = ({ isOpen, setIsOpen }) => {
         />
       )}
 
-      {/* Sidebar: starts below the navbar (top-16), z-40 is under the navbar's z-50 */}
+      {/* Sidebar: always starts right below the navbar */}
       <div
-        className={`theme-card w-64 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text  z-40 transform transition-transform duration-300 overflow-y-auto ${
+        className={`theme-card w-64 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text border-r border-border z-40 transform transition-transform duration-300 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
-        {/* Close button - mobile only */}
+        {/* Close button - mobile only. Brings the Menu button back */}
         <button
           onClick={() => setIsOpen(false)}
           className="md:hidden absolute top-4 right-2"
+          aria-label="Close menu"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Logo */}
-        
-
         {/* Main Navigation */}
-        <div className="w-full space-y-4 px-6 pt-5 ">
+        <div className="w-full space-y-4 px-6 pt-5">
           {navItems.map(({ label, icon: Icon, path }) => {
             const isActive =
               path === '/dashboard'
