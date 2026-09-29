@@ -255,7 +255,7 @@ export const Account = () => {
 
         
             {/* Clicking the photo opens the file picker (the hidden <input> below) */}
-            <label className="relative flex items-center justify-center border-2 rounded-md h-32 w-32 cursor-pointer overflow-hidden">
+            <label className="relative flex items-center justify-center border-b border-white/5 rounded-md h-32 w-32 cursor-pointer overflow-hidden">
               {resolvedPhotoUrl ? (
                 <img
                   src={resolvedPhotoUrl}
