@@ -1,18 +1,21 @@
-
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Leftsidebar } from './Leftsidebar'
-
+import { Navbar } from './Navbar'
 
 export const Dashboard = () => {
-  return (
-    <div>
-      <Leftsidebar />
-     
-      
+  const [isOpen, setIsOpen] = useState(false)
 
-      <div className="pt-25 md:pt-20 ml-0 md:ml-64 pt-16 md:pt-8 px-4 sm:px-8 md:px-12 lg:px-20">
-        <Outlet />
-      </div>
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar onMenuClick={() => setIsOpen(true)} />
+      <Leftsidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+      <main className="pt-16 ml-0 md:ml-64 px-4 sm:px-6 lg:px-8">
+        <div className="pt-6">
+          <Outlet />
+        </div>
+      </main>
     </div>
   )
 }

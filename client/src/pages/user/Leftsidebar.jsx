@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import {
   Calendar,
@@ -6,7 +5,6 @@ import {
   User,
   Receipt,
   Settings,
-  Menu,
   LayoutDashboard,
   X,
 } from 'lucide-react'
@@ -21,41 +19,32 @@ const navItems = [
   { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
 ]
 
-export const Leftsidebar = () => {
+export const Leftsidebar = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [isOpen, setIsOpen] = useState(false)
 
   const handleNavigate = (path) => {
     navigate(path)
-    setIsOpen(false) // Close drawer after selecting a page on mobile
+    setIsOpen(false)
   }
 
   return (
     <>
-      {/* Hamburger button - only visible on mobile */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md border-2 theme-border theme-bg theme-text"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
-
-      {/* Overlay - only visible when drawer is open on mobile */}
+      {/* Overlay - mobile only. Starts below the navbar (top-16) */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          className="md:hidden fixed inset-x-0 top-16 bottom-0 bg-black/50 z-30"
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar: starts below the navbar (top-16), z-40 is under the navbar's z-50 */}
       <div
-        className={`h-screen theme-card w-64 fixed left-0 top-0 flex flex-col items-center text-center theme-text theme-border border-r-[0.5px] z-50 transform transition-transform duration-300 ${
+        className={`theme-card w-64 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text  z-40 transform transition-transform duration-300 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
-        {/* Close button - only visible on mobile */}
+        {/* Close button - mobile only */}
         <button
           onClick={() => setIsOpen(false)}
           className="md:hidden absolute top-4 right-2"
@@ -63,21 +52,11 @@ export const Leftsidebar = () => {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Logo / Dashboard Home */}
-        <button
-          
-          className="flex flex-row items-center gap-2 py-6"
-        >
-          <img
-            src="/suitcase.png"
-            alt="Suitcase"
-            className="w-10 h-12"
-          />
-          <h1 className="font-mono text-lg">Expense Tracker</h1>
-        </button>
+        {/* Logo */}
+        
 
         {/* Main Navigation */}
-        <div className="w-full space-y-4 px-6">
+        <div className="w-full space-y-4 px-6 pt-5 ">
           {navItems.map(({ label, icon: Icon, path }) => {
             const isActive =
               path === '/dashboard'
