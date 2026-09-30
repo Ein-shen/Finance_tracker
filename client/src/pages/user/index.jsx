@@ -1,7 +1,7 @@
 import { AmountSalary } from "./singlepurpose/AmountSalary"
 import { BillAmount } from "./singlepurpose/BillAmount"
 import { MInusSalary } from "./singlepurpose/MInusSalary"
-
+import { CategoryChart } from '../../data_analytics/CategoryChart'
 export const Index = () => {
   return (
     <div className=" px-4 sm:px-6 md:px-10">
@@ -11,6 +11,11 @@ export const Index = () => {
         <AmountSalary />
         <BillAmount />
         <MInusSalary />
+      </div>
+
+      <div className="flex flex-row pt-10">
+        <CategoryChart />
+
       </div>
     </div>
   )
