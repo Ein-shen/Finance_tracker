@@ -39,7 +39,7 @@ export const Leftsidebar = () => {
           aria-label="Open menu"
           className="md:hidden fixed left-4 top-[4.75rem] z-30 flex items-center gap-2 rounded-md border border-border bg-background px-2 py-2 font-mono text-sm"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
           
         </button>
       )}
@@ -54,14 +54,14 @@ export const Leftsidebar = () => {
 
       {/* Sidebar: always starts right below the navbar */}
       <div
-        className={`theme-card w-64 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text border-white/10 border-r  z-40 transform transition-transform duration-300 overflow-y-auto ${
+        className={`theme-card w-64 py-5 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text border-white/10 border-r  z-40 transform transition-transform duration-300 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
         {/* Close button - mobile only. Brings the Menu button back */}
         <button
           onClick={() => setIsOpen(false)}
-          className="md:hidden absolute top-4 right-2"
+          className="md:hidden absolute top-2  right-2 "
           aria-label="Close menu"
         >
           <X className="w-5 h-5" />
