@@ -54,7 +54,7 @@ export const Leftsidebar = () => {
 
       {/* Sidebar: always starts right below the navbar */}
       <div
-        className={`theme-card w-64 py-5 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text border-white/10 border-r  z-40 transform transition-transform duration-300 overflow-y-auto ${
+        className={`theme-card w-64 py-0 sm:pt-5 fixed left-0 top-16 bottom-0 flex flex-col items-center text-center theme-text border-white/10 border-r  z-40 transform transition-transform duration-300 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
