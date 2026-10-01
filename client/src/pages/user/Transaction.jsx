@@ -369,7 +369,7 @@ export const Transaction = () => {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Transactions</h1>
-            <p className="mt-1 text-sm opacity-50">Track your income and expenses</p>
+
           </div>
 
           <button
