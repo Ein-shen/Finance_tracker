@@ -571,13 +571,13 @@ export const Schedule = () => {
 
                       <div className="min-w-0">
                         <h2 className="truncate text-base font-semibold capitalize">{schedule.category}</h2>
-                        <p className="mt-1 text-xs opacity-50">{schedule.repeat_type}</p>
+                        <p className="mt-1 text-md text-green-500 ">{schedule.repeat_type}</p>
                       </div>
                     </div>
 
                     <div className="shrink-0">
                       <p className="text-xs opacity-40">Due date</p>
-                      <p className="mt-1 text-sm font-medium">{formatDate(schedule.due_date)}</p>
+                      <p className="mt-1 text-sm text-red-500 font-medium">{formatDate(schedule.due_date)}</p>
                     </div>
                   </div>
 
@@ -586,17 +586,17 @@ export const Schedule = () => {
                   {/* BOTTOM */}
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="truncate text-sm capitalize opacity-50">{schedule.description}</p>
-                      <p className="mt-1 text-sm font-medium">₱{Number(schedule.amount).toFixed(2)}</p>
+                      <p className="truncate text-sm capitalize ">{schedule.description}</p>
+                      <p className="mt-1 text-sm font-medium text-red-500">-₱{Number(schedule.amount).toFixed(2)}</p>
                     </div>
 
                     <div className="flex shrink-0 items-center">
                       <button
                         type="button"
                         onClick={() => openEditModal(schedule)}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10"
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-green-500"
                       >
-                        <Pencil size={16} />
+                        <Pencil  size={16} />
                       </button>
 
                       <button
