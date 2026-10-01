@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Plus, X, Pencil, Trash2 } from 'lucide-react'
+import { Plus, X, Pencil, Trash2, Utensils, Car, ShoppingBag, Receipt, Film, Wallet } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api.js'
 import { HashLoader } from "react-spinners"
@@ -95,6 +95,18 @@ export const Schedule = () => {
 
   // Helper function to extract correct unique identifier
   const getScheduleId = (item) => item?.id || item?._id
+
+  // Category icon shown in the card's icon tile
+  const getCategoryIcon = (cat) => {
+    switch (cat?.toLowerCase()) {
+      case 'food': return <Utensils size={19} />
+      case 'transportation': return <Car size={19} />
+      case 'shopping': return <ShoppingBag size={19} />
+      case 'bills': return <Receipt size={19} />
+      case 'entertainment': return <Film size={19} />
+      default: return <Wallet size={19} />
+    }
+  }
 
   // STEP 3: Small helper to save the current list to localStorage.
   // We call this every time the list changes (after add/edit/delete/fetch)
@@ -541,64 +553,50 @@ export const Schedule = () => {
           )}
 
         {filteredSchedules.length > 0 && (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+          <div className=" space-y-5 pt-10">
             {filteredSchedules.map((schedule) => {
               const currentId = getScheduleId(schedule)
 
               return (
                 <div
                   key={currentId}
-                  className="theme-card theme-text  rounded-md p-4"
+                  className="theme-card theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
                 >
-                  <div className="flex justify-between items-center">
-                   
-                      <div className="space-y-5 w-full">
+                  {/* TOP */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl bg-black/5 dark:bg-white/10">
+                        {getCategoryIcon(schedule.category)}
+                      </div>
 
-                        {/* REPEAT TYPE */}
-                        <h2 className="w-full flex justify-center items-center">
-                          <span className="font-bold text-md">
-                            {schedule.repeat_type}
-                          </span>
-                        </h2>
-
-                        {/* SCHEDULE DETAILS */}
-                        <div className="flex justify-center">
-                          <div className="text-left">
-                            <h2>
-                              <span className="font-bold text-md">Type: </span>
-                              {schedule.category}
-                            </h2>
-
-                            <h2>
-                              <span className="font-bold text-md">Amount: </span>
-                              ₱{Number(schedule.amount).toFixed(2)}
-                            </h2>
-
-                            <h2>
-                              <span className="font-bold text-md">
-                                Description:{' '}
-                              </span>
-                              {schedule.description}
-                            </h2>
-
-                            <h2>
-                              <span className="font-bold text-md">Due: </span>
-                              {formatDate(schedule.due_date)}
-                            </h2>
-                          </div>
-                        </div>
-
+                      <div className="min-w-0">
+                        <h2 className="truncate text-base font-semibold capitalize">{schedule.category}</h2>
+                        <p className="mt-1 text-xs opacity-50">{schedule.repeat_type}</p>
                       </div>
                     </div>
 
-                    {/* EDIT / DELETE */}
-                    <div className="flex justify-end flex-row pt-3">
+                    <div className="shrink-0">
+                      <p className="text-xs opacity-40">Due date</p>
+                      <p className="mt-1 text-sm font-medium">{formatDate(schedule.due_date)}</p>
+                    </div>
+                  </div>
+
+                  <div className="my-5 h-px w-full bg-black/10 dark:bg-white/10" />
+
+                  {/* BOTTOM */}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm capitalize opacity-50">{schedule.description}</p>
+                      <p className="mt-1 text-sm font-medium">₱{Number(schedule.amount).toFixed(2)}</p>
+                    </div>
+
+                    <div className="flex shrink-0 items-center">
                       <button
                         type="button"
                         onClick={() => openEditModal(schedule)}
-                        className="p-1.5 rounded-md theme-text theme-hover"
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10"
                       >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                       </button>
 
                       <button
@@ -607,13 +605,12 @@ export const Schedule = () => {
                           setSelectedSchedule(schedule)
                           setShowDelete(true)
                         }}
-                        className="p-1.5 rounded-md theme-text theme-hover"
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-red-500"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
-
-
+                  </div>
                 </div>
               )
             })}
