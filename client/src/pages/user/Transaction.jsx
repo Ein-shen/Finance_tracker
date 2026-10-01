@@ -359,6 +359,8 @@ export const Transaction = () => {
     return Array.from(months).sort().reverse()
   }, [transactions])
 
+
+  
   // ---------- UI ----------
   return (
     <div className="w-full min-h-screen theme-bg theme-text">
@@ -440,12 +442,13 @@ export const Transaction = () => {
                   {/* TOP */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-center gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black/5 dark:bg-white/10">
+                     <div className="flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl bg-black/5 dark:bg-white/10">
                         {getCategoryIcon(transaction.category)}
                       </div>
-
+                      
+                    
                       <div className="min-w-0">
-                        <h2 className="truncate text-base font-semibold">{transaction.category}</h2>
+                        <h2 className="truncate text-base font-semibold capitalize">{transaction.category}</h2>
                         
                       </div>
                     </div>
