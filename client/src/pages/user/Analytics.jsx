@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { X } from 'lucide-react'
 import { auth } from '../../firebase'
 import { fetchAnalytics, getCachedAnalytics } from '../../data_analytics/AnlyticsUtils'
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
 import { HashLoader } from "react-spinners"
+
 // Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
 const getMonthLabel = (ym) => {
   if (!ym) return ''
@@ -81,12 +81,7 @@ export const Analytics = () => {
 
       // ASSUMPTION: fetchAnalytics accepts an optional 'YYYY-MM' month
       // string and returns data scoped to just that month; pass nothing
-      // (or undefined) for all-time totals. If fetchAnalytics doesn't
-      // support this yet, this param is currently ignored server-side
-      // and the filter won't actually narrow the results - update
-      // AnlyticsUtils.js / the API route to read it (e.g. as a query
-      // param) and filter server-side, the same way transaction_date /
-      // due_date are filtered elsewhere.
+      // (or undefined) for all-time totals.
       const data = await fetchAnalytics(month || undefined)
 
       setAnalytics(data)
@@ -120,9 +115,9 @@ export const Analytics = () => {
   }
 
   return (
-    <div className="w-full md:pt-0 h-screen">
+    <div className="w-full md:pt-0">
       {/* HEADER */}
-      <div className="w-full   rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
           Analytics
         </h1>
@@ -130,7 +125,6 @@ export const Analytics = () => {
 
       {/* MONTH FILTER BAR */}
       <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
-        
         <select
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
@@ -143,17 +137,12 @@ export const Analytics = () => {
             </option>
           ))}
         </select>
-        
       </div>
 
       {/* ANALYTICS CONTENT */}
       <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20 pb-10">
         {loadingAnalytics && (
-          <HashLoader
-            
-            size={20}
-            color="#dddfe9"
-          />
+          <HashLoader size={20} color="#dddfe9" />
         )}
 
         {!loadingAnalytics && !analytics && (
@@ -163,47 +152,29 @@ export const Analytics = () => {
         )}
 
         {!loadingAnalytics && analytics && (
-          /* Dynamic Layout: Stacked vertically on mobile (flex-col), side-by-side on desktop (md:flex-row) */
+          /* Stacked vertically on mobile (flex-col), side-by-side on desktop (md:flex-row) */
           <div className="w-full h-auto flex flex-col md:flex-row gap-5 pt-10 items-start justify-center">
-
-            {/* ======================================
-                TRANSACTIONS
-            ====================================== */}
+            {/* TRANSACTIONS */}
             <div className="theme-card rounded-md w-full py-5 px-5">
-              <h2 className="font-mono text-xl theme-text mb-4">
-                Transactions
-              </h2>
+              <h2 className="font-mono text-xl theme-text mb-4">Transactions</h2>
 
-              <SummaryCards
-                cards={[
-                  { label: 'Total Spent', value: `₱${analytics.totalSpent}` },
-                ]}
-              />
+              <SummaryCards cards={[{ label: 'Total Spent', value: `₱${analytics.totalSpent}` }]} />
 
               <div className="mt-6">
                 <CategoryChart data={analytics.spendingByCategory} />
               </div>
             </div>
 
-            {/* ======================================
-                SCHEDULE
-            ====================================== */}
+            {/* SCHEDULE */}
             <div className="theme-card rounded-md w-full py-5 px-5">
-              <h2 className="font-mono text-xl theme-text mb-4">
-                Schedule
-              </h2>
+              <h2 className="font-mono text-xl theme-text mb-4">Schedule</h2>
 
-              <SummaryCards
-                cards={[
-                  { label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` },
-                ]}
-              />
+              <SummaryCards cards={[{ label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` }]} />
 
               <div className="mt-6">
                 <CategoryChart data={analytics.upcomingByCategory} />
               </div>
             </div>
-
           </div>
         )}
       </div>
