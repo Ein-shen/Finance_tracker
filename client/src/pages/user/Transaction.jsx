@@ -365,22 +365,22 @@ export const Transaction = () => {
   return (
     <div className="w-full min-h-screen theme-bg theme-text">
       {/* HEADER */}
-      <div className="w-full px-4 pt-2 sm:px-8 md:px-12 lg:px-20">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Transactions</h1>
-
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setShowAdd(true)}
-            className="flex shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium theme-border theme-hover transition sm:px-4"
-          >
-            <Plus size={18} />
-          
-          </button>
-        </div>
+      <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
+        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+          Transactions
+          {authLoading && (
+            <span className="ml-2 text-xs opacity-60 align-middle">
+              (checking login...)
+            </span>
+          )}
+        </h1>
+        <button
+          type="button"
+          onClick={() => setShowAdd(true)}
+          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
+        >
+          <Plus size={25} />
+        </button>
       </div>
 
       {/* FILTER */}
@@ -398,7 +398,7 @@ export const Transaction = () => {
       </div>
 
       {/* TRANSACTION LIST */}
-      <div className="mt-8 px-4 pb-10 sm:px-8 md:px-12 lg:px-20">
+      <div className="mt-15 px-4 pb-10 sm:px-8 md:px-12 lg:px-20">
         {/* LOADING */}
         {loadingTransactions && transactions.length === 0 && (
           <div className="flex justify-center py-10">
@@ -456,7 +456,7 @@ export const Transaction = () => {
                     <div className="flex shrink-0 items-center gap-1">
                       <div>
                         <p className="text-xs opacity-40">Transaction date</p>
-                        <p className="mt-1 text-sm font-medium">{formatDate(transaction.transaction_date)}</p>
+                        <p className="mt-1 text-sm text-green-500 font-medium">{formatDate(transaction.transaction_date)}</p>
                       </div>
                     </div>
                   </div>
@@ -465,12 +465,17 @@ export const Transaction = () => {
 
                   {/* BOTTOM */}
                   <div className="flex items-center justify-between gap-4">
-                    
-                     <p className="mt-1 text-sm capitalize opacity-50">{transaction.description}</p>
-                    <div className="text-right">
-                     
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm capitalize opacity-50">{transaction.description}</p>
+                      <p className="font-medium text-red-500">-₱{Number(transaction.amount).toFixed(2)}</p>
+                    </div>
 
-                      <button type="button" onClick={() => openEditModal(transaction)} className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10">
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(transaction)}
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-green-500 dark:hover:bg-white/10"
+                      >
                         <Pencil size={16} />
                       </button>
 
@@ -480,7 +485,7 @@ export const Transaction = () => {
                           setSelectedTransaction(transaction)
                           setShowDelete(true)
                         }}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-red-500"
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-red-500 dark:hover:bg-white/10"
                       >
                         <Trash2 size={16} />
                       </button>
