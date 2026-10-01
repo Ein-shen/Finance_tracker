@@ -435,7 +435,7 @@ export const Transaction = () => {
               return (
                 <div
                   key={currentId}
-                  className="theme-card theme-text w-full rounded-2xl border theme-border p-5 transition-all duration-200 hover:-translate-y-[1px]"
+                  className="theme-card theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
                 >
                   {/* TOP */}
                   <div className="flex items-start justify-between gap-4">
