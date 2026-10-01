@@ -560,7 +560,7 @@ export const Schedule = () => {
               return (
                 <div
                   key={currentId}
-                  className="theme-card theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
+                  className="theme-card border-b theme-border theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
                 >
                   {/* TOP */}
                   <div className="flex items-start justify-between gap-4">
@@ -581,7 +581,7 @@ export const Schedule = () => {
                     </div>
                   </div>
 
-                  <div className="my-5 h-px w-full bg-black/10 dark:bg-white/10" />
+                  <div className="my-5 h-px w-full bg-theme border-b theme-border bg-black/10 dark:bg-white/10" />
 
                   {/* BOTTOM */}
                   <div className="flex items-center justify-between gap-4">
@@ -594,7 +594,7 @@ export const Schedule = () => {
                       <button
                         type="button"
                         onClick={() => openEditModal(schedule)}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-green-500"
+                        className="rounded-lg p-2 theme-hover theme-border opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-green-500"
                       >
                         <Pencil  size={16} />
                       </button>
@@ -605,7 +605,7 @@ export const Schedule = () => {
                           setSelectedSchedule(schedule)
                           setShowDelete(true)
                         }}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-red-500"
+                        className="rounded-lg theme-hover p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 theme-text hover:text-red-500"
                       >
                         <Trash2 size={16} />
                       </button>

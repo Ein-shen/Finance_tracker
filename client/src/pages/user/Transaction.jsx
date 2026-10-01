@@ -435,7 +435,7 @@ export const Transaction = () => {
               return (
                 <div
                   key={currentId}
-                  className="theme-card theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
+                  className="theme-card border-b theme-border theme-text w-full rounded-2xl border-white/10 border-1 hover:border-white/25 p-5 transition-all duration-200 hover:-translate-y-[1px]"
                 >
                   {/* TOP */}
                   <div className="flex items-start justify-between gap-4">
@@ -457,7 +457,7 @@ export const Transaction = () => {
                     </div>
                   </div>
 
-                  <div className="my-5 h-px w-full bg-black/10 dark:bg-white/10" />
+                  <div className="my-5 h-px border-b theme-border w-full bg-black/10 dark:bg-white/10" />
 
                   {/* BOTTOM */}
                   <div className="flex items-center justify-between gap-4">
@@ -470,7 +470,7 @@ export const Transaction = () => {
                       <button
                         type="button"
                         onClick={() => openEditModal(transaction)}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-green-500 dark:hover:bg-white/10"
+                        className="rounded-lg p-2 theme-hover opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-green-500 dark:hover:bg-white/10"
                       >
                         <Pencil size={16} />
                       </button>
@@ -481,7 +481,7 @@ export const Transaction = () => {
                           setSelectedTransaction(transaction)
                           setShowDelete(true)
                         }}
-                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-red-500 dark:hover:bg-white/10"
+                        className="rounded-lg p-2 theme-hover opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-red-500 dark:hover:bg-white/10"
                       >
                         <Trash2 size={16} />
                       </button>
