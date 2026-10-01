@@ -1,39 +1,60 @@
 @import "tailwindcss";
 
+/* =========================
+   Theme variables
+   ========================= */
+
 :root {
   --bg-color: #242424;
   --text-color: #ffffff;
   --card-color: #2b2b2b;
-  --border-color: #CED4DA;
 
-  /* Dark mode hover */
+  /* RGB values so Tailwind opacity works */
+  --border-color: 255 255 255;
+
   --hover-color: #404040;
   --hover-text-color: #ffffff;
-
-
-  /* div bg */
 }
 
 :root.light {
   --bg-color: #ffffff;
   --text-color: #222222;
   --card-color: #eeeeee;
-  --border-color: #222222;
 
-  /* Light mode hover = gray-100 */
+  --border-color: 34 34 34;
+
   --hover-color: #f9f9f9;
   --hover-text-color: #222222;
 }
 
+/* =========================
+   Tailwind theme colors
+   ========================= */
+
+@theme {
+  --color-theme-border: rgb(var(--border-color));
+  --color-theme-bg: var(--bg-color);
+  --color-theme-card: var(--card-color);
+  --color-theme-text: var(--text-color);
+}
+
+/* =========================
+   Base
+   ========================= */
+
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
 }
 
-/* Theme classes */
+/* =========================
+   Custom theme classes
+   ========================= */
+
 .theme-bg {
   background-color: var(--bg-color);
 }
@@ -47,14 +68,10 @@ body {
 }
 
 .theme-border {
-  border-color: var(--border-color);
+  border-color: rgb(var(--border-color) / 10%);
 }
 
 .theme-hover:hover {
   background-color: var(--hover-color);
   color: var(--hover-text-color);
-}
-
-.theme-div {
-  background-color: var(--bg);
 }

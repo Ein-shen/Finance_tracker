@@ -81,7 +81,7 @@ export const Leftsidebar = () => {
                 key={label}
                 onClick={() => handleNavigate(path)}
                 className={`w-full flex items-center gap-2 font-mono text-md rounded-md p-2 transition-colors theme-hover ${
-                  isActive ? 'bg-[#606060] text-white' : ''
+                isActive ? 'border border-theme-border/10 theme-bg' : ''
                 }`}
               >
                 <Icon className="w-4 h-4" />
