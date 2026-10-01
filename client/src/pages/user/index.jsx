@@ -1,21 +1,77 @@
+import { useEffect, useState } from 'react'
+import { auth } from '../../firebase'
 import { AmountSalary } from "./singlepurpose/AmountSalary"
 import { BillAmount } from "./singlepurpose/BillAmount"
 import { MInusSalary } from "./singlepurpose/MInusSalary"
+import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
+import { fetchAnalytics, getCachedAnalytics } from '../../data_analytics/AnlyticsUtils'
+
+const formatPeso = (n) =>
+  Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+
 export const Index = () => {
+  const [analytics, setAnalytics] = useState(() => getCachedAnalytics())
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) return
+      fetchAnalytics().then(setAnalytics).catch(console.error)
+    })
+    return unsubscribe
+  }, [])
+
   return (
-    <div className=" px-4 sm:px-6 md:px-10">
-      <h1 className="text-xl sm:text-2xl text-theme font-semibold">Financial overview.</h1>
+    <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20 md:pt-2">
+      <h1 className="font-mono text-xl sm:text-2xl theme-text">Financial overview</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-6 pt-10 sm:pt-20">
-        <AmountSalary />
-        <BillAmount />
-        <MInusSalary />
-      </div>
+      <div className="mt-6  px-5 pt-0 sm:pt-10">
+        {/* CARDS */}
+        <div className="flex flex-col gap-6 sm:gap-8">
+          <AmountSalary />
+          <BillAmount />
+          <MInusSalary />
+        </div>
 
-      <div className="flex flex-row pt-10">
-        <CategoryChart />
+        {analytics && (
+          <>
+            {/* TOTALS */}
+            <div className="flex flex-row w-full gap-5 pt-10">
+              <div className="theme-card rounded-xl w-full">
+                <h2 className="font-mono text-xl theme-text text-center p-2">Total Schedule</h2>
+                <SummaryCards
+                  cards={[{ label: 'Upcoming Bills', value: `-₱${formatPeso(analytics.totalUpcoming)}` }]}
+                />
+              </div>
 
+              <div className="theme-card rounded-xl w-full">
+                <h2 className="font-mono text-xl theme-text text-center p-2">Total transaction</h2>
+                <SummaryCards
+                  cards={[{ label: 'Total Spent', value: `-₱${formatPeso(analytics.totalSpent)}` }]}
+                />
+              </div>
+            </div>
+
+            {/* CHARTS */}
+            <div className="flex flex-col lg:flex-row gap-5 pt-5 pb-10">
+              {/* TRANSACTIONS */}
+              <div className="theme-card rounded-xl w-full py-5 px-5">
+                <h2 className="font-mono text-xl theme-text mb-4">Transactions</h2>
+                <div className="mt-6">
+                  <CategoryChart data={analytics.spendingByCategory} />
+                </div>
+              </div>
+
+              {/* SCHEDULE */}
+              <div className="theme-card rounded-xl w-full py-5 px-5">
+                <h2 className="font-mono text-xl theme-text mb-4">Schedule</h2>
+                <div className="mt-6">
+                  <CategoryChart data={analytics.upcomingByCategory} />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
