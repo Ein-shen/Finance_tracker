@@ -378,7 +378,7 @@ export const Transaction = () => {
             className="flex shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium theme-border theme-hover transition sm:px-4"
           >
             <Plus size={18} />
-            <span className="hidden sm:inline">Add Transaction</span>
+          
           </button>
         </div>
       </div>
