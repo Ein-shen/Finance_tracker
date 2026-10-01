@@ -1,35 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Plus, X, Pencil, Trash2 } from 'lucide-react'
+import { Plus, X, Pencil, Trash2, Utensils, Car, ShoppingBag, Receipt, Film, Wallet } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
-import { HashLoader } from "react-spinners"
+import { HashLoader } from 'react-spinners'
 
 const CACHE_KEY_PREFIX = 'cachedTransactions_'
 
 export const Transaction = () => {
-  // POPUPS DELETE, EDIT, ADD
+  // ---------- POPUPS ----------
   const [showAdd, setShowAdd] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
 
-  // FORM
+  // ---------- ADD FORM ----------
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [transactionDate, setTransactionDate] = useState('')
 
-  // LOADING
+  // ---------- LOADING ----------
   const [loading, setLoading] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
 
-  // TRANSACTIONS - initialize from cache so something shows instantly.
-  // We don't know the user yet at first render, so we peek at any cache
-  // key present; it gets corrected/cleared once auth resolves.
+  // ---------- TRANSACTIONS ----------
   const [transactions, setTransactions] = useState(() => {
     try {
-      const keys = Object.keys(localStorage).filter((k) =>
-        k.startsWith(CACHE_KEY_PREFIX)
-      )
+      const keys = Object.keys(localStorage).filter((key) => key.startsWith(CACHE_KEY_PREFIX))
       if (keys.length === 0) return []
       const cached = localStorage.getItem(keys[0])
       return cached ? JSON.parse(cached) : []
@@ -37,62 +33,58 @@ export const Transaction = () => {
       return []
     }
   })
+  const [loadingTransactions, setLoadingTransactions] = useState(() => transactions.length === 0)
 
-  // Only show a full "loading" state if we truly have nothing cached yet
-  const [loadingTransactions, setLoadingTransactions] = useState(
-    () => transactions.length === 0
-  )
-
-  // MONTH FILTER - value is either '' (show all) or 'YYYY-MM'
+  // ---------- FILTER / SELECTED ----------
   const [filterMonth, setFilterMonth] = useState('')
-
-  // SELECTED TRANSACTION
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  // EDIT FORM
+  // ---------- EDIT FORM ----------
   const [editDescription, setEditDescription] = useState('')
   const [editAmount, setEditAmount] = useState('')
   const [editCategory, setEditCategory] = useState('')
   const [editTransactionDate, setEditTransactionDate] = useState('')
 
-  // Helper to ensure proper path joining with API_URL
+  // ---------- API HELPERS ----------
   const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
-
-  // Helper to build a per-user cache key
   const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
 
   const saveCache = (uid, data) => {
     try {
-      if (uid) {
-        localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
-      }
-    } catch (e) {
-      console.error('Failed to save transaction cache:', e)
+      if (uid) localStorage.setItem(getCacheKey(uid), JSON.stringify(data))
+    } catch (error) {
+      console.error('Failed to save transaction cache:', error)
     }
   }
 
-  // ==========================================
-  // WAIT FOR FIREBASE AUTH
-  // ==========================================
+  // ---------- CATEGORY ICON ----------
+  const getCategoryIcon = (category) => {
+    switch (category?.toLowerCase()) {
+      case 'food': return <Utensils size={19} />
+      case 'transportation': return <Car size={19} />
+      case 'shopping': return <ShoppingBag size={19} />
+      case 'bills': return <Receipt size={19} />
+      case 'entertainment': return <Film size={19} />
+      default: return <Wallet size={19} />
+    }
+  }
 
+  // ---------- WAIT FOR FIREBASE AUTH ----------
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log('Firebase user:', user)
 
       if (user) {
-        // Load the cache for THIS specific user (in case device is shared)
         try {
           const cached = localStorage.getItem(getCacheKey(user.uid))
           if (cached) {
             setTransactions(JSON.parse(cached))
             setLoadingTransactions(false)
           }
-        } catch (e) {
-          console.error('Failed to read transaction cache:', e)
+        } catch (error) {
+          console.error('Failed to read transaction cache:', error)
         }
       } else {
-        // Logged out - clear in-memory state (cache stays on disk per-uid,
-        // harmless since it's keyed by uid and never shown to another user)
         setTransactions([])
       }
 
@@ -102,14 +94,10 @@ export const Transaction = () => {
     return unsubscribe
   }, [])
 
-  // ==========================================
-  // GET TRANSACTIONS
-  // ==========================================
-
+  // ---------- GET TRANSACTIONS ----------
   const fetchTransactions = async () => {
     try {
       const user = auth.currentUser
-
       console.log('Current Firebase user:', user)
 
       if (!user) {
@@ -119,21 +107,17 @@ export const Transaction = () => {
         return
       }
 
-      // Only show the blocking spinner if we don't already have cached data
       setLoadingTransactions((prev) => (transactions.length === 0 ? true : prev))
 
       const token = await user.getIdToken()
-
       const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
 
       const contentType = response.headers.get('content-type')
-
       let data = {}
+
       if (contentType && contentType.includes('application/json')) {
         data = await response.json()
       } else {
@@ -142,40 +126,26 @@ export const Transaction = () => {
         throw new Error(`Server returned ${response.status} instead of JSON`)
       }
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get transactions')
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to get transactions')
 
       const freshTransactions = data.transactions || []
       setTransactions(freshTransactions)
       saveCache(user.uid, freshTransactions)
     } catch (error) {
       console.error('Get transactions error:', error)
-      // If we already have cached transactions showing, fail quietly in the
-      // background instead of throwing an alert over the user's data.
-      if (transactions.length === 0) {
-        alert(error.message || 'Failed to get transactions')
-      }
+      if (transactions.length === 0) alert(error.message || 'Failed to get transactions')
     } finally {
       setLoadingTransactions(false)
     }
   }
 
-  // ==========================================
-  // LOAD TRANSACTIONS (only after auth resolves)
-  // ==========================================
-
+  // ---------- LOAD TRANSACTIONS ----------
   useEffect(() => {
-    if (!authLoading) {
-      fetchTransactions()
-    }
+    if (!authLoading) fetchTransactions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading])
 
-  // ==========================================
-  // DELETE TRANSACTION
-  // ==========================================
-
+  // ---------- DELETE TRANSACTION ----------
   const handleDeleteTransaction = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('Selected transaction is missing an ID.')
@@ -186,22 +156,13 @@ export const Transaction = () => {
       setLoading(true)
 
       const user = auth.currentUser
-      if (!user) {
-        throw new Error('You must be logged in first')
-      }
+      if (!user) throw new Error('You must be logged in first')
 
       const token = await user.getIdToken()
-
-      const response = await fetch(
-        `${baseUrl}/api/transactions/${selectedTransaction.id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const response = await fetch(`${baseUrl}/api/transactions/${selectedTransaction.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      })
 
       const contentType = response.headers.get('content-type')
       let data = {}
@@ -214,14 +175,10 @@ export const Transaction = () => {
         throw new Error(`Server returned status ${response.status}`)
       }
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete transaction')
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to delete transaction')
 
-      setTransactions((prevTransactions) => {
-        const updated = prevTransactions.filter(
-          (item) => item.id !== selectedTransaction.id
-        )
+      setTransactions((previousTransactions) => {
+        const updated = previousTransactions.filter((item) => item.id !== selectedTransaction.id)
         saveCache(user.uid, updated)
         return updated
       })
@@ -236,10 +193,7 @@ export const Transaction = () => {
     }
   }
 
-  // ==========================================
-  // ADD TRANSACTION
-  // ==========================================
-
+  // ---------- ADD TRANSACTION ----------
   const handleAddTransaction = async () => {
     if (!description || !amount || !category || !transactionDate) {
       alert('Please fill in all fields')
@@ -250,17 +204,12 @@ export const Transaction = () => {
       setLoading(true)
 
       const user = auth.currentUser
-      if (!user) {
-        throw new Error('You must be logged in first')
-      }
+      if (!user) throw new Error('You must be logged in first')
 
       const token = await user.getIdToken()
-
       const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
           description,
@@ -281,9 +230,7 @@ export const Transaction = () => {
         throw new Error(`Server returned ${response.status} instead of JSON`)
       }
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to add transaction')
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to add transaction')
 
       setTransactions((previousTransactions) => {
         const updated = [data.transaction, ...previousTransactions]
@@ -304,25 +251,17 @@ export const Transaction = () => {
     }
   }
 
-  // ==========================================
-  // OPEN EDIT MODAL (pre-fill form)
-  // ==========================================
-
+  // ---------- OPEN EDIT MODAL ----------
   const openEditModal = (transaction) => {
     setSelectedTransaction(transaction)
     setEditDescription(transaction.description)
     setEditAmount(transaction.amount)
     setEditCategory(transaction.category)
-    setEditTransactionDate(
-      transaction.transaction_date ? transaction.transaction_date.split('T')[0] : ''
-    )
+    setEditTransactionDate(transaction.transaction_date ? transaction.transaction_date.split('T')[0] : '')
     setShowEdit(true)
   }
 
-  // ==========================================
-  // EDIT TRANSACTION
-  // ==========================================
-
+  // ---------- EDIT TRANSACTION ----------
   const handleEditTransaction = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('No transaction selected.')
@@ -338,28 +277,19 @@ export const Transaction = () => {
       setLoading(true)
 
       const user = auth.currentUser
-      if (!user) {
-        throw new Error('You must be logged in first')
-      }
+      if (!user) throw new Error('You must be logged in first')
 
       const token = await user.getIdToken()
-
-      const response = await fetch(
-        `${baseUrl}/api/transactions/${selectedTransaction.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            description: editDescription,
-            amount: Number(editAmount),
-            category: editCategory,
-            transaction_date: editTransactionDate,
-          }),
-        }
-      )
+      const response = await fetch(`${baseUrl}/api/transactions/${selectedTransaction.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          description: editDescription,
+          amount: Number(editAmount),
+          category: editCategory,
+          transaction_date: editTransactionDate,
+        }),
+      })
 
       const contentType = response.headers.get('content-type')
       let data = {}
@@ -372,14 +302,10 @@ export const Transaction = () => {
         throw new Error(`Server returned ${response.status} instead of JSON`)
       }
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to edit transaction')
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to edit transaction')
 
-      setTransactions((prev) => {
-        const updated = prev.map((item) =>
-          item.id === selectedTransaction.id ? data.transaction : item
-        )
+      setTransactions((previous) => {
+        const updated = previous.map((item) => (item.id === selectedTransaction.id ? data.transaction : item))
         saveCache(user.uid, updated)
         return updated
       })
@@ -394,181 +320,169 @@ export const Transaction = () => {
     }
   }
 
-  // FORMAT DATE
+  // ---------- FORMAT DATE ----------
   const formatDate = (date) => {
     if (!date) return ''
-    return new Date(date).toLocaleDateString()
+    return new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
-  // ==========================================
-  // MONTH FILTER
-  // ==========================================
-
-  // Builds 'YYYY-MM' from a transaction's date, safely
+  // ---------- MONTH FILTER ----------
   const getYearMonth = (dateStr) => {
     if (!dateStr) return ''
     const d = new Date(dateStr)
     if (Number.isNaN(d.getTime())) return ''
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    return `${year}-${month}`
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
   }
 
   const filteredTransactions = useMemo(() => {
     if (!filterMonth) return transactions
-    return transactions.filter(
-      (t) => getYearMonth(t.transaction_date) === filterMonth
-    )
+    return transactions.filter((t) => getYearMonth(t.transaction_date) === filterMonth)
   }, [transactions, filterMonth])
 
-  // Human readable label for a 'YYYY-MM' value, e.g. "September 2026"
   const getMonthLabel = (ym) => {
     if (!ym) return ''
     const [year, month] = ym.split('-')
-    const d = new Date(Number(year), Number(month) - 1, 1)
-    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+    return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(undefined, {
+      month: 'long',
+      year: 'numeric',
+    })
   }
 
   const filterMonthLabel = useMemo(() => getMonthLabel(filterMonth), [filterMonth])
 
-  // Distinct 'YYYY-MM' values actually present in the data, newest first
   const availableMonths = useMemo(() => {
-    const set = new Set()
+    const months = new Set()
     transactions.forEach((t) => {
       const ym = getYearMonth(t.transaction_date)
-      if (ym) set.add(ym)
+      if (ym) months.add(ym)
     })
-    return Array.from(set).sort().reverse()
+    return Array.from(months).sort().reverse()
   }, [transactions])
 
+  // ---------- UI ----------
   return (
-    <div className="w-full md:pt-0 h-screen">
+    <div className="w-full min-h-screen theme-bg theme-text">
       {/* HEADER */}
-      <div className="w-full   rounded-md px-5 flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20 ">
-        <h1 className="font-mono text-xl sm:text-2xl theme-text">
-          Transactions
-          {authLoading && (
-            <span className="ml-2 text-xs opacity-60 align-middle">
-              (checking login...)
-            </span>
-          )}
-        </h1>
+      <div className="w-full px-4 pt-2 sm:px-8 md:px-12 lg:px-20">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Transactions</h1>
+            <p className="mt-1 text-sm opacity-50">Track your income and expenses</p>
+          </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAdd(true)}
-          className="flex items-center justify-center gap-1 sm:gap-2 font-mono text-sm sm:text-md rounded-md px-1.5 py-1 md:py-2 md:px-3 shrink-0 theme-border theme-text theme-hover"
-        >
-          <Plus size={25} />
-        </button>
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="flex shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium theme-border theme-hover transition sm:px-4"
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">Add Transaction</span>
+          </button>
+        </div>
       </div>
 
-      {/* MONTH FILTER BAR */}
-      <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
-      
+      {/* FILTER */}
+      <div className="mt-6 px-4 sm:px-8 md:px-12 lg:px-20">
         <select
           value={filterMonth}
-          onChange={(e) => setFilterMonth(e.target.value)}
-          className="rounded-md  py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+          onChange={(event) => setFilterMonth(event.target.value)}
+          className="rounded-xl px-3 py-2 text-sm outline-none theme-bg theme-text theme-border"
         >
           <option value="">All Transactions</option>
           {availableMonths.map((ym) => (
-            <option key={ym} value={ym}>
-              {getMonthLabel(ym)}
-            </option>
+            <option key={ym} value={ym}>{getMonthLabel(ym)}</option>
           ))}
         </select>
-        
       </div>
 
       {/* TRANSACTION LIST */}
-      <div className="mt-8 px-4 sm:px-8 md:px-12 lg:px-20">
+      <div className="mt-8 px-4 pb-10 sm:px-8 md:px-12 lg:px-20">
+        {/* LOADING */}
         {loadingTransactions && transactions.length === 0 && (
-          <HashLoader
-             
-              size={20}
-              color="#dddfe9"
-            />
+          <div className="flex justify-center py-10">
+            <HashLoader size={25} color="#dddfe9" />
+          </div>
         )}
 
+        {/* EMPTY */}
         {!loadingTransactions && transactions.length === 0 && (
-          <p className="theme-text font-mono">No transactions yet.</p>
+          <div className="rounded-2xl border p-8 text-center theme-border">
+            <Wallet size={32} className="mx-auto mb-3 opacity-40" />
+            <p className="text-sm opacity-60">No transactions yet.</p>
+            <button
+              type="button"
+              onClick={() => setShowAdd(true)}
+              className="mt-4 rounded-xl border px-4 py-2 text-sm theme-border theme-hover"
+            >
+              Add your first transaction
+            </button>
+          </div>
         )}
 
-        {!loadingTransactions &&
-          transactions.length > 0 &&
-          filteredTransactions.length === 0 && (
-            <p className="theme-text font-mono">
-              No transactions for {filterMonthLabel || 'this period'}.
-            </p>
-          )}
+        {/* NO FILTER RESULTS */}
+        {!loadingTransactions && transactions.length > 0 && filteredTransactions.length === 0 && (
+          <div className="rounded-2xl border p-8 text-center theme-border">
+            <p className="text-sm opacity-60">No transactions for {filterMonthLabel || 'this period'}.</p>
+          </div>
+        )}
 
+        {/* TRANSACTIONS */}
         {filteredTransactions.length > 0 && (
-          <div className="theme-div grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 pt-10">
+          <div className="flex flex-col gap-4">
             {filteredTransactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
+
               return (
-                <div key={currentId} className="theme-card theme-text rounded-md p-4">
-                  {/* CARD */}
-                  <div className="flex justify-between items-center">
+                <div
+                  key={currentId}
+                  className="theme-card theme-text w-full rounded-2xl border theme-border p-5 transition-all duration-200 hover:-translate-y-[1px]"
+                >
+                  {/* TOP */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-black/5 dark:bg-white/10">
+                        {getCategoryIcon(transaction.category)}
+                      </div>
+
+                      <div className="min-w-0">
+                        <h2 className="truncate text-base font-semibold">{transaction.category}</h2>
+                        
+                      </div>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-1">
+                      <div>
+                        <p className="text-xs opacity-40">Transaction date</p>
+                        <p className="mt-1 text-sm font-medium">{formatDate(transaction.transaction_date)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="my-5 h-px w-full bg-black/10 dark:bg-white/10" />
+
+                  {/* BOTTOM */}
+                  <div className="flex items-center justify-between gap-4">
                     
-                          <div className="space-y-5 w-full ">
+                     <p className="mt-1 text-sm capitalize opacity-50">{transaction.description}</p>
+                    <div className="text-right">
+                     
 
-                            {/* CATEGORY */}
-                            <h2 className="w-full flex justify-center items-center">
-                              <span className="font-bold text-md">
-                                {transaction.category}
-                              </span>
-                            </h2>
+                      <button type="button" onClick={() => openEditModal(transaction)} className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10">
+                        <Pencil size={16} />
+                      </button>
 
-                            {/* TRANSACTION DETAILS */}
-                            <div className="flex justify-center ">
-                              <div className="text-left">
-                                <h2>
-                                  <span className="font-bold text-md">Amount: </span>
-                                  ₱{Number(transaction.amount).toFixed(2)}
-                                </h2>
-
-                                <h2>
-                                  <span className="font-bold text-md">Description: </span>
-                                  {transaction.description}
-                                </h2>
-
-                                <h2>
-                                  <span className="font-bold text-md">Date: </span>
-                                  {formatDate(transaction.transaction_date)}
-                                </h2>
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-
-                        {/* EDIT / DELETE */}
-                        <div className="flex justify-end flex-row pt-3">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(transaction)}
-                            className="p-1.5 rounded-md theme-text theme-hover"
-                          >
-                            <Pencil size={18} />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedTransaction(transaction)
-                              setShowDelete(true)
-                            }}
-                            className="p-1.5 rounded-md theme-text theme-hover"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-
-
-
-
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTransaction(transaction)
+                          setShowDelete(true)
+                        }}
+                        className="rounded-lg p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )
             })}
@@ -576,7 +490,7 @@ export const Transaction = () => {
         )}
       </div>
 
-      {/* EDIT TRANSACTION POPUP */}
+      {/* EDIT POPUP */}
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
@@ -589,10 +503,9 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl  p-4 sm:p-6 theme-card theme-text theme-border">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-mono text-xl">Edit Transaction</h2>
-
+          <div className="relative z-10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl border p-5 theme-card theme-text theme-border sm:max-w-md sm:p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Edit Transaction</h2>
               <button
                 type="button"
                 disabled={loading}
@@ -600,42 +513,38 @@ export const Transaction = () => {
                   setShowEdit(false)
                   setSelectedTransaction(null)
                 }}
-                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+                className="rounded-lg p-1 opacity-60 transition hover:opacity-100 disabled:opacity-30"
               >
-                <X className="w-5 h-5" />
+                <X size={20} />
               </button>
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Description</label>
+                <label className="text-sm">Description</label>
                 <input
                   type="text"
                   value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  onChange={(event) => setEditDescription(event.target.value)}
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Amount</label>
+                <label className="text-sm">Amount</label>
                 <input
                   type="number"
                   value={editAmount}
-                  onChange={(e) => setEditAmount(e.target.value)}
+                  onChange={(event) => setEditAmount(event.target.value)}
                   min="0"
                   step="0.01"
-                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Category</label>
-                <select
-                  value={editCategory}
-                  onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
-                >
+                <label className="text-sm">Category</label>
+                <select value={editCategory} onChange={(event) => setEditCategory(event.target.value)} className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border">
                   <option value="">Select category</option>
                   <option value="food">Food</option>
                   <option value="transportation">Transportation</option>
@@ -647,16 +556,16 @@ export const Transaction = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Date</label>
+                <label className="text-sm">Date</label>
                 <input
                   type="date"
                   value={editTransactionDate}
-                  onChange={(e) => setEditTransactionDate(e.target.value)}
-                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  onChange={(event) => setEditTransactionDate(event.target.value)}
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => {
@@ -664,17 +573,12 @@ export const Transaction = () => {
                     setSelectedTransaction(null)
                   }}
                   disabled={loading}
-                  className="w-full border border-white/10  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                  className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50"
                 >
                   Cancel
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleEditTransaction}
-                  disabled={loading}
-                  className="w-full bg-blue-500 border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
-                >
+                <button type="button" onClick={handleEditTransaction} disabled={loading} className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50">
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
@@ -696,12 +600,9 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-4 sm:p-6 theme-card theme-text theme-border">
-            <div className="relative flex items-center justify-between mb-6">
-              <h2 className="font-mono text-md">
-                Are you sure to delete this transaction?
-              </h2>
-
+          <div className="relative z-10 w-full max-w-sm rounded-2xl border p-5 theme-card theme-text theme-border">
+            <div className="mb-6 flex items-start justify-between">
+              <h2 className="pr-5 text-base font-medium">Are you sure you want to delete this transaction?</h2>
               <button
                 type="button"
                 disabled={loading}
@@ -709,13 +610,13 @@ export const Transaction = () => {
                   setShowDelete(false)
                   setSelectedTransaction(null)
                 }}
-                className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
+                className="rounded-lg p-1 opacity-60 hover:opacity-100"
               >
-                <X className="w-5 h-5" />
+                <X size={20} />
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-2">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={() => {
@@ -723,7 +624,7 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-full border border-white/10  rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -732,7 +633,7 @@ export const Transaction = () => {
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full bg-red-600  border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
+                className="w-full rounded-xl border border-red-500/20 bg-red-500/10 py-2.5 text-sm text-red-500 transition hover:bg-red-500/20 disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
@@ -741,7 +642,7 @@ export const Transaction = () => {
         </div>
       )}
 
-      {/* ADD TRANSACTION POPUP */}
+      {/* ADD POPUP */}
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
@@ -751,52 +652,42 @@ export const Transaction = () => {
             }}
           />
 
-          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl  p-4 sm:p-6 theme-card theme-text theme-border">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-mono text-xl">Add Transaction</h2>
-
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => setShowAdd(false)}
-                className="theme-text theme-hover rounded-md p-1 disabled:opacity-50"
-              >
-                <X className="w-5 h-5" />
+          <div className="relative z-10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl border p-5 theme-card theme-text theme-border sm:max-w-md sm:p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Add Transaction</h2>
+              <button type="button" disabled={loading} onClick={() => setShowAdd(false)} className="rounded-lg p-1 opacity-60 transition hover:opacity-100 disabled:opacity-30">
+                <X size={20} />
               </button>
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Description</label>
+                <label className="text-sm">Description</label>
                 <input
                   type="text"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(event) => setDescription(event.target.value)}
                   placeholder="e.g. Grocery"
-                  className="w-full rounded-md  px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Amount</label>
+                <label className="text-sm">Amount</label>
                 <input
                   type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(event) => setAmount(event.target.value)}
                   placeholder="₱0.00"
                   min="0"
                   step="0.01"
-                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
-                >
+                <label className="text-sm">Category</label>
+                <select value={category} onChange={(event) => setCategory(event.target.value)} className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border">
                   <option value="">Select category</option>
                   <option value="food">Food</option>
                   <option value="transportation">Transportation</option>
@@ -808,31 +699,21 @@ export const Transaction = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-mono text-sm">Date</label>
+                <label className="text-sm">Date</label>
                 <input
                   type="date"
                   value={transactionDate}
-                  onChange={(e) => setTransactionDate(e.target.value)}
-                  className="w-full rounded-md px-3 py-2 outline-none theme-bg theme-text theme-border"
+                  onChange={(event) => setTransactionDate(event.target.value)}
+                  className="w-full rounded-xl border px-3 py-2.5 outline-none theme-bg theme-text theme-border"
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAdd(false)}
-                  disabled={loading}
-                  className="w-full  border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
-                >
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                <button type="button" onClick={() => setShowAdd(false)} disabled={loading} className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50">
                   Cancel
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleAddTransaction}
-                  disabled={loading}
-                  className="bg-green-500 border border-white/10 w-full rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
-                >
+                <button type="button" onClick={handleAddTransaction} disabled={loading} className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50">
                   {loading ? 'Adding...' : 'Add Transaction'}
                 </button>
               </div>
