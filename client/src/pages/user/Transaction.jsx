@@ -359,11 +359,9 @@ export const Transaction = () => {
     return Array.from(months).sort().reverse()
   }, [transactions])
 
-
-  
   // ---------- UI ----------
   return (
-    <div className="w-full min-h-screen theme-bg theme-text">
+    <div className="w-full md:pt-0">
       {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
         <h1 className="font-mono text-xl sm:text-2xl theme-text">
@@ -384,11 +382,11 @@ export const Transaction = () => {
       </div>
 
       {/* FILTER */}
-      <div className="mt-6 px-4 sm:px-8 md:px-12 lg:px-20">
+      <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
         <select
           value={filterMonth}
           onChange={(event) => setFilterMonth(event.target.value)}
-          className="rounded-xl px-3 py-2 text-sm outline-none theme-bg theme-text theme-border"
+          className="rounded-md py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
         >
           <option value="">All Transactions</option>
           {availableMonths.map((ym) => (
@@ -398,7 +396,7 @@ export const Transaction = () => {
       </div>
 
       {/* TRANSACTION LIST */}
-      <div className="mt-15 px-4 pb-10 sm:px-8 md:px-12 lg:px-20">
+      <div className="mt-8 px-4 pb-10 sm:px-8 md:px-12 lg:px-20">
         {/* LOADING */}
         {loadingTransactions && transactions.length === 0 && (
           <div className="flex justify-center py-10">
@@ -430,7 +428,7 @@ export const Transaction = () => {
 
         {/* TRANSACTIONS */}
         {filteredTransactions.length > 0 && (
-          <div className="flex flex-col gap-4">
+          <div className="space-y-5 pt-10">
             {filteredTransactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
 
@@ -442,14 +440,12 @@ export const Transaction = () => {
                   {/* TOP */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-center gap-4">
-                     <div className="flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl bg-black/5 dark:bg-white/10">
+                      <div className="flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl bg-black/5 dark:bg-white/10">
                         {getCategoryIcon(transaction.category)}
                       </div>
-                      
-                    
+
                       <div className="min-w-0">
                         <h2 className="truncate text-base font-semibold capitalize">{transaction.category}</h2>
-                        
                       </div>
                     </div>
 
