@@ -4,13 +4,22 @@ import { auth } from '../../../firebase'
 import { fetchAnalytics } from '../../../data_analytics/AnlyticsUtils'
 import { API_URL } from '../../../api'
 import { HashLoader } from 'react-spinners'
-//=============================================================================
-// PURPOSE OF THIS FILE: SHOW REMAINING BALANCE = SALARY - (SCHEDULE + TRANSACTIONS)
+
+// =============================================================================
+// PURPOSE OF THIS FILE: 
+// Show remaining balance = Salary - (Schedule + Transactions Expenses).
+//
+// LOCAL STORAGE STRATEGY:
+// 1. Caches both the user's salary and analytics separately in localStorage 
+//    using user-specific keys (`user_salary_UID` and `bill_analytics_UID`).
+// 2. Instantly displays cached salary & expenses on component mount so the UI 
+//    doesn't flash empty or wait on network latency.
+// 3. Fetches fresh data from the server in the background and saves updates to cache.
 //
 // Props:
-//   refreshKey - change this value (e.g. bump a counter) to force a refetch,
-//                useful right after salary or a bill is added/updated elsewhere
-//=============================================================================
+//  refreshKey - change this value (e.g. bump a counter) to force a refetch,
+//               useful right after salary or a bill is added/updated elsewhere
+// =============================================================================
 
 const peso = (n) => `₱${Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`
 
@@ -18,11 +27,14 @@ export const MInusSalary = ({ refreshKey }) => {
   const [authLoading, setAuthLoading] = useState(true)
   const [loadingSalary, setLoadingSalary] = useState(true)
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
+  
   const [getSalary, setGetSalary] = useState(null)
   const [analytics, setAnalytics] = useState(null)
 
   // ==========================================
-  // WAIT FOR FIREBASE AUTH
+  // STEP 1: WAIT FOR FIREBASE AUTH
+  // Ensures we know the logged-in user before trying 
+  // to fetch data or read user-specific localStorage keys.
   // ==========================================
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -33,17 +45,51 @@ export const MInusSalary = ({ refreshKey }) => {
   }, [])
 
   // ==========================================
-  // GET SALARY
+  // STEP 2: LOAD FROM LOCAL STORAGE CACHE FIRST
+  // Instantly populates salary and analytics from localStorage 
+  // if they were saved previously.
+  // ==========================================
+  useEffect(() => {
+    if (authLoading) return
+
+    const user = auth.currentUser
+    if (user) {
+      // 1. Load cached salary
+      const cachedSalary = localStorage.getItem(`user_salary_${user.uid}`)
+      if (cachedSalary !== null) {
+        try {
+          setGetSalary(JSON.parse(cachedSalary))
+          setLoadingSalary(false)
+        } catch (e) {
+          console.error('Failed to parse cached salary:', e)
+        }
+      }
+
+      // 2. Load cached analytics (shares key with BillAmount component)
+      const cachedAnalytics = localStorage.getItem(`bill_analytics_${user.uid}`)
+      if (cachedAnalytics) {
+        try {
+          setAnalytics(JSON.parse(cachedAnalytics))
+          setLoadingAnalytics(false)
+        } catch (e) {
+          console.error('Failed to parse cached analytics:', e)
+        }
+      }
+    }
+  }, [authLoading])
+
+  // ==========================================
+  // STEP 3: FETCH FRESH SALARY FROM API & CACHE IT
   // ==========================================
   const fetchSalary = async () => {
     try {
-      setLoadingSalary(true)
       const user = auth.currentUser
       if (!user) {
-        console.log('No Firebase user Logged in')
         setGetSalary(null)
+        setLoadingSalary(false)
         return
       }
+
       const token = await user.getIdToken()
       const response = await fetch(`${API_URL}/api/users/salary`, {
         method: 'GET',
@@ -51,6 +97,7 @@ export const MInusSalary = ({ refreshKey }) => {
           Authorization: `Bearer ${token}`,
         },
       })
+
       const contentType = response.headers.get('content-type')
       let data = {}
       if (contentType && contentType.includes('application/json')) {
@@ -60,41 +107,55 @@ export const MInusSalary = ({ refreshKey }) => {
         console.error('Server returned non-JSON:', text)
         throw new Error(`Server returned ${response.status} instead of JSON`)
       }
+
       if (!response.ok) {
         throw new Error(data.message || 'Failed to get Salary')
       }
-      setGetSalary(data.salary ?? null)
+
+      const salaryValue = data.salary ?? null
+      setGetSalary(salaryValue)
+
+      // Save fresh salary to localStorage so it loads instantly next time
+      localStorage.setItem(`user_salary_${user.uid}`, JSON.stringify(salaryValue))
+
     } catch (error) {
       console.error('Get salary error:', error)
-      alert(error.message || 'Failed to get salary')
+      // Only alert if we don't have a cached salary showing yet
+      if (getSalary === null) {
+        alert(error.message || 'Failed to get salary')
+      }
     } finally {
       setLoadingSalary(false)
     }
   }
 
   // ==========================================
-  // GET ANALYTICS
+  // STEP 4: FETCH FRESH ANALYTICS & CACHE IT
   // ==========================================
   const getAnalytics = async () => {
     try {
-      setLoadingAnalytics(true)
       const user = auth.currentUser
       if (!user) {
         setAnalytics(null)
+        setLoadingAnalytics(false)
         return
       }
+
       const data = await fetchAnalytics()
       setAnalytics(data)
+
+      // Save to localStorage (shared key with BillAmount)
+      localStorage.setItem(`bill_analytics_${user.uid}`, JSON.stringify(data))
+
     } catch (error) {
       console.error('Get analytics error:', error)
-      alert(error.message || 'Failed to get analytics')
     } finally {
       setLoadingAnalytics(false)
     }
   }
 
   // ==========================================
-  // LOAD SALARY + ANALYTICS (after auth resolves, and whenever refreshKey changes)
+  // STEP 5: LOAD DATA AFTER AUTH OR REFRESH KEY
   // ==========================================
   useEffect(() => {
     if (!authLoading) {
@@ -105,9 +166,10 @@ export const MInusSalary = ({ refreshKey }) => {
   }, [authLoading, refreshKey])
 
   // ==========================================
-  // RENDER
+  // STEP 6: RENDER
   // ==========================================
-  const isLoading = loadingSalary || loadingAnalytics
+  // Only show loader spinner if we are loading AND have no cached data at all yet
+  const isLoading = (loadingSalary && getSalary === null) || (loadingAnalytics && !analytics)
   const hasSalary = getSalary !== null && getSalary !== undefined
   const totalExpenses = analytics ? analytics.totalSpent + analytics.totalUpcoming : 0
   const remaining = hasSalary ? getSalary - totalExpenses : null
