@@ -6,7 +6,7 @@ import { MInusSalary } from "./singlepurpose/MInusSalary"
 import { SummaryCards } from '../../data_analytics/SummaryCards'
 import { CategoryChart } from '../../data_analytics/CategoryChart'
 import { fetchAnalytics, getCachedAnalytics } from '../../data_analytics/AnlyticsUtils'
-
+import { Search } from 'lucide-react'
 const formatPeso = (n) =>
   Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 
@@ -29,12 +29,12 @@ export const Index = () => {
         <form className='flex flex-row space-x-4'>
           <input
           placeholder='Search'
-          className='border border-1 rounded-md px-3'
+          className='theme-border theme-text border px-3 border-white/30 rounded-md px-1'
           />
           <button
-          className='border border-1 px-5 py-3 rounded-md'
+          className='theme-border border border-white/30 theme-hover hover:border-white/40 theme-bg  px-5 py-2 rounded-md'
           >
-            Search
+            <Search color='gray' size={25}/>
           </button>
         </form>
 
