@@ -85,7 +85,7 @@ export const Settings = () => {
 
         {/* Language Button */}
         <button
-          className="w-full border-b pb-4  px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
+          className="w-full  px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
           onClick={() => {
             setShowOpen(false)
             handleNavigate('')
@@ -95,10 +95,7 @@ export const Settings = () => {
           <ChevronRight size={25} />
         </button>
 
-        <span className=" px-6 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between">
-            <Signout />
-            
-        </span>
+        
         
       </div>
     </div>
