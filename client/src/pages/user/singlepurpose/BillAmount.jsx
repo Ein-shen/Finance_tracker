@@ -10,7 +10,7 @@ import { HashLoader } from 'react-spinners'
 //   refreshKey - change this value (e.g. bump a counter) to force a refetch
 //=============================================================================
 
-const peso = (n) => `₱${Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`
+const peso = (n) => `-₱${Number(n).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`
 
 export const BillAmount = ({ refreshKey }) => {
 
