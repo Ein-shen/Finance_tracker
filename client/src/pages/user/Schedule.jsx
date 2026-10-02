@@ -250,8 +250,11 @@ export const Schedule = () => {
   }, [authLoading])
 
   // ==========================================
-  // DELETE SCHEDULE
+  // DELETE SCHEDULE (optimistic)
   // ==========================================
+  // Remove from screen + cache right away, close the popup,
+  // then delete on the server in the background.
+  // If the server fails, put the old list back.
   const handleDeleteSchedule = async () => {
     const targetId = getScheduleId(selectedSchedule)
     if (!targetId) {
@@ -259,11 +262,25 @@ export const Schedule = () => {
       return
     }
 
-    try {
-      setLoading(true)
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
 
+    const previousSchedules = schedules // saved for rollback
+
+    // 1. remove from screen + cache right away
+    const updated = schedules.filter((item) => getScheduleId(item) !== targetId)
+    setSchedules(updated)
+    saveCache(user.uid, updated)
+
+    // 2. close popup immediately
+    setShowDelete(false)
+    setSelectedSchedule(null)
+
+    // 3. delete on the server in the background
+    try {
       const token = await user.getIdToken()
       const response = await fetch(`${API_URL}/api/schedule/${targetId}`, {
         method: 'DELETE',
@@ -284,42 +301,64 @@ export const Schedule = () => {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to delete schedule')
       }
-
-      // STEP 7: Whenever we change the list with setSchedules, we pass a
-      // callback so we have access to "prev" (the list right before the
-      // change). We compute "updated", write it to localStorage via
-      // saveCache, THEN return it so React also updates the screen.
-      // This one block keeps the screen and the cache perfectly in sync.
-      setSchedules((prev) => {
-        const updated = prev.filter((item) => getScheduleId(item) !== targetId)
-        saveCache(user.uid, updated)
-        return updated
-      })
-
-      setShowDelete(false)
-      setSelectedSchedule(null)
     } catch (error) {
       console.error('Delete schedule error:', error)
+      // 4. server failed, put it back
+      setSchedules(previousSchedules)
+      saveCache(user.uid, previousSchedules)
       alert(error.message || 'Failed to delete schedule')
-    } finally {
-      setLoading(false)
     }
   }
 
   // ==========================================
-  // ADD SCHEDULE
+  // ADD SCHEDULE (optimistic)
   // ==========================================
+  // Show the new item right away with a temporary ID, then swap in
+  // the real one (with the real ID) when the server replies.
+  // If the server fails, remove the temp item.
   const handleAddSchedule = async () => {
     if (!description || !amount || !category || !dueDate || !repeatType) {
       alert('Please fill in all fields')
       return
     }
 
-    try {
-      setLoading(true)
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
 
+    // grab the form values before we clear them
+    const newDescription = description
+    const newAmount = Number(amount)
+    const newCategory = category
+    const newDueDate = dueDate
+    const newRepeatType = repeatType
+
+    // 1. show it on screen + cache right away with a temp ID
+    const tempId = `temp-${Date.now()}`
+    const optimisticItem = {
+      id: tempId,
+      description: newDescription,
+      amount: newAmount,
+      category: newCategory,
+      due_date: newDueDate,
+      repeat_type: newRepeatType,
+    }
+    const optimisticList = [optimisticItem, ...schedules]
+    setSchedules(optimisticList)
+    saveCache(user.uid, optimisticList)
+
+    // 2. clear the form + close popup immediately
+    setDescription('')
+    setAmount('')
+    setCategory('')
+    setDueDate('')
+    setRepeatType('')
+    setShowAdd(false)
+
+    // 3. save in the background
+    try {
       const token = await user.getIdToken()
       const response = await fetch(`${API_URL}/api/schedule`, {
         method: 'POST',
@@ -328,11 +367,11 @@ export const Schedule = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          description,
-          amount: Number(amount),
-          category,
-          due_date: dueDate,
-          repeat_type: repeatType,
+          description: newDescription,
+          amount: newAmount,
+          category: newCategory,
+          due_date: newDueDate,
+          repeat_type: newRepeatType,
         }),
       })
 
@@ -349,24 +388,23 @@ export const Schedule = () => {
         throw new Error(data.message || 'Failed to add schedule')
       }
 
-      // Same pattern: update state + cache together.
+      // swap the temp item for the real one from the server
       setSchedules((prev) => {
-        const updated = [data.schedule, ...prev]
+        const updated = prev.map((item) =>
+          getScheduleId(item) === tempId ? data.schedule : item
+        )
         saveCache(user.uid, updated)
         return updated
       })
-
-      setDescription('')
-      setAmount('')
-      setCategory('')
-      setDueDate('')
-      setRepeatType('')
-      setShowAdd(false)
     } catch (error) {
       console.error('Add schedule error:', error)
+      // 4. server failed, remove the temp item
+      setSchedules((prev) => {
+        const updated = prev.filter((item) => getScheduleId(item) !== tempId)
+        saveCache(user.uid, updated)
+        return updated
+      })
       alert(error.message || 'Failed to add schedule')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -639,6 +677,8 @@ export const Schedule = () => {
           <div className=" space-y-5 pt-10">
             {filteredSchedules.map((schedule) => {
               const currentId = getScheduleId(schedule)
+              // item is still waiting for the server to give it a real ID
+              const isPending = String(currentId).startsWith('temp-')
 
               return (
                 <div
@@ -676,23 +716,27 @@ export const Schedule = () => {
                     <div className="flex shrink-0 items-center">
                       <button
                         type="button"
+                        disabled={isPending}
                         onClick={() => openEditModal(schedule)}
                         className="rounded-lg p-2 opacity-50 transition
                                   hover:bg-black/5 hover:opacity-100 hover:text-green-500
-                                  dark:hover:bg-white/10"
+                                  dark:hover:bg-white/10
+                                  disabled:opacity-20 disabled:pointer-events-none"
                         >
                         <Pencil  size={16} />
                       </button>
 
                       <button
                         type="button"
+                        disabled={isPending}
                         onClick={() => {
                           setSelectedSchedule(schedule)
                           setShowDelete(true)
                         }}
                         className="rounded-lg p-2 opacity-50 transition
                                   hover:bg-black/5 hover:opacity-100 hover:text-red-500
-                                  dark:hover:bg-white/10"
+                                  dark:hover:bg-white/10
+                                  disabled:opacity-20 disabled:pointer-events-none"
                       >
                         <Trash2 size={16} />
                       </button>
