@@ -23,8 +23,23 @@ export const Index = () => {
 
   return (
     <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20 md:pt-2">
-      <h1 className="font-mono text-xl sm:text-2xl theme-text">Financial overview</h1>
 
+      <div className='flex flex-row items-center justify-between '>
+        <h1 className="font-mono text-xl sm:text-2xl theme-text">Financial overview</h1>
+        <form className='flex flex-row space-x-4'>
+          <input
+          placeholder='Search'
+          className='border border-1 rounded-md px-3'
+          />
+          <button
+          className='border border-1 px-5 py-3 rounded-md'
+          >
+            Search
+          </button>
+        </form>
+
+      </div>
+      
       <div className="mt-6  px-5 pt-0 sm:pt-10">
         {/* CARDS */}
         <div className="flex flex-col gap-6 sm:gap-8">
