@@ -677,8 +677,10 @@ export const Schedule = () => {
                       <button
                         type="button"
                         onClick={() => openEditModal(schedule)}
-                        className="rounded-lg p-2 theme-hover theme-border opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 hover:text-green-500"
-                      >
+                        className="rounded-lg p-2 opacity-50 transition
+                                  hover:bg-black/5 hover:opacity-100 hover:text-green-500
+                                  dark:hover:bg-white/10"
+                        >
                         <Pencil  size={16} />
                       </button>
 
@@ -688,7 +690,9 @@ export const Schedule = () => {
                           setSelectedSchedule(schedule)
                           setShowDelete(true)
                         }}
-                        className="rounded-lg theme-hover p-2 opacity-50 transition hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/10 theme-text hover:text-red-500"
+                        className="rounded-lg p-2 opacity-50 transition
+                                  hover:bg-black/5 hover:opacity-100 hover:text-red-500
+                                  dark:hover:bg-white/10"
                       >
                         <Trash2 size={16} />
                       </button>
