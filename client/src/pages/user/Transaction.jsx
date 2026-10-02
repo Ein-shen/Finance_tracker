@@ -40,7 +40,6 @@ export const Transaction = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   // ---------- MONTH DROPDOWN ----------
-  // open/closed state + ref to the wrapper element
   const [monthOpen, setMonthOpen] = useState(false)
   const monthMenuRef = useRef(null)
 
@@ -171,21 +170,38 @@ export const Transaction = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading])
 
-  // ---------- DELETE TRANSACTION ----------
+  // ---------- DELETE TRANSACTION (optimistic) ----------
+  // Remove from screen + cache right away, close popup,
+  // then delete on the server in the background.
+  // If the server fails, put the old list back.
   const handleDeleteTransaction = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('Selected transaction is missing an ID.')
       return
     }
 
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
+
+    const targetId = selectedTransaction.id
+    const previousTransactions = transactions // saved for rollback
+
+    // 1. remove from screen + cache right away
+    const updated = transactions.filter((item) => item.id !== targetId)
+    setTransactions(updated)
+    saveCache(user.uid, updated)
+
+    // 2. close popup immediately
+    setShowDelete(false)
+    setSelectedTransaction(null)
+
+    // 3. delete on the server in the background
     try {
-      setLoading(true)
-
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
-
       const token = await user.getIdToken()
-      const response = await fetch(`${baseUrl}/api/transactions/${selectedTransaction.id}`, {
+      const response = await fetch(`${baseUrl}/api/transactions/${targetId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       })
@@ -202,46 +218,69 @@ export const Transaction = () => {
       }
 
       if (!response.ok) throw new Error(data.message || 'Failed to delete transaction')
-
-      setTransactions((previousTransactions) => {
-        const updated = previousTransactions.filter((item) => item.id !== selectedTransaction.id)
-        saveCache(user.uid, updated)
-        return updated
-      })
-
-      setShowDelete(false)
-      setSelectedTransaction(null)
     } catch (error) {
       console.error('Delete transaction error:', error)
+      // 4. server failed, put it back
+      setTransactions(previousTransactions)
+      saveCache(user.uid, previousTransactions)
       alert(error.message || 'Failed to delete transaction')
-    } finally {
-      setLoading(false)
     }
   }
 
-  // ---------- ADD TRANSACTION ----------
+  // ---------- ADD TRANSACTION (optimistic) ----------
+  // Show the new item right away with a temporary ID,
+  // then swap in the real item (with the real ID) when the server replies.
+  // If the server fails, remove the temp item.
   const handleAddTransaction = async () => {
     if (!description || !amount || !category || !transactionDate) {
       alert('Please fill in all fields')
       return
     }
 
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
+
+    // grab the form values before we clear them
+    const newDescription = description
+    const newAmount = Number(amount)
+    const newCategory = category
+    const newDate = transactionDate
+
+    // 1. show it on screen + cache right away with a temp ID
+    const tempId = `temp-${Date.now()}`
+    const optimisticItem = {
+      id: tempId,
+      description: newDescription,
+      amount: newAmount,
+      category: newCategory,
+      transaction_date: newDate,
+    }
+    const optimisticList = [optimisticItem, ...transactions]
+    setTransactions(optimisticList)
+    saveCache(user.uid, optimisticList)
+
+    // 2. clear the form + close popup immediately
+    setDescription('')
+    setAmount('')
+    setCategory('')
+    setTransactionDate('')
+    setShowAdd(false)
+
+    // 3. save in the background
     try {
-      setLoading(true)
-
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
-
       const token = await user.getIdToken()
       const response = await fetch(`${baseUrl}/api/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
-          description,
-          amount: Number(amount),
-          category,
-          transaction_date: transactionDate,
+          description: newDescription,
+          amount: newAmount,
+          category: newCategory,
+          transaction_date: newDate,
         }),
       })
 
@@ -258,22 +297,21 @@ export const Transaction = () => {
 
       if (!response.ok) throw new Error(data.message || 'Failed to add transaction')
 
-      setTransactions((previousTransactions) => {
-        const updated = [data.transaction, ...previousTransactions]
+      // swap the temp item for the real one from the server
+      setTransactions((previous) => {
+        const updated = previous.map((item) => (item.id === tempId ? data.transaction : item))
         saveCache(user.uid, updated)
         return updated
       })
-
-      setDescription('')
-      setAmount('')
-      setCategory('')
-      setTransactionDate('')
-      setShowAdd(false)
     } catch (error) {
       console.error('Transaction error:', error)
+      // 4. server failed, remove the temp item
+      setTransactions((previous) => {
+        const updated = previous.filter((item) => item.id !== tempId)
+        saveCache(user.uid, updated)
+        return updated
+      })
       alert(error.message || 'Failed to add transaction')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -287,10 +325,10 @@ export const Transaction = () => {
     setShowEdit(true)
   }
 
-  // ---------- EDIT TRANSACTION ----------
-  // Updates the screen + cache right away and closes the popup,
-  // then saves to the server in the background. If the server
-  // fails, the change is rolled back.
+  // ---------- EDIT TRANSACTION (optimistic) ----------
+  // Update screen + cache right away, close popup,
+  // then save to the server in the background.
+  // If the server fails, roll back.
   const handleEditTransaction = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('No transaction selected.')
@@ -309,7 +347,7 @@ export const Transaction = () => {
     }
 
     const targetId = selectedTransaction.id
-    const previousTransactions = transactions // saved in case we need to roll back
+    const previousTransactions = transactions // saved for rollback
 
     // 1. update the screen + cache right away
     const optimisticItem = {
@@ -364,7 +402,7 @@ export const Transaction = () => {
       })
     } catch (error) {
       console.error('Edit transaction error:', error)
-      // 4. server failed, so undo the change
+      // 4. server failed, undo the change
       setTransactions(previousTransactions)
       saveCache(user.uid, previousTransactions)
       alert(error.message || 'Failed to edit transaction')
@@ -519,6 +557,8 @@ export const Transaction = () => {
           <div className="space-y-5 pt-10">
             {filteredTransactions.map((transaction) => {
               const currentId = transaction.id || transaction._id
+              // item is still waiting for the server to give it a real ID
+              const isPending = String(currentId).startsWith('temp-')
 
               return (
                 <div
@@ -557,23 +597,27 @@ export const Transaction = () => {
                     <div className="flex items-center">
                       <button
                         type="button"
+                        disabled={isPending}
                         onClick={() => openEditModal(transaction)}
                         className="rounded-lg p-2 opacity-50 transition
                                   hover:bg-black/5 hover:opacity-100 hover:text-green-500
-                                  dark:hover:bg-white/10"
+                                  dark:hover:bg-white/10
+                                  disabled:opacity-20 disabled:pointer-events-none"
                       >
                         <Pencil size={16} />
                       </button>
 
                       <button
                         type="button"
+                        disabled={isPending}
                         onClick={() => {
                           setSelectedTransaction(transaction)
                           setShowDelete(true)
                         }}
                         className="rounded-lg p-2 opacity-50 transition
                                   hover:bg-black/5 hover:opacity-100 hover:text-red-500
-                                  dark:hover:bg-white/10"
+                                  dark:hover:bg-white/10
+                                  disabled:opacity-20 disabled:pointer-events-none"
                       >
                         <Trash2 size={16} />
                       </button>
