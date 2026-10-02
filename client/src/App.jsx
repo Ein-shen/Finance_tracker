@@ -44,25 +44,17 @@ import { BarChartComponent } from './components/BarChartComponent.jsx'
 // ==========================================
 import { HashLoader } from "react-spinners"
 
-
-
 function LoadingScreen({ loading }) {
   return (
-    <div className="min-h-screen  theme-bg flex flex-row items-center justify-center gap-2">
-
+    <div className="min-h-screen theme-bg flex flex-row items-center justify-center gap-2">
       <HashLoader
         loading={loading}
         size={20}
         color="#dddfe9"
       />
-      <span className='font-mono text-md'>
-          Initializing ExpenseKontrol...
+      <span className="font-mono text-md">
+        Initializing ExpenseKontrol...
       </span>
-      
-
-      
-     
-      
     </div>
   )
 }
@@ -74,67 +66,98 @@ function LoadingScreen({ loading }) {
 function App() {
   const [session, setSession] = useState(null)
   const [role, setRole] = useState(null)
-  const [authLoading, setAuthLoading] = useState(true)
+  const [authLoading, setAuthLoading] = useState(true) // waits for Firebase only
+  const [roleLoading, setRoleLoading] = useState(false) // waits for /api/users/role
 
   // ==========================================
   // FIREBASE AUTH STATE
   // ==========================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (!user) {
-          setSession(null)
-          setRole(null)
-          setAuthLoading(false)
-          return
-        }
+    let cancelled = false
 
-        setSession(user)
-        const idToken = await user.getIdToken(true)
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // Not logged in: nothing else to wait for
+      if (!user) {
+        setSession(null)
+        setRole(null)
+        setRoleLoading(false)
+        setAuthLoading(false)
+        return
+      }
+
+      // Firebase has answered, so show the app now.
+      // The role is fetched in the background.
+      setSession(user)
+      setRoleLoading(true)
+      setAuthLoading(false)
+
+      try {
+        const idToken = await user.getIdToken() // no forced refresh
 
         // ========================================
         // GET ROLE FROM BACKEND
         // ========================================
-
-        const response = await fetch(`${API_URL}/api/users/role`, { 
+        const response = await fetch(`${API_URL}/api/users/role`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${idToken}`,
           },
         })
 
-        // ✅ NEW: handle banned users
+        if (cancelled) return
+
+        // Banned users
         if (response.status === 403) {
           await auth.signOut()
           setSession(null)
           setRole(null)
           alert('Your account has been banned.')
-          setAuthLoading(false)
           return
         }
 
         if (!response.ok) {
           setRole('user')
-          setAuthLoading(false)
           return
         }
 
         const data = await response.json()
-        setRole(data.role || 'user')
+        if (!cancelled) setRole(data.role || 'user')
       } catch (error) {
         console.error('Authentication / role error:', error)
-        setRole('user')
+        if (!cancelled) setRole('user')
       } finally {
-        setAuthLoading(false)
+        if (!cancelled) setRoleLoading(false)
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      cancelled = true
+      unsubscribe()
+    }
   }, [])
 
+  // Only blocks on Firebase restoring the session (~600 ms)
   if (authLoading) {
     return <LoadingScreen />
+  }
+
+  // ==========================================
+  // ADMIN ROUTE GUARD
+  // Only admin routes wait for the role
+  // ==========================================
+  const adminOnly = (element) => {
+    if (session && roleLoading) return <LoadingScreen />
+    return session && role === 'admin'
+      ? element
+      : <Navigate to="/admin-login" replace />
+  }
+
+  const adminLoginElement = () => {
+    if (session && roleLoading) return <LoadingScreen />
+    return session && role === 'admin'
+      ? <Navigate to="/admin/admindashboard" replace />
+      : <Adminlogin />
   }
 
   return (
@@ -159,27 +182,12 @@ function App() {
       </Route>
 
       {/* ADMIN LOGIN */}
-      <Route
-        path="/admin-login"
-        element={
-          session && role === 'admin' ? (
-            <Navigate to="/admin/admindashboard" replace />
-          ) : (
-            <Adminlogin />
-          )
-        }
-      />
+      <Route path="/admin-login" element={adminLoginElement()} />
 
       {/* ADMIN DASHBOARD */}
       <Route
         path="/admin/admindashboard"
-        element={
-          session && role === 'admin' ? (
-            <AdminDashboard />
-          ) : (
-            <Navigate to="/admin-login" replace />
-          )
-        }
+        element={adminOnly(<AdminDashboard />)}
       >
         <Route index element={<AdminHome />} />
         <Route path="adminhome" element={<AdminHome />} />

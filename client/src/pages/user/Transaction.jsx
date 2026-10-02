@@ -386,11 +386,11 @@ export const Transaction = () => {
         <select
           value={filterMonth}
           onChange={(event) => setFilterMonth(event.target.value)}
-          className="rounded-md py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
+          className="rounded-md py-1.5 outline-none theme-text theme-border font-mono text-sm"
         >
           <option value="">All Transactions</option>
           {availableMonths.map((ym) => (
-            <option key={ym} value={ym}>{getMonthLabel(ym)}</option>
+            <option  key={ym} value={ym}>{getMonthLabel(ym)}</option>
           ))}
         </select>
       </div>
