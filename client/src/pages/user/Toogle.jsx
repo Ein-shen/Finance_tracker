@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { Sun, Moon } from 'lucide-react'
 
 const ThemeContext = createContext(null)
 
@@ -28,22 +29,34 @@ export function useTheme() {
   return useContext(ThemeContext)
 }
 
+// Switch where the circle (knob) holds the sun / moon icon.
+// Click it and the knob slides across while the icon swaps.
 export const Toogle = () => {
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
 
   return (
     <button
+      type="button"
+      role="switch"
+      aria-checked={isDark}
+      aria-label="Toggle theme"
       onClick={toggleTheme}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-        isDark ? 'bg-gray-600' : 'bg-blue-600'
+      className={`relative inline-flex h-7 w-14 shrink-0 items-center rounded-full ring-1 ring-white/10 transition-colors duration-300 ${
+        isDark ? 'bg-slate-700' : 'bg-yellow-200'
       }`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-          isDark ? 'translate-x-1' : 'translate-x-6'
+        className={`absolute left-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow transition-transform duration-300 ${
+          isDark ? 'translate-x-7' : 'translate-x-0'
         }`}
-      />
+      >
+        {isDark ? (
+          <Moon size={14} className="text-slate-700" />
+        ) : (
+          <Sun size={14} className="text-yellow-500" />
+        )}
+      </span>
     </button>
   )
 }
