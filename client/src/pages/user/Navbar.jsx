@@ -2,11 +2,16 @@ import { useEffect, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const CACHE_KEY_PREFIX = 'accountProfile_'
 
 export const Navbar = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [photoUrl, setPhotoUrl] = useState(null)
+  const [showAccount, setShowAccount] = useState(false)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -52,15 +57,22 @@ export const Navbar = () => {
 
         {/* hero */}
         <div className="ml-auto flex items-center gap-1">
-          <div className="h-9 w-9 overflow-hidden rounded-full border border-white bg-blue-500">
+          <div 
+            onClick={() => navigate(`/dashboard/account`)}
+            className="h-9 w-9 overflow-hidden rounded-full border border-white bg-blue-500">
             {resolvedPhotoUrl && (
               <img src={resolvedPhotoUrl} alt="Profile" className="h-full w-full object-cover" />
             )}
           </div>
-
-          <button type="button" className="rounded-lg p-1 opacity-60 transition hover:opacity-100">
+          
+          <button 
+            
+            type="button" 
+            className="rounded-lg p-1 opacity-60 transition hover:opacity-100">
             <ChevronDown size={20} />
           </button>
+
+          
         </div>
       </div>
     </header>
