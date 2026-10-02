@@ -288,6 +288,9 @@ export const Transaction = () => {
   }
 
   // ---------- EDIT TRANSACTION ----------
+  // Updates the screen + cache right away and closes the popup,
+  // then saves to the server in the background. If the server
+  // fails, the change is rolled back.
   const handleEditTransaction = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
       alert('No transaction selected.')
@@ -299,14 +302,37 @@ export const Transaction = () => {
       return
     }
 
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
+
+    const targetId = selectedTransaction.id
+    const previousTransactions = transactions // saved in case we need to roll back
+
+    // 1. update the screen + cache right away
+    const optimisticItem = {
+      ...selectedTransaction,
+      description: editDescription,
+      amount: Number(editAmount),
+      category: editCategory,
+      transaction_date: editTransactionDate,
+    }
+    const optimisticList = transactions.map((item) =>
+      item.id === targetId ? optimisticItem : item
+    )
+    setTransactions(optimisticList)
+    saveCache(user.uid, optimisticList)
+
+    // 2. close the popup immediately
+    setShowEdit(false)
+    setSelectedTransaction(null)
+
+    // 3. save to the server in the background
     try {
-      setLoading(true)
-
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
-
       const token = await user.getIdToken()
-      const response = await fetch(`${baseUrl}/api/transactions/${selectedTransaction.id}`, {
+      const response = await fetch(`${baseUrl}/api/transactions/${targetId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -330,19 +356,18 @@ export const Transaction = () => {
 
       if (!response.ok) throw new Error(data.message || 'Failed to edit transaction')
 
+      // swap in the real server version
       setTransactions((previous) => {
-        const updated = previous.map((item) => (item.id === selectedTransaction.id ? data.transaction : item))
+        const updated = previous.map((item) => (item.id === targetId ? data.transaction : item))
         saveCache(user.uid, updated)
         return updated
       })
-
-      setShowEdit(false)
-      setSelectedTransaction(null)
     } catch (error) {
       console.error('Edit transaction error:', error)
+      // 4. server failed, so undo the change
+      setTransactions(previousTransactions)
+      saveCache(user.uid, previousTransactions)
       alert(error.message || 'Failed to edit transaction')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -512,7 +537,7 @@ export const Transaction = () => {
                       </div>
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-1">
+                    <div className="flex shrink-0  gap-1">
                       <div>
                         <p className="text-xs opacity-40">Transaction date</p>
                         <p className="mt-1 text-sm text-green-500 font-medium">{formatDate(transaction.transaction_date)}</p>
@@ -533,7 +558,9 @@ export const Transaction = () => {
                       <button
                         type="button"
                         onClick={() => openEditModal(transaction)}
-                        className="rounded-lg p-2 theme-hover opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-green-500 dark:hover:bg-white/10"
+                        className="rounded-lg p-2 opacity-50 transition
+                                  hover:bg-black/5 hover:opacity-100 hover:text-green-500
+                                  dark:hover:bg-white/10"
                       >
                         <Pencil size={16} />
                       </button>
@@ -544,7 +571,9 @@ export const Transaction = () => {
                           setSelectedTransaction(transaction)
                           setShowDelete(true)
                         }}
-                        className="rounded-lg p-2 theme-hover opacity-50 transition hover:bg-black/5 hover:opacity-100 hover:text-red-500 dark:hover:bg-white/10"
+                        className="rounded-lg p-2 opacity-50 transition
+                                  hover:bg-black/5 hover:opacity-100 hover:text-red-500
+                                  dark:hover:bg-white/10"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -666,10 +695,11 @@ export const Transaction = () => {
               }
             }}
           />
-
-          <div className="relative z-10 w-full max-w-sm rounded-2xl border p-5 theme-card theme-text theme-border">
-            <div className="mb-6 flex items-start justify-between">
-              <h2 className="pr-5 text-base font-medium">Are you sure you want to delete this transaction?</h2>
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-4 sm:p-6 theme-card theme-text theme-border">
+            <div className="relative flex items-center justify-between mb-6">
+              <h2 className="font-mono text-md">
+                Are you sure to delete this transaction?
+              </h2>
               <button
                 type="button"
                 disabled={loading}
@@ -677,13 +707,13 @@ export const Transaction = () => {
                   setShowDelete(false)
                   setSelectedTransaction(null)
                 }}
-                className="rounded-lg p-1 opacity-60 hover:opacity-100"
+                className="absolute right-0 top-0 theme-text theme-hover rounded-md p-1 disabled:opacity-50"
               >
-                <X size={20} />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col sm:flex-row gap-3 mt-2">
               <button
                 type="button"
                 onClick={() => {
@@ -691,16 +721,15 @@ export const Transaction = () => {
                   setSelectedTransaction(null)
                 }}
                 disabled={loading}
-                className="w-full rounded-xl border py-2.5 text-sm theme-border theme-hover disabled:opacity-50"
+                className="w-full  rounded-md border border-white/10 py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 Cancel
               </button>
-
               <button
                 type="button"
                 onClick={handleDeleteTransaction}
                 disabled={loading}
-                className="w-full rounded-xl border border-red-500/20 bg-red-500/10 py-2.5 text-sm text-red-500 transition hover:bg-red-500/20 disabled:opacity-50"
+                className="bg-red-500 w-full border border-white/10 rounded-md py-2 font-mono theme-text theme-border theme-hover disabled:opacity-50"
               >
                 {loading ? 'Deleting...' : 'Delete'}
               </button>
