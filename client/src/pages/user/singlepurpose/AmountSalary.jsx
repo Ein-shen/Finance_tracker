@@ -13,6 +13,40 @@ import { HashLoader } from 'react-spinners'
 //                 useful right after a parent successfully saves a new salary
 //=============================================================================
 
+// ==========================================
+// LOCAL STORAGE CACHE
+// Key includes the user's uid so one user's salary never shows
+// up for another user on the same device.
+// Result looks like: "cachedSalary_abc123uid"
+// ==========================================
+const CACHE_KEY_PREFIX = 'cachedSalary_'
+const getCacheKey = (uid) => `${CACHE_KEY_PREFIX}${uid}`
+
+// read a cached salary (returns a number, or null if nothing cached)
+const readCache = (uid) => {
+  try {
+    const cached = localStorage.getItem(getCacheKey(uid))
+    return cached !== null ? JSON.parse(cached) : null
+  } catch (error) {
+    console.error('Failed to read salary cache:', error)
+    return null
+  }
+}
+
+// save the salary. If there's no salary, remove the cache instead.
+const saveCache = (uid, salary) => {
+  try {
+    if (!uid) return
+    if (salary === null || salary === undefined) {
+      localStorage.removeItem(getCacheKey(uid))
+    } else {
+      localStorage.setItem(getCacheKey(uid), JSON.stringify(salary))
+    }
+  } catch (error) {
+    console.error('Failed to save salary cache:', error)
+  }
+}
+
 const peso = (n) =>
   `₱${Number(n).toLocaleString('en-PH', {
     minimumFractionDigits: 0,
@@ -21,8 +55,25 @@ const peso = (n) =>
 export const AmountSalary = ({ onAddClick, refreshKey }) => {
 
   const [authLoading, setAuthLoading] = useState(true)
-  const [loadingSalary, setLoadingSalary] = useState(true)
-  const [getSalary, setGetSalary] = useState(null)
+
+  // STEP 1: read from cache on first render so the salary shows instantly.
+  // We don't know the uid yet, so we grab any salary cache on this device
+  // as a "good enough" guess. The auth listener below corrects it.
+  const [getSalary, setGetSalary] = useState(() => {
+    try {
+      const keys = Object.keys(localStorage).filter((key) =>
+        key.startsWith(CACHE_KEY_PREFIX)
+      )
+      if (keys.length === 0) return null
+      const cached = localStorage.getItem(keys[0])
+      return cached !== null ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
+  // STEP 2: only show the spinner if there's nothing cached to show
+  const [loadingSalary, setLoadingSalary] = useState(() => getSalary === null)
 
   // ==========================================
   // WAIT FOR FIREBASE AUTH
@@ -30,6 +81,17 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log('Firebase user:', user)
+
+      if (user) {
+        // STEP 3: now we know the real user, so load THEIR cache.
+        // This fixes the "guess" from step 1 (e.g. on a shared device).
+        const cached = readCache(user.uid)
+        setGetSalary(cached)
+        setLoadingSalary(cached === null)
+      } else {
+        setGetSalary(null)
+      }
+
       setAuthLoading(false)
     })
 
@@ -41,8 +103,6 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
   // ==========================================
   const fetchSalary = async () => {
     try {
-      setLoadingSalary(true)
-
       const user = auth.currentUser
 
       console.log('Current Firebase user:', user)
@@ -52,6 +112,10 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
         setGetSalary(null)
         return
       }
+
+      // STEP 4: only show the spinner if the screen has nothing to show.
+      // If cached salary is already visible, the fetch happens quietly.
+      if (getSalary === null) setLoadingSalary(true)
 
       const token = await user.getIdToken()
 
@@ -81,11 +145,18 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
         throw new Error(data.message || 'Failed to get Salary')
       }
 
-      setGetSalary(data.salary ?? null)
+      // STEP 5: update the screen AND the cache together
+      const freshSalary = data.salary ?? null
+      setGetSalary(freshSalary)
+      saveCache(user.uid, freshSalary)
 
     } catch (error) {
       console.error('Get salary error:', error)
-      alert(error.message || 'Failed to get salary')
+      // only alert if there's nothing cached on screen. A background
+      // failure shouldn't interrupt someone who already sees their salary.
+      if (getSalary === null) {
+        alert(error.message || 'Failed to get salary')
+      }
 
     } finally {
       setLoadingSalary(false)
