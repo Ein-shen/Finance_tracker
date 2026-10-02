@@ -1003,6 +1003,79 @@ app.delete(
 )
 
 // ==========================================
+// DELETE TRANSACTION
+// ==========================================
+
+app.delete(
+  '/api/transactions/:id',
+  authenticateFirebase,
+  async (req, res) => {
+    try {
+      const { id } = req.params
+
+      const transactionId =
+        Number(id)
+
+      const firebaseUid =
+        req.firebaseUid
+
+      if (
+        !Number.isInteger(
+          transactionId
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            'Invalid transaction ID',
+        })
+      }
+
+      const result =
+        await pool.query(
+          `
+          DELETE FROM transactions
+          WHERE id = $1
+          AND firebase_uid = $2
+          RETURNING *
+          `,
+          [
+            transactionId,
+            firebaseUid,
+          ]
+        )
+
+      if (
+        result.rows.length === 0
+      ) {
+        return res.status(404).json({
+          message:
+            'Transaction not found',
+        })
+      }
+
+      res.status(200).json({
+        message:
+          'Transaction deleted successfully',
+
+        transaction:
+          result.rows[0],
+      })
+    } catch (error) {
+      console.error(
+        'Delete transaction error:',
+        error
+      )
+
+      res.status(500).json({
+        message:
+          'Failed to delete transaction',
+      })
+    }
+  }
+)
+
+
+// ==========================================
 // GET USER PROFILE
 // ==========================================
 
