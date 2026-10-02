@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { Plus, X, Pencil, Trash2, Utensils, Car, ShoppingBag, Receipt, Film, Wallet } from 'lucide-react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Plus, X, Pencil, Trash2, Utensils, Car, ShoppingBag, Receipt, Film, Wallet, ChevronDown, Check } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api.js'
 import { HashLoader } from "react-spinners"
@@ -81,6 +81,31 @@ export const Schedule = () => {
 
   // MONTH FILTER - value is either '' (show all) or 'YYYY-MM'
   const [filterMonth, setFilterMonth] = useState('')
+
+  // MONTH DROPDOWN - open/closed state + ref to the wrapper element
+  const [monthOpen, setMonthOpen] = useState(false)
+  const monthMenuRef = useRef(null)
+
+  // close the month dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!monthOpen) return
+
+    const handleClickOutside = (e) => {
+      if (monthMenuRef.current && !monthMenuRef.current.contains(e.target)) {
+        setMonthOpen(false)
+      }
+    }
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setMonthOpen(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [monthOpen])
 
   const [selectedSchedule, setSelectedSchedule] = useState(null)
 
@@ -513,20 +538,53 @@ export const Schedule = () => {
 
       {/* MONTH FILTER BAR */}
       <div className="mt-4 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-wrap items-center gap-3">
-        
-        <select
-          value={filterMonth}
-          onChange={(e) => setFilterMonth(e.target.value)}
-          className="rounded-md py-1.5 outline-none theme-bg theme-text theme-border font-mono text-sm"
-        >
-          <option value="">All Schedules</option>
-          {availableMonths.map((ym) => (
-            <option key={ym} value={ym}>
-              {getMonthLabel(ym)}
-            </option>
-          ))}
-        </select>
-        
+        <div ref={monthMenuRef} className="relative">
+          {/* trigger button */}
+          <button
+            type="button"
+            onClick={() => setMonthOpen((prev) => !prev)}
+            aria-haspopup="listbox"
+            aria-expanded={monthOpen}
+            className="flex items-center  rounded-md gap-2 py-1.5 font-mono text-sm theme-bg theme-text theme-border theme-hover"
+          >
+            <span>{filterMonth ? filterMonthLabel : 'All Schedules'}</span>
+            <ChevronDown
+              size={18}
+              className={`opacity-60 transition-transform duration-200 ${monthOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {/* dropdown menu */}
+          {monthOpen && (
+            <div
+              role="listbox"
+              className="absolute left-0 top-full z-40 mt-2 max-h-64 min-w-full w-52 overflow-y-auto rounded-xl border border-white/10 theme-card shadow-lg"
+            >
+              {[
+                { value: '', label: 'All Schedules' },
+                ...availableMonths.map((ym) => ({ value: ym, label: getMonthLabel(ym) })),
+              ].map((opt) => {
+                const isSelected = opt.value === filterMonth
+                return (
+                  <button
+                    key={opt.value || 'all'}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => {
+                      setFilterMonth(opt.value)
+                      setMonthOpen(false)
+                    }}
+                    className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-mono text-sm theme-text transition hover:bg-white/10"
+                  >
+                    <span>{opt.label}</span>
+                    {isSelected && <Check size={16} className="opacity-70" />}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* SCHEDULE LIST */}
