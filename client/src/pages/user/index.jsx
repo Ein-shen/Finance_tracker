@@ -40,14 +40,14 @@ export const Index = () => {
               <div className="theme-card rounded-xl w-full">
                 <h2 className="font-mono text-xl theme-text text-center p-2">Total Schedule</h2>
                 <SummaryCards
-                  cards={[{ label: 'Upcoming Bills', value: `-₱${formatPeso(analytics.totalUpcoming)}` }]}
+                  cards={[{ label: 'Upcoming Bills', value: `₱${formatPeso(analytics.totalUpcoming)}` }]}
                 />
               </div>
 
               <div className="theme-card rounded-xl w-full">
                 <h2 className="font-mono text-xl theme-text text-center p-2">Total transaction</h2>
                 <SummaryCards
-                  cards={[{ label: 'Total Spent', value: `-₱${formatPeso(analytics.totalSpent)}` }]}
+                  cards={[{ label: 'Total Spent', value: `₱${formatPeso(analytics.totalSpent)}` }]}
                 />
               </div>
             </div>
