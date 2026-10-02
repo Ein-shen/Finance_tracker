@@ -3,11 +3,16 @@ import { ChevronDown, User, Settings, HelpCircle, LogOut } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 import { useNavigate } from 'react-router-dom'
-
+import { Toogle, useTheme } from "./Toogle"
+import { Star } from "lucide-react";
 const CACHE_KEY_PREFIX = 'accountProfile_'
 
 export const Navbar = () => {
   const navigate = useNavigate()
+
+  // same theme logic as Settings
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
 
   const [photoUrl, setPhotoUrl] = useState(null)
   const [showAccount, setShowAccount] = useState(false) // dropdown open/closed
@@ -124,7 +129,7 @@ export const Navbar = () => {
           {showAccount && (
             <div
               role="menu"
-              className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-xl border border-white/10 theme-card shadow-lg"
+              className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-xl border border-white/10 theme-card shadow-lg"
             >
               {menuItems.map(({ label, icon: Icon, onClick }) => (
                 <button
@@ -138,6 +143,15 @@ export const Navbar = () => {
                   {label}
                 </button>
               ))}
+
+              <div className="border-t border-white/10" />
+
+              {/* Theme Toggle Item (same as Settings) */}
+              <div className="flex w-full flex-row items-center gap-3 px-4 py-2.5">
+                
+                <Star size={16}/>
+                <Toogle />
+              </div>
 
               <div className="border-t border-white/10" />
 
