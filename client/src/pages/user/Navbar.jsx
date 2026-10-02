@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ChevronDown, User, Settings, HelpCircle, LogOut } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const CACHE_KEY_PREFIX = 'accountProfile_'
 
 export const Navbar = () => {
   const navigate = useNavigate()
-  const location = useLocation()
 
   const [photoUrl, setPhotoUrl] = useState(null)
-  const [showAccount, setShowAccount] = useState(false)
+  const [showAccount, setShowAccount] = useState(false) // dropdown open/closed
+  const menuRef = useRef(null)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -44,8 +44,50 @@ export const Navbar = () => {
     return unsubscribe
   }, [])
 
+  // close the dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!showAccount) return
+
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowAccount(false)
+      }
+    }
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setShowAccount(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showAccount])
+
+  const goTo = (path) => {
+    setShowAccount(false)
+    navigate(path)
+  }
+
+  const handleLogout = async () => {
+    setShowAccount(false)
+    try {
+      await auth.signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
   const resolvedPhotoUrl =
     photoUrl && photoUrl.startsWith('/uploads') ? `${API_URL}${photoUrl}` : photoUrl
+
+  const menuItems = [
+    { label: 'Account', icon: User, onClick: () => goTo('/dashboard/account') },
+    { label: 'Settings', icon: Settings, onClick: () => goTo('/dashboard/settings') },
+    { label: 'Help', icon: HelpCircle, onClick: () => goTo('/dashboard/help') },
+  ]
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/10 theme-card">
@@ -55,24 +97,61 @@ export const Navbar = () => {
           <h1 className="font-mono text-md sm:text-lg md:text-lg">Expense Tracker</h1>
         </button>
 
-        {/* hero */}
-        <div className="ml-auto flex items-center gap-1">
-          <div 
-            onClick={() => navigate(`/dashboard/account`)}
-            className="h-9 w-9 overflow-hidden rounded-full border border-white bg-blue-500">
+        {/* profile + dropdown */}
+        <div ref={menuRef} className="relative ml-auto flex items-center gap-1">
+          <div
+            onClick={() => navigate('/dashboard/account')}
+            className="h-9 w-9 cursor-pointer overflow-hidden rounded-full border border-white bg-blue-500"
+          >
             {resolvedPhotoUrl && (
               <img src={resolvedPhotoUrl} alt="Profile" className="h-full w-full object-cover" />
             )}
           </div>
-          
-          <button 
-            
-            type="button" 
-            className="rounded-lg p-1 opacity-60 transition hover:opacity-100">
-            <ChevronDown size={20} />
+
+          <button
+            type="button"
+            onClick={() => setShowAccount((prev) => !prev)}
+            aria-haspopup="menu"
+            aria-expanded={showAccount}
+            className="rounded-lg p-1 opacity-60 transition hover:opacity-100"
+          >
+            <ChevronDown
+              size={20}
+              className={`transition-transform duration-200 ${showAccount ? 'rotate-180' : ''}`}
+            />
           </button>
 
-          
+          {showAccount && (
+            <div
+              role="menu"
+              className="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-xl border border-white/10 theme-card shadow-lg"
+            >
+              {menuItems.map(({ label, icon: Icon, onClick }) => (
+                <button
+                  key={label}
+                  type="button"
+                  role="menuitem"
+                  onClick={onClick}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-white/10"
+                >
+                  <Icon size={16} className="opacity-70" />
+                  {label}
+                </button>
+              ))}
+
+              <div className="border-t border-white/10" />
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-400 transition hover:bg-white/10"
+              >
+                <LogOut size={16} />
+                Log out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
