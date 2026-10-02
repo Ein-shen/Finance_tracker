@@ -385,6 +385,9 @@ export const Schedule = () => {
     setShowEdit(true)
   }
 
+  // Updates the screen + cache right away and closes the popup,
+  // then saves to the server in the background. If the server
+  // fails, the change is rolled back.
   const handleEditSchedule = async () => {
     const targetId = getScheduleId(selectedSchedule)
     if (!targetId) {
@@ -403,11 +406,35 @@ export const Schedule = () => {
       return
     }
 
-    try {
-      setLoading(true)
-      const user = auth.currentUser
-      if (!user) throw new Error('You must be logged in first')
+    const user = auth.currentUser
+    if (!user) {
+      alert('You must be logged in first')
+      return
+    }
 
+    const previousSchedules = schedules // saved in case we need to roll back
+
+    // 1. update the screen + cache right away
+    const optimisticItem = {
+      ...selectedSchedule,
+      description: editDescription,
+      amount: Number(editAmount),
+      category: editCategory,
+      due_date: editDueDate,
+      repeat_type: editRepeatType,
+    }
+    const optimisticList = schedules.map((item) =>
+      getScheduleId(item) === targetId ? optimisticItem : item
+    )
+    setSchedules(optimisticList)
+    saveCache(user.uid, optimisticList)
+
+    // 2. close the popup immediately
+    setShowEdit(false)
+    setSelectedSchedule(null)
+
+    // 3. save to the server in the background
+    try {
       const token = await user.getIdToken()
       const response = await fetch(`${API_URL}/api/schedule/${targetId}`, {
         method: 'PUT',
@@ -437,7 +464,7 @@ export const Schedule = () => {
         throw new Error(data.message || 'Failed to edit schedule')
       }
 
-      // Same pattern again: update state + cache together.
+      // swap in the real server version
       setSchedules((prev) => {
         const updated = prev.map((item) =>
           getScheduleId(item) === targetId ? data.schedule : item
@@ -445,14 +472,12 @@ export const Schedule = () => {
         saveCache(user.uid, updated)
         return updated
       })
-
-      setShowEdit(false)
-      setSelectedSchedule(null)
     } catch (error) {
       console.error('Edit schedule error:', error)
+      // 4. server failed, so undo the change
+      setSchedules(previousSchedules)
+      saveCache(user.uid, previousSchedules)
       alert(error.message || 'Failed to edit schedule')
-    } finally {
-      setLoading(false)
     }
   }
 
