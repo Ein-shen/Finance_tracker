@@ -16,8 +16,7 @@ const navItems = [
   { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
   { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
-  { label: 'Account', icon: User, path: '/dashboard/account' },
-  { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
+
 ]
 
 export const Leftsidebar = () => {
