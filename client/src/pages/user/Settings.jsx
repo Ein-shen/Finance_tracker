@@ -28,24 +28,7 @@ export const Settings = () => {
 
       <div className=" theme-card py-4 space-y-4 theme-border border px-3 rounded-md w-[70%] mx-auto flex flex-col justify-center items-stretch">
   
-        {/* Theme Toggle Item */}
-        <div className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-5 flex flex-row justify-between items-center">
-          <span className="flex items-center gap-3 font-mono">
-            {isLight ? (
-              <>
-                Light Mode
-                <Sun className="w-5 h-5" />
-              </>
-            ) : (
-              <>
-                Dark Mode
-                <Moon className="w-5 h-5" />
-              </>
-            )}
-          </span>
-
-          <Toogle />
-        </div>
+        
 
         {/* About Button */}
         <button 
