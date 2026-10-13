@@ -14,7 +14,7 @@ const navItems = [
     iconSrc: 'https://img.icons8.com/?size=100&id=aOXlHTOpHruk&format=png&color=000000',
     path: '/dashboard',
   },
-  { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
+  { label: 'Transaction', iconSrc: 'https://img.icons8.com/?size=100&id=XRiBSekxarzd&format=png&color=000000', icon: Receipt, path: '/dashboard/transaction' },
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
   { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
 ]
