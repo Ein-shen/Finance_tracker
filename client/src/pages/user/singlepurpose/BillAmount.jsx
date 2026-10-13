@@ -188,7 +188,8 @@ export const BillAmount = ({ refreshKey }) => {
 
         <div className="bg-[#0077B6] rounded-md p-3 sm:p-4">
 
-          <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
+          <p className="theme-text flex flex-row gap-1 items-center font-mono text-xs sm:text-sm opacity-70">
+            <img src="https://img.icons8.com/?size=100&id=clCu8sTHeQ0i&format=png&color=000000" alt="total" height={24} width={24} />
             Total expenses
           </p>
 
