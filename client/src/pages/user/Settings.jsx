@@ -32,13 +32,16 @@ export const Settings = () => {
 
         {/* About Button */}
         <button 
-          className="w-full border-b pb-4 px-6 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
+          className="w-full border-b pb-4 px-6 gap-1 sm:px-8 md:px-12 lg:px-5 font-mono text-md transition-colors hover:opacity-80 flex items-center justify-between"
           onClick={() => {
             setShowOpen(false)
             handleNavigate('/dashboard/about')
           }}
         >
-          <span>About</span>
+          
+          <span className='flex flex-row item-center gap-2'>
+            <img src="https://img.icons8.com/?size=100&id=PUULuXvUfB6u&format=png&color=000000" alt="set" height={10} width={20} />
+            About</span>
           <ChevronRight size={25} />
         </button>
 
@@ -50,7 +53,9 @@ export const Settings = () => {
             handleNavigate('/dashboard/support')
           }}
         >
-          <span>Support</span>
+          <span className='flex flex-row item-center gap-2'>
+            <img src="https://img.icons8.com/?size=100&id=CKanVNIbMiJO&format=png&color=000000" alt="sup" height={10} width={20} />
+            Support</span>
           <ChevronRight size={25} />
         </button>
 
@@ -62,7 +67,9 @@ export const Settings = () => {
             handleNavigate('/dashboard/help')
           }}
         >
-          <span>Ask for help </span>
+          <span className='flex flex-row item-center gap-2'>
+            <img src="https://img.icons8.com/?size=100&id=wYfd7Y8cWmet&format=png&color=000000" alt="ask" height={10} width={20}/>
+            Ask for help </span>
           <ChevronRight size={25} />
         </button>
 
@@ -74,7 +81,9 @@ export const Settings = () => {
             handleNavigate('')
           }}
         >
-          <span>Language</span>
+          <span className='flex flex-row item-center gap-2'>
+            <img src="https://img.icons8.com/?size=100&id=ceTqKjlDTFsp&format=png&color=000000" alt="lang" height={10} width={20} />
+            Language</span>
           <ChevronRight size={25} />
         </button>
 
