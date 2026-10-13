@@ -33,7 +33,8 @@ export const Index = () => {
     <div className="w-full px-4 sm:px-8 md:px-12 lg:px-20 md:pt-2">
 
       <div className="flex flex-row items-center justify-between">
-        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+        <h1 className="font-mono text-xl flex flex-row gap-1 items-center  sm:text-2xl theme-text">
+          <img src="https://img.icons8.com/?size=100&id=aOXlHTOpHruk&format=png&color=000000" alt="overview" height={24} width={24} />
           Financial overview
         </h1>
 
