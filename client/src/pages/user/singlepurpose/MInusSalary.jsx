@@ -196,7 +196,10 @@ export const MInusSalary = ({ refreshKey }) => {
 
       {!isLoading && hasSalary && analytics && (
         <div className={`bg-[#A35311]  rounded-md p-3 sm:p-4 ${isOverspent ? 'border-l-rose-500' : 'border-l-indigo-500'}`}>
-          <p className="theme-text font-mono text-xs sm:text-sm opacity-70">Salary minus expenses</p>
+          <p className="theme-text items-center flex flex-row gap-1 font-mono text-xs sm:text-sm opacity-70">
+            <img src="https://img.icons8.com/?size=100&id=U6DfZK1vH0E3&format=png&color=000000" alt="minus" height={24} width={24} />
+            
+            Salary minus expenses</p>
           <p className={`font-mono text-2xl sm:text-3xl font-bold tabular-nums break-words ${isOverspent ? 'text-rose-400' : 'theme-text'}`}>
             {peso(remaining)}
           </p>
