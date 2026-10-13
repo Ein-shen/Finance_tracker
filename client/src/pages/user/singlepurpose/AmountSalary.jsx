@@ -228,7 +228,8 @@ export const AmountSalary = ({ onAddClick, refreshKey }) => {
         ========================================== */
         <div className="  rounded-md p-3 sm:p-4 bg-[#588157] ">
 
-          <p className="theme-text font-mono text-xs sm:text-sm opacity-70">
+          <p className="theme-text flex flex-row gap-1 items-center  font-mono text-xs sm:text-sm opacity-70">
+            <img src="https://img.icons8.com/?size=100&id=iNcxOiFTeYwV&format=png&color=000000" alt="monthly" height={24} width={24} />
             Monthly salary
           </p>
 
