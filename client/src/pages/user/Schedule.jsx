@@ -124,12 +124,12 @@ export const Schedule = () => {
   // Category icon shown in the card's icon tile
   const getCategoryIcon = (cat) => {
     switch (cat?.toLowerCase()) {
-      case 'food': return <Utensils size={19} />
-      case 'transportation': return <Car size={19} />
-      case 'shopping': return <ShoppingBag size={19} />
-      case 'bills': return <Receipt size={19} />
-      case 'entertainment': return <Film size={19} />
-      default: return <Wallet size={19} />
+      case 'food': return <img src="https://img.icons8.com/?size=100&id=p1dxYcr835rN&format=png&color=000000" alt="food " height={24} width={24} />
+      case 'transportation': return <img src="https://img.icons8.com/?size=100&id=COfeCP0ZqQKk&format=png&color=000000" alt="Transport " height={24} width={24} />
+      case 'shopping': return <img src="https://img.icons8.com/?size=100&id=8g0spcR3NCSq&format=png&color=000000" alt="shopping " height={24} width={24} />
+      case 'bills': return <img src="https://img.icons8.com/?size=100&id=8KjmxtKj6Qe0&format=png&color=000000" alt="bill " height={24} width={24} /> 
+      case 'entertainment': return <img src="https://img.icons8.com/?size=100&id=4AB7j_XjvHPH&format=png&color=000000" alt="entainment " height={24} width={24} />
+      default: return <img src="https://img.icons8.com/?size=100&id=pfbpdB57bm6O&format=png&color=000000" alt="food " height={24} width={24} />
     }
   }
 
@@ -582,7 +582,8 @@ export const Schedule = () => {
     <div className="w-full md:pt-0">
       {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
-        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+        <h1 className="font-mono items-center flex flex-row gap-1 text-xl sm:text-2xl theme-text">
+        <img src="https://img.icons8.com/?size=100&id=zvUXnOTfR89R&format=png&color=000000" alt="sched" height={24} width={24}/>
           Schedule
           {authLoading && (
             <span className="ml-2 text-xs opacity-60 align-middle">
