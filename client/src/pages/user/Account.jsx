@@ -35,13 +35,6 @@ export const Account = () => {
   // ==========================================
   // LOAD CACHED PROFILE IMMEDIATELY (BEFORE LOGIN CHECK FINISHES)
   // ==========================================
-  // This runs ONCE, the very first time the component renders.
-  // At this exact moment we don't know WHICH user is logged in yet
-  // (Firebase hasn't told us), so we just grab whatever cached profile
-  // happens to already be sitting in localStorage. This lets the page
-  // show something immediately, instead of a blank "loading" screen.
-  // A few lines below, once Firebase confirms who the user actually is,
-  // we double check and correct this if needed.
   const [{ name: cachedName, email: cachedEmail, photoUrl: cachedPhotoUrl }] = useState(() => {
     try {
       // Find any localStorage key that starts with "accountProfile_"
@@ -66,11 +59,6 @@ export const Account = () => {
   // ==========================================
   // REACT STATE (what the component actually displays)
   // ==========================================
-  // We seed these with whatever we found in the cache above, so the
-  // very first render already shows real data instead of "Name" / "Email".
-
-  // Only show the big "loading..." state if we truly have nothing cached.
-  // If we already have a cached name/email, skip straight to showing it.
   const [loadingProfile, setLoadingProfile] = useState(!cachedName && !cachedEmail)
 
   const [name, setName] = useState(cachedName || '')
@@ -84,13 +72,8 @@ export const Account = () => {
   // WAIT FOR FIREBASE TO TELL US WHO IS LOGGED IN
   // ==========================================
   useEffect(() => {
-    // onAuthStateChanged fires once when the app loads, and again anytime
-    // the user logs in or out.
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        // Now that we know exactly WHO is logged in, check if there is a
-        // saved cache specifically for THIS person's uid (in case someone
-        // else used this browser before and their data got peeked earlier).
         try {
           const cached = localStorage.getItem(getCacheKey(user.uid))
           if (cached) {
@@ -104,12 +87,6 @@ export const Account = () => {
           console.error('Failed to read account cache:', error)
         }
 
-        // Whether or not we had a cache, always fetch the latest data
-        // from the server too, so the info stays accurate/up to date.
-        // Note: if the server/database is unreachable (like the Neon
-        // connection error you saw earlier), this fetch will fail and
-        // get caught below — but it will NOT crash the page, because
-        // we already have cached data showing from the block above.
         fetchProfile(user)
       } else {
         // Nobody is logged in
@@ -129,9 +106,6 @@ export const Account = () => {
       const user = userArg || auth.currentUser
       if (!user) return
 
-      // If we already have something on screen (from cache), don't show
-      // the big blocking "loading" state again while we refresh in the
-      // background. Only show it if the screen is truly empty.
       setLoadingProfile((prev) => (name || email ? false : prev))
 
       // Get a fresh auth token to prove to our backend who we are
@@ -160,17 +134,12 @@ export const Account = () => {
       setEmail(freshEmail)
       setPhotoUrl(freshPhotoUrl)
 
-      // Save this fresh data to localStorage so next time the page loads,
-      // it can show this instantly before even asking the server again.
       saveCache(user.uid, {
         name: freshName,
         email: freshEmail,
         photoUrl: freshPhotoUrl,
       })
     } catch (error) {
-      // If the server/database is down (e.g. ENOTFOUND from Neon), we land
-      // here. We just log it and quietly keep showing whatever cached data
-      // is already on screen instead of breaking the page.
       console.error('Get profile error:', error)
     } finally {
       setLoadingProfile(false)
@@ -220,6 +189,11 @@ export const Account = () => {
 
       // Use the real photo URL returned by the server
       setPhotoUrl(data.user.photo_url)
+
+      // ADDED: tell the Navbar so it shows the same picture right away
+      window.dispatchEvent(
+        new CustomEvent('profile-updated', { detail: { photoUrl: data.user.photo_url } })
+      )
 
       // Update the cache with the new photo too, so it's remembered
       saveCache(user.uid, {

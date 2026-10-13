@@ -51,6 +51,13 @@ export const Navbar = () => {
     return unsubscribe
   }, [])
 
+  // ADDED: update the avatar when the Account page uploads a new photo
+  useEffect(() => {
+    const onUpdate = (e) => setPhotoUrl(e.detail?.photoUrl || null)
+    window.addEventListener('profile-updated', onUpdate)
+    return () => window.removeEventListener('profile-updated', onUpdate)
+  }, [])
+
   // close the dropdown when clicking outside or pressing Escape
   useEffect(() => {
     if (!showAccount) return
