@@ -118,7 +118,9 @@ export const Analytics = () => {
     <div className="w-full md:pt-0">
       {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
-        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+        <h1 className="font-mono text-xl sm:text-2xl  flex flex-row gap-1 items-center theme-text">
+          
+          <img src="https://img.icons8.com/?size=100&id=aLTVTLhwbxnK&format=png&color=000000" alt="analytics" height={24} width={24} />
           Analytics
         </h1>
       </div>
@@ -156,7 +158,9 @@ export const Analytics = () => {
           <div className="w-full h-auto flex flex-col md:flex-row gap-5 pt-10 items-start justify-center">
             {/* TRANSACTIONS */}
             <div className="theme-card rounded-md w-full py-5 px-5">
-              <h2 className="font-mono text-xl theme-text mb-4">Transactions</h2>
+              <h2 className="font-mono text-lg theme-text flex flex-row gap-1 items-center mb-4">
+                <img src="https://img.icons8.com/?size=100&id=XRiBSekxarzd&format=png&color=000000" alt="trans" height={20} width={20} />
+                Transactions</h2>
 
               <SummaryCards cards={[{ label: 'Total Spent', value: `₱${analytics.totalSpent}` }]} />
 
@@ -167,7 +171,9 @@ export const Analytics = () => {
 
             {/* SCHEDULE */}
             <div className="theme-card rounded-md w-full py-5 px-5">
-              <h2 className="font-mono text-xl theme-text mb-4">Schedule</h2>
+              <h2 className="font-mono text-lg flex flex-row items-center gap-1 theme-text mb-4">
+                <img src="https://img.icons8.com/?size=100&id=zvUXnOTfR89R&format=png&color=000000" alt="sched" height={20} width={20}/>
+                Schedule</h2>
 
               <SummaryCards cards={[{ label: 'Upcoming Bills', value: `₱${analytics.totalUpcoming}` }]} />
 
