@@ -2,21 +2,21 @@ import React, { useState } from 'react'
 import {
   Calendar,
   BarChart2,
-  User,
   Receipt,
-  Settings,
-  LayoutDashboard,
   Menu,
   X,
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const navItems = [
-  { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
+  {
+    label: 'Overview',
+    iconSrc: 'https://img.icons8.com/?size=100&id=aOXlHTOpHruk&format=png&color=000000',
+    path: '/dashboard',
+  },
   { label: 'Transaction', icon: Receipt, path: '/dashboard/transaction' },
   { label: 'Schedule', icon: Calendar, path: '/dashboard/schedule' },
   { label: 'Analytics', icon: BarChart2, path: '/dashboard/analytics' },
-
 ]
 
 export const Leftsidebar = () => {
@@ -39,7 +39,6 @@ export const Leftsidebar = () => {
           className="md:hidden fixed left-4 top-[4.75rem] z-30 flex items-center gap-2 rounded-md border border-border bg-background px-2 py-2 font-mono text-sm"
         >
           <Menu className="w-4 h-4" />
-          
         </button>
       )}
 
@@ -68,7 +67,7 @@ export const Leftsidebar = () => {
 
         {/* Main Navigation */}
         <div className="w-full space-y-4 px-6 pt-5">
-          {navItems.map(({ label, icon: Icon, path }) => {
+          {navItems.map(({ label, icon: Icon, iconSrc, path }) => {
             const isActive =
               path === '/dashboard'
                 ? location.pathname === '/dashboard'
@@ -79,12 +78,16 @@ export const Leftsidebar = () => {
               <button
                 key={label}
                 onClick={() => handleNavigate(path)}
-                className={`w-full flex items-center gap-2 font-mono text-md rounded-md p-2 transition-colors theme-hover ${
-                isActive ? 'border border-theme-border/10 theme-bg' : ''
+                className={`w-full flex items-center gap-2 font-mono rounded-md p-2 transition-colors theme-hover ${
+                  isActive ? 'border border-theme-border/10 theme-bg' : ''
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                {label}
+                {iconSrc ? (
+                  <img src={iconSrc} alt="" className="w-4 h-4 shrink-0" />
+                ) : (
+                  Icon && <Icon className="w-4 h-4 shrink-0" />
+                )}
+                <span className="text-xs">{label}</span>
               </button>
             )
           })}
