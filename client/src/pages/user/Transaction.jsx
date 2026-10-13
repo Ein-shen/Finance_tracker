@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Plus, X, Pencil, Trash2, Utensils, Car, ShoppingBag, Receipt, Film, Wallet, ChevronDown, Check } from 'lucide-react'
+import { Plus, X, Pencil, Trash2,  Wallet, ChevronDown, Check } from 'lucide-react'
 import { auth } from '../../firebase'
 import { API_URL } from '../../api'
 import { HashLoader } from 'react-spinners'
@@ -85,12 +85,12 @@ export const Transaction = () => {
   // ---------- CATEGORY ICON ----------
   const getCategoryIcon = (category) => {
     switch (category?.toLowerCase()) {
-      case 'food': return <Utensils size={19} />
-      case 'transportation': return <Car size={19} />
-      case 'shopping': return <ShoppingBag size={19} />
-      case 'bills': return <Receipt size={19} />
-      case 'entertainment': return <Film size={19} />
-      default: return <Wallet size={19} />
+      case 'food': return <img src="https://img.icons8.com/?size=100&id=p1dxYcr835rN&format=png&color=000000" alt="food " height={24} width={24} />
+      case 'transportation': return <img src="https://img.icons8.com/?size=100&id=COfeCP0ZqQKk&format=png&color=000000" alt="Transport " height={24} width={24} />
+      case 'shopping': return <img src="https://img.icons8.com/?size=100&id=8g0spcR3NCSq&format=png&color=000000" alt="shopping " height={24} width={24} />
+      case 'bills': return <img src="https://img.icons8.com/?size=100&id=8KjmxtKj6Qe0&format=png&color=000000" alt="bill " height={24} width={24} />
+      case 'entertainment': return <img src="https://img.icons8.com/?size=100&id=4AB7j_XjvHPH&format=png&color=000000" alt="entainment " height={24} width={24} />
+      default: return <img src="https://img.icons8.com/?size=100&id=pfbpdB57bm6O&format=png&color=000000" alt="food " height={24} width={24} />
     }
   }
 
@@ -453,7 +453,8 @@ export const Transaction = () => {
     <div className="w-full md:pt-0">
       {/* HEADER */}
       <div className="w-full flex flex-row justify-between items-center px-4 sm:px-8 md:px-12 lg:px-20">
-        <h1 className="font-mono text-xl sm:text-2xl theme-text">
+        <h1 className="font-mono flex flex-row gap-1 items-center text-xl sm:text-2xl theme-text">
+          <img src="https://img.icons8.com/?size=100&id=XRiBSekxarzd&format=png&color=000000" alt="transaction" height={24} width={24} />
           Transactions
           {authLoading && (
             <span className="ml-2 text-xs opacity-60 align-middle">
