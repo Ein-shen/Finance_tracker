@@ -38,7 +38,7 @@ export const Index = () => {
           Financial overview
         </h1>
 
-        <form className="flex flex-row space-x-4">
+        {/* <form className="flex flex-row space-x-4">
           <input
             placeholder="Search"
             className="theme-border theme-text border border-white/30 rounded-md px-3"
@@ -50,7 +50,7 @@ export const Index = () => {
           >
             <Search color="gray" size={25} />
           </button>
-        </form>
+        </form> */}
       </div>
 
       <div className="mt-6 px-5 pt-0 sm:pt-10">
